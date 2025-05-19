@@ -18,6 +18,7 @@ const App = () => {
         flex: 1,
         paddingTop: StatusBar.currentHeight,
       }}>
+      <StatusBar barStyle={'dark-content'} />
       <Provider store={store}>
         <RootNavigator />
       </Provider>

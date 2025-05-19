@@ -35,9 +35,9 @@ const RootNavigator = () => {
     }
 
     if (!token && !isOnBoardingComplete) {
-      return <AuthRoutes />;
+      return <AppRoutes />;
     }
-    return <AppRoutes />;
+    return <AuthRoutes />;
   };
   return <NavigationContainer>{getRoute()}</NavigationContainer>;
 };

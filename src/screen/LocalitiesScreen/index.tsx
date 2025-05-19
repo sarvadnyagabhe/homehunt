@@ -16,21 +16,15 @@ import {COLORS} from '../../assets/colors';
 
 const data = {
   delhi: [
-    {id: 1, name: 'North Delhi'},
-    {id: 1, name: 'East Delhi'},
-    {id: 1, name: 'West Delhi'},
-    {id: 1, name: 'South Delhi'},
-  ],
-  gurugram: [
-    {id: 1, name: 'North gurugram'},
-    {id: 1, name: 'East gurugram'},
-    {id: 1, name: 'West gurugram'},
-    {id: 1, name: 'South gurugram'},
+    {id: 1, name: 'Dwarka, New Delhi'},
+    {id: 1, name: 'Laxmi Nagar, New Delhi'},
+    {id: 1, name: 'Uttam Nagar, New Delhi'},
+    {id: 1, name: 'Saket, New Delhi'},
   ],
 };
 
 const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
-  const cityData = route?.params?.data;
+  const locationData = route?.params?.data;
 
   const handleLocation = async () => {
     const hasPermission = await getLocationPermission();
@@ -44,7 +38,7 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
     <View style={styles.parent}>
       <CustomBack />
       <MagicText style={styles.mainText}>
-        Top localities in {cityData?.name}
+        Top localities in {locationData?.name}
       </MagicText>
       <SearchContainer
         style={styles.searchStyle}
@@ -63,12 +57,18 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
       <HR style={styles.hrView} />
 
       <View>
-        <View style={styles.row}>
-          <View style={styles.locationIconView}>
-            <LocationIcon />
-          </View>
-          <MagicText style={styles.locationText}>North delhi</MagicText>
-        </View>
+        {data.delhi?.map(item => {
+          return (
+            <TouchableOpacity onPress={() => {}}>
+              <View style={styles.row}>
+                <View style={styles.locationIconView}>
+                  <LocationIcon />
+                </View>
+                <MagicText style={styles.locationText}>{item?.name}</MagicText>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
