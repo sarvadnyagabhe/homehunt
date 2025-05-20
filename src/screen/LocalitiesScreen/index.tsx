@@ -13,6 +13,8 @@ import SearchContainer from '../../components/SearchContainer';
 import {CurrentLocationIcon, LocationIcon} from '../../assets/icons';
 import HR from '../../components/HR';
 import {COLORS} from '../../assets/colors';
+import {useDispatch} from 'react-redux';
+import {setToken} from '../../store/slice/authSlice';
 
 const data = {
   delhi: [
@@ -24,6 +26,7 @@ const data = {
 };
 
 const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
+  const dispatch = useDispatch();
   const locationData = route?.params?.data;
 
   const handleLocation = async () => {
@@ -59,7 +62,11 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
       <View>
         {data.delhi?.map(item => {
           return (
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity
+              onPress={() => {
+                //❗️TODO: remove this after login flow completed(added temporary)
+                dispatch(setToken('token'));
+              }}>
               <View style={styles.row}>
                 <View style={styles.locationIconView}>
                   <LocationIcon />

@@ -6,19 +6,29 @@ import {
   StyleSheet,
   View,
   Pressable,
+  ViewStyle,
+  StyleProp,
 } from 'react-native';
 import {COLORS} from '../../assets/colors';
 import DotComponent from '../DotComponent';
 import Video from 'react-native-video';
 import FastImage from 'react-native-fast-image';
-
-const CustomSlider = ({sliderData = []}: any) => {
+type CustomSliderType = {
+  sliderData: any;
+  containerStyle?: StyleProp<ViewStyle>;
+  isHome?: boolean;
+};
+const CustomSlider = ({
+  sliderData = [],
+  containerStyle,
+  isHome = false,
+}: CustomSliderType) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const scrollRef = useRef<FlatList>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
   const videoRefs = useRef<any>({});
-  const screenWidth = Dimensions.get('screen').width - 16;
-
+  const screenWidth = Dimensions.get('screen').width - (isHome ? 0 : 28);
+  // const screenWidth = isHome ? width - 28 : width;
   // Pause video when scrolling away
   useEffect(() => {
     Object.keys(videoRefs.current).forEach(key => {
@@ -57,7 +67,7 @@ const CustomSlider = ({sliderData = []}: any) => {
   const styles = getStyles(screenWidth);
 
   return (
-    <View style={{marginBottom: 20}}>
+    <View>
       <FlatList
         data={sliderData}
         horizontal
@@ -73,27 +83,25 @@ const CustomSlider = ({sliderData = []}: any) => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item, index}) => {
           return (
-            <>
-              <Pressable style={{}} key={index}>
-                <View style={styles.mainViewStyle}>
-                  {item.type === 'image' ? (
-                    <FastImage
-                      style={styles.outputBoxStyle}
-                      source={item.image}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <Video
-                      source={item?.video}
-                      style={styles.outputBoxStyle}
-                      resizeMode="cover"
-                      controls={true}
-                      repeat
-                    />
-                  )}
-                </View>
-              </Pressable>
-            </>
+            <Pressable>
+              <View style={styles.mainViewStyle}>
+                {item.type === 'image' ? (
+                  <FastImage
+                    style={[styles.outputBoxStyle, containerStyle]}
+                    source={item?.image}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Video
+                    source={item?.video}
+                    style={[styles.outputBoxStyle, containerStyle]}
+                    resizeMode="cover"
+                    controls={true}
+                    repeat
+                  />
+                )}
+              </View>
+            </Pressable>
           );
         }}
       />
@@ -105,7 +113,7 @@ const CustomSlider = ({sliderData = []}: any) => {
                   key={index}
                   currentIndex={currentIndex}
                   index={index}
-                  activeColor={COLORS.WHITE}
+                  activeColor={COLORS.LIGHT_GREEN}
                   InActiveColor={COLORS.GRAY}
                 />
               );
@@ -120,18 +128,17 @@ export const getStyles = (screenWidth: number) => {
   return StyleSheet.create({
     dotView: {
       position: 'absolute',
-      bottom: 14,
+      bottom: 16,
       flexDirection: 'row',
       alignSelf: 'center',
-      backgroundColor: '#FFFFFF80',
-      paddingVertical: 6,
-      paddingHorizontal: 6,
-      borderRadius: 16,
     },
-    outputBoxStyle: {height: '100%', width: '100%', borderRadius: 10},
     mainViewStyle: {
       width: screenWidth,
-      height: 165,
+      height: 220,
+    },
+    outputBoxStyle: {
+      height: '100%',
+      width: '100%',
     },
     containerStyle: {
       alignItems: 'center',

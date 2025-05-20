@@ -33,11 +33,11 @@ const RootNavigator = () => {
     if (loading) {
       return <SplashScreen />;
     }
-
-    if (!token && !isOnBoardingComplete) {
-      return <AppRoutes />;
+    // && !isOnBoardingComplete
+    if (!token) {
+      return <AuthRoutes />;
     }
-    return <AuthRoutes />;
+    return <AppRoutes />;
   };
   return <NavigationContainer>{getRoute()}</NavigationContainer>;
 };
