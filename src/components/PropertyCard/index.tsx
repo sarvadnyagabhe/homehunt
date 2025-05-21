@@ -9,7 +9,7 @@ type PropertyCardType = {
   item: any;
 };
 const PropertyCard = ({item}: PropertyCardType) => {
-  const width = Dimensions.get('screen').width - 28;
+  const width = Dimensions.get('window').width - 36;
   const styles = getStyles(width);
 
   return (
@@ -66,6 +66,7 @@ const getStyles = (width: number) => {
     parent: {
       marginVertical: 14,
       elevation: 4,
+      marginHorizontal: 4,
     },
     imageStyle: {
       width: width,
