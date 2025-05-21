@@ -16,6 +16,7 @@ import NotificationIcon from './NotificationIcon';
 import SearchIcon from './SearchIcon';
 import ShareIcon from './ShareIcon';
 import StarIcon from './StarIcon';
+import TimerIcon from './TimerIcon';
 
 export {
   DelhiIcon,
@@ -36,4 +37,5 @@ export {
   ShareIcon,
   CallIcon,
   MoreOptionIcon,
+  TimerIcon,
 };

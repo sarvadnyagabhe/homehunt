@@ -13,6 +13,7 @@ import {
 import {COLORS} from '../../assets/colors';
 import {getButtonStyle} from './utils';
 import ButtonStyle from './style';
+import MagicText from '../MagicText';
 
 type ButtonPropType = {
   type?: 'PRIMARY' | 'OUTLINE' | 'DISABLE';
@@ -58,7 +59,7 @@ const Button = ({
         disabled
           ? type === 'OUTLINE'
             ? {opacity: 0.6}
-            : {backgroundColor: '#fc1c15', opacity: 0.6}
+            : {backgroundColor: COLORS.GREEN, opacity: 0.6}
           : {},
         style,
       ]}
@@ -82,8 +83,7 @@ const Button = ({
               newStyle[1],
               labelStyle,
               disabled ? {color: COLORS.WHITE} : {},
-            ]}
-            family="GOTHAM_MEDIUM">
+            ]}>
             {label}
           </MagicText>
           {rightIcon ? (
