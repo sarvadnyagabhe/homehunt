@@ -16,7 +16,7 @@ const DotComponent = ({
   InActiveColor,
 }: DotComponentType) => {
   return (
-    <View style={{width: 10, marginRight: 2, marginLeft: 2}}>
+    <View style={{width: 14, marginRight: 6}}>
       <View
         key={index}
         style={[
@@ -37,8 +37,8 @@ export default DotComponent;
 const styles = StyleSheet.create({
   dotStyle: {
     marginRight: 12,
-    width: 8,
-    height: 8,
+    width: 16,
+    height: 4,
     borderRadius: 8,
   },
 });

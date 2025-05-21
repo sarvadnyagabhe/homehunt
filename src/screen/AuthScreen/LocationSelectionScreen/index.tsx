@@ -4,7 +4,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {LocationSelectionScreenProps} from '../../../types/authTypes';
 import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
@@ -20,12 +20,6 @@ const data = {
     {id: 1, name: 'West Delhi'},
     {id: 1, name: 'South Delhi'},
   ],
-  gurugram: [
-    {id: 1, name: 'North gurugram'},
-    {id: 1, name: 'East gurugram'},
-    {id: 1, name: 'West gurugram'},
-    {id: 1, name: 'South gurugram'},
-  ],
 };
 
 const LocationSelectionScreen = ({
@@ -33,13 +27,14 @@ const LocationSelectionScreen = ({
   route,
 }: LocationSelectionScreenProps) => {
   const cityData = route?.params?.data;
+  const [locationCoords, setLocationCoords] = useState<any>();
 
   const handleLocation = async () => {
     const hasPermission = await getLocationPermission();
-    console.log('hasPermission', hasPermission);
+
     if (hasPermission) {
       const location = getCurrentLocation();
-      console.log('location', location);
+      setLocationCoords(location);
     }
   };
   return (
@@ -65,17 +60,21 @@ const LocationSelectionScreen = ({
       <HR style={styles.hrView} />
 
       <View>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('LocalitiesScreen', {data: data.delhi})
-          }>
-          <View style={styles.row}>
-            <View style={styles.locationIconView}>
-              <LocationIcon />
-            </View>
-            <MagicText style={styles.locationText}>North delhi</MagicText>
-          </View>
-        </TouchableOpacity>
+        {data.delhi?.map((item, index) => {
+          return (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('LocalitiesScreen', {data: item})
+              }>
+              <View style={styles.row} key={index}>
+                <View style={styles.locationIconView}>
+                  <LocationIcon />
+                </View>
+                <MagicText style={styles.locationText}>{item?.name}</MagicText>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );

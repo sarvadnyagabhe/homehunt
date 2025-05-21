@@ -4,6 +4,7 @@ import {AuthStackParamList} from '../../types/authTypes';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import CitySelectionScreen from '../../screen/AuthScreen/CitySelectionScreen';
 import LocationSelectionScreen from '../../screen/AuthScreen/LocationSelectionScreen';
+import LocalitiesScreen from '../../screen/LocalitiesScreen';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 const AuthRoutes = () => {
@@ -21,6 +22,7 @@ const AuthRoutes = () => {
         name="LocationSelectionScreen"
         component={LocationSelectionScreen}
       />
+      <Stack.Screen name="LocalitiesScreen" component={LocalitiesScreen} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
     </Stack.Navigator>
   );

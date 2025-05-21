@@ -18,11 +18,17 @@ type MainStackParamList = {
 
 type HomeScreenStackParamList = {
   HomeScreen: any;
+  ProprtyDetailScreen: any;
 };
 
 export type HomeScreenProps = NativeStackScreenProps<
   HomeScreenStackParamList,
   'HomeScreen'
+>;
+
+export type ProprtyDetailScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'ProprtyDetailScreen'
 >;
 
 export type {MainStackParamList, BottomTabParamList, HomeScreenStackParamList};
