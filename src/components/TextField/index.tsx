@@ -76,6 +76,7 @@ const TextField = ({
               Platform.OS === 'ios' ? {padding: 8} : {},
               isValid ? {} : {color: COLORS.RED},
               inputStyle,
+              leftIcon ? {marginLeft: 12} : {marginLeft: 0},
             ]}
             {...TextInputProps}
           />

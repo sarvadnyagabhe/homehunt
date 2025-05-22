@@ -48,7 +48,7 @@ const OTPTextField = ({
         textContentType="oneTimeCode"
         autoCapitalize="characters"
         renderCell={({index, symbol, isFocused}) => (
-          <View style={{flexDirection: 'row-reverse'}}>
+          <View style={{flexDirection: 'row-reverse'}} key={index}>
             <MagicText
               key={index}
               style={[

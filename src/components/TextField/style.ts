@@ -6,6 +6,7 @@ const TextFieldStyle = StyleSheet.create({
     borderColor: COLORS.GRAY,
     borderRadius: 8,
     backgroundColor: COLORS.WHITE_SMOKE,
+    paddingVertical: 10,
   },
   row: {
     flexDirection: 'row',

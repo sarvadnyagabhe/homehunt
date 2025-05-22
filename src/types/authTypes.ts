@@ -6,6 +6,7 @@ export type AuthStackParamList = {
   LocationSelectionScreen: any;
   LocalitiesScreen: any;
   OtpScreen: any;
+  SignupScreen: any;
 };
 
 export type LoginScreenProps = NativeStackScreenProps<
@@ -31,4 +32,9 @@ export type LocalitiesScreenProps = NativeStackScreenProps<
 export type OtpScreenProps = NativeStackScreenProps<
   AuthStackParamList,
   'OtpScreen'
+>;
+
+export type SignupScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'SignupScreen'
 >;

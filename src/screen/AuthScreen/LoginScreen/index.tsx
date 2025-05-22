@@ -1,4 +1,4 @@
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import MagicText from '../../../components/MagicText';
 import {COLORS} from '../../../assets/colors';
@@ -26,7 +26,6 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
           <MagicText style={styles.moibleText}>Enter Mobile Number</MagicText>
           <TextField
             placeholder="Phone"
-            style={{paddingVertical: 10}}
             inputStyle={{marginLeft: 12}}
             leftIcon={<CallIcon />}
           />
@@ -44,7 +43,9 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <MagicText style={styles.agentText}>Continue as Agent</MagicText>
+        <TouchableOpacity onPress={() => navigation.navigate('SignupScreen')}>
+          <MagicText style={styles.agentText}>Continue as Agent</MagicText>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  signinText: {fontSize: 14},
+  signinText: {fontSize: 16},
 
   signinView: {
     flex: 1,

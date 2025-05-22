@@ -1,12 +1,28 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import MagicText from '../../MagicText';
 import CustomBack from '../../CustomBack';
 import {COLORS} from '../../../assets/colors';
 import OTPTextField from '../../../components/OTPTextField';
 import {TimerIcon} from '../../../assets/icons';
+import {OtpScreenProps} from '../../../types/authTypes';
 
-const OtpScreen = () => {
+const OtpScreen = ({navigation}: OtpScreenProps) => {
+  const [timer, setTimer] = useState<number>(30);
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        if (timer === 0) {
+          clearInterval(interval);
+        } else {
+          setTimer(timer - 1);
+        }
+      }, 1000);
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [timer]);
   return (
     <View style={styles.parent}>
       <CustomBack />
@@ -26,10 +42,17 @@ const OtpScreen = () => {
         <View style={styles.roundView}>
           <View style={styles.row}>
             <TimerIcon />
-            <MagicText>00.21</MagicText>
+            <MagicText>{timer}</MagicText>
           </View>
         </View>
-        <MagicText>Didn't recieve otp? Resend OTP</MagicText>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          onPress={() => {
+            setTimer(30);
+          }}
+          disabled={timer > 0 && timer < 30}>
+          <MagicText>Didn't recieve otp? Resend OTP</MagicText>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -42,19 +65,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.WHITE,
     paddingHorizontal: 14,
-    // paddingTop: 14,
   },
   codeText: {fontSize: 22},
   titleView: {width: '60%'},
   title: {marginTop: 12, lineHeight: 22},
   otpView: {
-    // flex: 1,
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   roundView: {
-    width: 90,
+    width: 80,
     height: 50,
     borderRadius: 30,
     alignContent: 'center',

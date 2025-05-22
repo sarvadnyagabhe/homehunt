@@ -6,12 +6,13 @@ import CitySelectionScreen from '../../screen/AuthScreen/CitySelectionScreen';
 import LocationSelectionScreen from '../../screen/AuthScreen/LocationSelectionScreen';
 import LocalitiesScreen from '../../screen/LocalitiesScreen';
 import OtpScreen from '../../components/OTPTextField/OtpScreen';
+import SignupScreen from '../../screen/AuthScreen/SignupScreen';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 const AuthRoutes = () => {
   return (
     <Stack.Navigator
-      initialRouteName="CitySelectionScreen"
+      initialRouteName="LoginScreen"
       screenOptions={{
         headerShown: false,
       }}>
@@ -26,6 +27,7 @@ const AuthRoutes = () => {
       <Stack.Screen name="LocalitiesScreen" component={LocalitiesScreen} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="OtpScreen" component={OtpScreen} />
+      <Stack.Screen name="SignupScreen" component={SignupScreen} />
     </Stack.Navigator>
   );
 };
