@@ -4,6 +4,9 @@ import HomeScreen from '../screen/AppScreen/HomeScreen';
 import {HomeScreenStackParamList} from '../types/appTypes';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ProprtyDetailScreen from '../screen/AppScreen/ProprtyDetailScreen';
+import AddReviewScreen from '../screen/AppScreen/AddReviewScreen';
+import ProfileScreen from '../screen/AppScreen/ProfileScreen';
+import ExpertsScreen from '../screen/AppScreen/ExpertsScreen';
 
 const HomeStack = createNativeStackNavigator<HomeScreenStackParamList>();
 
@@ -16,6 +19,9 @@ const HomeScreenStack = () => (
       name="ProprtyDetailScreen"
       component={ProprtyDetailScreen}
     />
+    <HomeStack.Screen name="AddReviewScreen" component={AddReviewScreen} />
+    <HomeStack.Screen name="ProfileScreen" component={ProfileScreen} />
+    <HomeStack.Screen name="ExpertsScreen" component={ExpertsScreen} />
   </HomeStack.Navigator>
 );
 export {HomeScreenStack};

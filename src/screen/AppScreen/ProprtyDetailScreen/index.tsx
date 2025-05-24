@@ -208,8 +208,8 @@ const ProprtyDetailScreen = ({route}: ProprtyDetailScreenProps) => {
             <FlatList
               data={reviewData?.data?.slice(0, reviewCount)}
               nestedScrollEnabled={false}
-              renderItem={({item}) => {
-                return <ReviewCard item={item} />;
+              renderItem={({item, index}) => {
+                return <ReviewCard key={index} item={item} />;
               }}
             />
             {reviewData?.data?.length > reviewCount && (
