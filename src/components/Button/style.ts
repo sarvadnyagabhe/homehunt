@@ -13,6 +13,7 @@ const ButtonStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderColor: COLORS.GREEN,
+    paddingVertical: 14,
   },
   disabledStyle: {
     backgroundColor: COLORS.GRAY,

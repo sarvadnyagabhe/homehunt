@@ -22,6 +22,8 @@ type HomeScreenStackParamList = {
   AddReviewScreen: any;
   ProfileScreen: any;
   ExpertsScreen: any;
+  SavedScreen: any;
+  ReviewDetailsScreen: any;
 };
 
 export type HomeScreenProps = NativeStackScreenProps<
@@ -46,6 +48,14 @@ export type ProfileScreennProps = NativeStackScreenProps<
 export type ExpertsScreenProps = NativeStackScreenProps<
   HomeScreenStackParamList,
   'ExpertsScreen'
+>;
+export type SavedScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'SavedScreen'
+>;
+export type ReviewDetailsScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'ReviewDetailsScreen'
 >;
 
 export type {MainStackParamList, BottomTabParamList, HomeScreenStackParamList};

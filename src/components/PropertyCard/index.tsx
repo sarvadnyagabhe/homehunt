@@ -31,7 +31,9 @@ const PropertyCard = ({item}: PropertyCardType) => {
             right: 15,
           }}>
           <View style={styles.bookmarkIconView}>
-            <BookmarkIcon />
+            <BookmarkIcon
+              color={item?.isSaved ? COLORS.LIGHT_GREEN : COLORS.WHITE}
+            />
           </View>
         </View>
       </View>

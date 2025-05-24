@@ -25,7 +25,7 @@ import StarRating from 'react-native-star-rating-widget';
 import HR from '../../../components/HR';
 import ReviewCard from '../../../components/ReviewCard';
 
-const ProprtyDetailScreen = ({route}: ProprtyDetailScreenProps) => {
+const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const data = route?.params?.data;
   const reviewsData = {
     data: [
@@ -166,7 +166,10 @@ const ProprtyDetailScreen = ({route}: ProprtyDetailScreenProps) => {
           <View style={styles.reviewView}>
             <MagicText style={styles.reviewText}>Start Your Review</MagicText>
             <StarRating
-              onChange={rating => onStarRatingPress(rating)}
+              onChange={rating => {
+                onStarRatingPress(rating);
+                navigation.navigate('AddReviewScreen', {item: rating});
+              }}
               enableHalfStar={true}
               rating={starCount}
               maxStars={5}
@@ -181,7 +184,7 @@ const ProprtyDetailScreen = ({route}: ProprtyDetailScreenProps) => {
           <HR />
           <View>
             <View style={styles.totalReviewView}>
-              <MagicText>Review & Ratings</MagicText>
+              <MagicText style={{fontSize: 14}}>Review & Ratings</MagicText>
               <View style={[styles.row, styles.reviewView]}>
                 <MagicText style={{fontSize: 32, fontWeight: '700'}}>
                   {reviewData?.avergeReview}

@@ -87,16 +87,21 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
         )}
         <MagicText>Terms of service</MagicText>
 
-        <View style={[styles.row, {marginTop: 22}]}>
-          <View style={styles.bookmarkRound}>
-            <BookmarkIcon color={COLORS.BLACK} />
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => navigation.navigate('SavedScreen')}>
+          <View style={[styles.row, {marginTop: 22}]}>
+            <View style={styles.bookmarkRound}>
+              <BookmarkIcon color={COLORS.BLACK} />
+            </View>
+            <MagicText style={styles.savedText}>Saved Agents</MagicText>
           </View>
-          <MagicText style={styles.savedText}>Saved Agents</MagicText>
-        </View>
+        </TouchableOpacity>
 
         <View style={{flex: 1, justifyContent: 'center'}}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('ExpertsScreen')}>
+            onPress={() => navigation.navigate('ExpertsScreen')}
+            activeOpacity={0.7}>
             <View style={styles.getHelpView}>
               <MagicText style={styles.getHelpText}>Get Expert Help</MagicText>
               <MagicText style={styles.sellbuyText}>
