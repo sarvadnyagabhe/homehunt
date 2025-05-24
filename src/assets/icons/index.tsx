@@ -21,6 +21,7 @@ import SearchIcon from './SearchIcon';
 import ShareIcon from './ShareIcon';
 import StarIcon from './StarIcon';
 import TimerIcon from './TimerIcon';
+import VerifiedIcon from './VerifiedIcon';
 
 export {
   DelhiIcon,
@@ -46,4 +47,5 @@ export {
   CameraIcon,
   FormProfileIcon,
   EmailIcon,
+  VerifiedIcon,
 };

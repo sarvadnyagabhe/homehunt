@@ -66,9 +66,14 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
             {/* <ForwardArrowIcon /> */}
           </View>
         </View>
-        <View style={styles.profileViewStyle}>
-          <Image source={IMAGE.PROFILE_IMAGE} style={styles.profileImgStyle} />
-        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
+          <View style={styles.profileViewStyle}>
+            <Image
+              source={IMAGE.PROFILE_IMAGE}
+              style={styles.profileImgStyle}
+            />
+          </View>
+        </TouchableOpacity>
       </View>
       <View style={styles.flatlistView}>
         <FlatList

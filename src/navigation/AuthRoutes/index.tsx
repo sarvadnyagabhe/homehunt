@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 const AuthRoutes = () => {
   return (
     <Stack.Navigator
-      initialRouteName="LoginScreen"
+      initialRouteName="CitySelectionScreen"
       screenOptions={{
         headerShown: false,
       }}>

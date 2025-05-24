@@ -19,6 +19,9 @@ type MainStackParamList = {
 type HomeScreenStackParamList = {
   HomeScreen: any;
   ProprtyDetailScreen: any;
+  AddReviewScreen: any;
+  ProfileScreen: any;
+  ExpertsScreen: any;
 };
 
 export type HomeScreenProps = NativeStackScreenProps<
@@ -29,6 +32,20 @@ export type HomeScreenProps = NativeStackScreenProps<
 export type ProprtyDetailScreenProps = NativeStackScreenProps<
   HomeScreenStackParamList,
   'ProprtyDetailScreen'
+>;
+
+export type AddReviewScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'AddReviewScreen'
+>;
+
+export type ProfileScreennProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'ProfileScreen'
+>;
+export type ExpertsScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'ExpertsScreen'
 >;
 
 export type {MainStackParamList, BottomTabParamList, HomeScreenStackParamList};

@@ -83,7 +83,7 @@ const TextField = ({
           {isLoading ? <ActivityIndicator /> : null}
           {rightIcon ? (
             <TouchableOpacity
-              style={{marginLeft: 8}}
+              style={{marginLeft: 8, marginRight: rightIcon ? 12 : 0}}
               onPress={onRightIconPress}
               disabled={rightIconDisabled}>
               {rightIcon}

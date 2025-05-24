@@ -13,7 +13,7 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
   return (
     <View style={styles.parent}>
       <View style={styles.row}>
-        <CustomBack />
+        {/* <CustomBack /> */}
         <View style={styles.signinView}>
           <MagicText style={styles.signinText}>Sign In</MagicText>
         </View>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   signinView: {
     flex: 1,
     alignItems: 'center',
-    marginLeft: -22,
+    // marginLeft: -22,
     marginRight: 22,
   },
   logoStyle: {width: 250, height: 200, alignSelf: 'center', marginTop: 22},
