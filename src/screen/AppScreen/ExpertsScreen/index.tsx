@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useState} from 'react';
 import CustomBack from '../../../components/CustomBack';
 import {COLORS} from '../../../assets/colors';
 import MagicText from '../../../components/MagicText';
@@ -13,6 +13,7 @@ const ExpertsScreen = () => {
     propertyType: [{label: 'Residential'}, {label: 'Commercial'}],
     bhkType: [{label: '1 RK'}, {label: '2 BHK'}, {label: '3 BHK'}],
   };
+  const [isPropertySelected, setIsPropertySelected] = useState<string>('');
 
   return (
     <View style={styles.parent}>
@@ -29,11 +30,13 @@ const ExpertsScreen = () => {
             <View style={[styles.row]}>
               {data?.youWantTo?.map(item => {
                 return (
-                  <View style={styles.roundView}>
-                    <MagicText style={styles.roundText}>
-                      {item?.label}
-                    </MagicText>
-                  </View>
+                  <TouchableOpacity onPress={() => {}}>
+                    <View style={styles.roundView}>
+                      <MagicText style={styles.roundText}>
+                        {item?.label}
+                      </MagicText>
+                    </View>
+                  </TouchableOpacity>
                 );
               })}
             </View>
@@ -43,27 +46,38 @@ const ExpertsScreen = () => {
             <View style={[styles.row]}>
               {data?.propertyType?.map(item => {
                 return (
-                  <View style={styles.roundView}>
-                    <MagicText style={styles.roundText}>
-                      {item?.label}
-                    </MagicText>
-                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsPropertySelected(item?.label);
+                    }}>
+                    <View style={styles.roundView}>
+                      <MagicText style={styles.roundText}>
+                        {item?.label}
+                      </MagicText>
+                    </View>
+                  </TouchableOpacity>
                 );
               })}
             </View>
           </View>
-          <View style={{marginTop: 20}}>
-            <MagicText style={styles.subheader}>BHK Type</MagicText>
-            <View style={[styles.row]}>
-              {data?.propertyType?.map(item => {
-                return (
-                  <View style={styles.roundView}>
-                    <MagicText style={styles.roundText}>1 RK</MagicText>
-                  </View>
-                );
-              })}
+          {isPropertySelected === 'Residential' && (
+            <View style={{marginTop: 20}}>
+              <MagicText style={styles.subheader}>BHK Type</MagicText>
+              <View style={[styles.row]}>
+                {data?.bhkType?.map(item => {
+                  return (
+                    <TouchableOpacity onPress={() => {}}>
+                      <View style={styles.roundView}>
+                        <MagicText style={styles.roundText}>
+                          {item?.label}
+                        </MagicText>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
-          </View>
+          )}
           <View style={{marginTop: 20}}>
             <MagicText style={styles.subheader}>Locality</MagicText>
             <TextField
