@@ -17,8 +17,12 @@ import {useFormik} from 'formik';
 import * as yup from 'yup';
 import Button from '../../../components/Button';
 import {ProfileScreennProps} from '../../../types/appTypes';
+import {useAppDispatch} from '../../../store';
+import {clearAuthState} from '../../../store/slice/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   const isVerified = true;
+  const dispatch = useAppDispatch();
   const handleValidation = yup.object().shape({
     name: yup.string().required('Name is required'),
     phone: yup.string().required('Phone is required'),
@@ -34,6 +38,12 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     validationSchema: handleValidation,
     onSubmit: (values: any) => {},
   });
+
+  const handleLogout = async () => {
+    dispatch(clearAuthState());
+    await AsyncStorage.setItem('token', '');
+  };
+
   return (
     <View style={styles.parent}>
       <View style={styles.row}>
@@ -119,7 +129,12 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
             },
           ]}>
           <MagicText style={styles.agentText}>Become Agent</MagicText>
-          <MagicText style={styles.logout}>Log out</MagicText>
+          <TouchableOpacity
+            onPress={() => {
+              handleLogout();
+            }}>
+            <MagicText style={styles.logout}>Log out</MagicText>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
