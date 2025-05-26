@@ -51,3 +51,28 @@ export const handleAgentSignup = async (payload: {
     throw error;
   }
 };
+
+export const handleAgentDetails = async (agentId: number) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}${ENDPOINT.get_agent_details}/${agentId}`,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const handleProfile = async (payload: any) => {
+  console.log('payload', payload);
+
+  try {
+    const response = await axios.patch(
+      `${BASE_URL}${ENDPOINT.update_agent_profile}`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
