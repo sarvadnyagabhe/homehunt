@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
 import CitySelectionCard from '../../../components/CitySelectionCard';
@@ -11,40 +11,55 @@ import {
   GurugramIcon,
   NoidaIcon,
 } from '../../../assets/icons';
-import {CitySelectionScreenProps} from '../../../types/authTypes';
-import CustomBack from '../../../components/CustomBack';
+
+import {getAllCityList} from '../../../services/locationSelectionServices';
+import {CitySelectionScreenProps} from '../../../types/appTypes';
 
 const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
-  const cityData = [
-    {id: 1, name: 'DELHI', icon: DelhiIcon},
-    {id: 2, name: 'GURUGRAM', icon: GurugramIcon},
-    {id: 3, name: 'NOIDA', icon: NoidaIcon},
-    {id: 4, name: 'GREATER NOIDA', icon: GreaterNoidaIcon},
-    {id: 5, name: 'GAZIABAD', icon: GhaziabadIcon},
-  ];
   const [selectedCity, setSelectedCity] = useState<any>();
+  const [locationsList, setLocationsList] = useState<any>([]);
+
+  const getCityList = () => {
+    getAllCityList()
+      .then(res => {
+        setLocationsList(res?.data);
+      })
+      .catch(error => {
+        console.log('error in getting all locations', error);
+      });
+  };
+
+  useEffect(() => {
+    getCityList();
+  }, []);
   return (
     <View style={styles.parent}>
-      <CustomBack />
+      {/* <CustomBack /> */}
       <MagicText style={{fontSize: 24}}>Select your city</MagicText>
       <SearchContainer
         searchText={'Search for city'}
         style={styles.searchStyle}
       />
-      <View style={styles.cityCardView}>
-        {cityData?.map((item, index) => {
+      <FlatList
+        data={locationsList}
+        numColumns={2}
+        // contentContainerStyle={styles.cityCardView}
+        renderItem={({item, index}) => {
           return (
             <CitySelectionCard
               key={index}
               item={item}
               onSelect={item => {
                 setSelectedCity(item);
-                navigation.navigate('LocationSelectionScreen', {data: item});
+                navigation.navigate('LocationSelectionScreen', {
+                  item,
+                  locationsList,
+                });
               }}
             />
           );
-        })}
-      </View>
+        }}
+      />
     </View>
   );
 };
@@ -66,5 +81,6 @@ const styles = StyleSheet.create({
     marginTop: 22,
     flexDirection: 'row',
     flexWrap: 'wrap',
+    backgroundColor: 'red',
   },
 });

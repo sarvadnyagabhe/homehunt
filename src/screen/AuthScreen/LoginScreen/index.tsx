@@ -1,5 +1,5 @@
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import {COLORS} from '../../../assets/colors';
 import CustomBack from '../../../components/CustomBack';
@@ -8,8 +8,33 @@ import TextField from '../../../components/TextField';
 import {CallIcon} from '../../../assets/icons';
 import Button from '../../../components/Button';
 import {LoginScreenProps} from '../../../types/authTypes';
+import {handleLogin} from '../../../services/authServices';
+import Toast from 'react-native-toast-message';
 
 const LoginScreen = ({navigation}: LoginScreenProps) => {
+  const [mobile, setMobile] = useState<any>();
+
+  const handleSignIn = () => {
+    const payload = {
+      phone: mobile,
+    };
+    handleLogin(payload)
+      .then(res => {
+        console.log('res', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.user?.message,
+        });
+        navigation.navigate('OtpScreen', {mobile});
+      })
+      .catch(error => {
+        console.log('error', error?.response?.data?.message);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
   return (
     <View style={styles.parent}>
       <View style={styles.row}>
@@ -28,12 +53,14 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
             placeholder="Phone"
             inputStyle={{marginLeft: 12}}
             leftIcon={<CallIcon />}
+            onChangeText={number => setMobile(number)}
+            maxLength={10}
           />
           <MagicText style={styles.termsText}>Terms of service</MagicText>
           <Button
             label="Continue"
             style={styles.btnStyle}
-            onPress={() => navigation.navigate('OtpScreen')}
+            onPress={() => handleSignIn()}
           />
         </View>
       </View>
@@ -54,7 +81,12 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  parent: {flex: 1, backgroundColor: COLORS.WHITE, paddingHorizontal: 14},
+  parent: {
+    flex: 1,
+    backgroundColor: COLORS.WHITE,
+    paddingHorizontal: 14,
+    paddingTop: 14,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

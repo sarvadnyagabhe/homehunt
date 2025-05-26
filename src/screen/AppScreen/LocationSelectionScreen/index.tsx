@@ -1,11 +1,11 @@
 import {
+  FlatList,
   PermissionsAndroid,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import {LocationSelectionScreenProps} from '../../../types/authTypes';
 import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
 import CustomBack from '../../../components/CustomBack';
@@ -13,20 +13,14 @@ import {COLORS} from '../../../assets/colors';
 import {CurrentLocationIcon, LocationIcon} from '../../../assets/icons';
 import HR from '../../../components/HR';
 import {getCurrentLocation, getLocationPermission} from '../../../utils';
-const data = {
-  delhi: [
-    {id: 1, name: 'North Delhi'},
-    {id: 1, name: 'East Delhi'},
-    {id: 1, name: 'West Delhi'},
-    {id: 1, name: 'South Delhi'},
-  ],
-};
+import {LocationSelectionScreenProps} from '../../../types/appTypes';
 
 const LocationSelectionScreen = ({
   navigation,
   route,
 }: LocationSelectionScreenProps) => {
-  const cityData = route?.params?.data;
+  const item = route?.params?.item;
+  const locationsList = route?.params?.locationsList;
   const [locationCoords, setLocationCoords] = useState<any>();
 
   const handleLocation = async () => {
@@ -37,11 +31,15 @@ const LocationSelectionScreen = ({
       setLocationCoords(location);
     }
   };
+  const filterdLocations = locationsList?.filter(
+    (ele: any) => ele?.city_id == item?.city_id,
+  );
+
   return (
     <View style={styles.parent}>
       <CustomBack />
       <MagicText style={styles.mainText}>
-        Select your location in {cityData?.name}
+        Select your location in {item?.city_name}
       </MagicText>
       <SearchContainer
         style={styles.searchStyle}
@@ -60,21 +58,29 @@ const LocationSelectionScreen = ({
       <HR style={styles.hrView} />
 
       <View>
-        {data.delhi?.map((item, index) => {
-          return (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('LocalitiesScreen', {data: item})
-              }>
-              <View style={styles.row} key={index}>
-                <View style={styles.locationIconView}>
-                  <LocationIcon />
+        <FlatList
+          data={filterdLocations}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('LocalitiesScreen', {
+                    item,
+                    filterdLocations,
+                  })
+                }>
+                <View style={styles.row} key={index}>
+                  <View style={styles.locationIconView}>
+                    <LocationIcon />
+                  </View>
+                  <MagicText style={styles.locationText}>
+                    {item?.parent_area_name}
+                  </MagicText>
                 </View>
-                <MagicText style={styles.locationText}>{item?.name}</MagicText>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+              </TouchableOpacity>
+            );
+          }}
+        />
       </View>
     </View>
   );

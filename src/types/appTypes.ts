@@ -24,6 +24,9 @@ type HomeScreenStackParamList = {
   ExpertsScreen: any;
   SavedScreen: any;
   ReviewDetailsScreen: any;
+  CitySelectionScreen: any;
+  LocationSelectionScreen: any;
+  LocalitiesScreen: any;
 };
 
 export type HomeScreenProps = NativeStackScreenProps<
@@ -56,6 +59,21 @@ export type SavedScreenProps = NativeStackScreenProps<
 export type ReviewDetailsScreenProps = NativeStackScreenProps<
   HomeScreenStackParamList,
   'ReviewDetailsScreen'
+>;
+
+export type CitySelectionScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'CitySelectionScreen'
+>;
+
+export type LocationSelectionScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'LocationSelectionScreen'
+>;
+
+export type LocalitiesScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'LocalitiesScreen'
 >;
 
 export type {MainStackParamList, BottomTabParamList, HomeScreenStackParamList};

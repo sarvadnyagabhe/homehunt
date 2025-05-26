@@ -9,13 +9,16 @@ import ProfileScreen from '../screen/AppScreen/ProfileScreen';
 import ExpertsScreen from '../screen/AppScreen/ExpertsScreen';
 import SavedScreen from '../screen/AppScreen/SavedScreen';
 import ReviewDetailsScreen from '../screen/AppScreen/ReviewDetailsScreen';
+import CitySelectionScreen from '../screen/AppScreen/CitySelectionScreen';
+import LocationSelectionScreen from '../screen/AppScreen/LocationSelectionScreen';
+import LocalitiesScreen from '../screen/AppScreen/LocalitiesScreen';
 
 const HomeStack = createNativeStackNavigator<HomeScreenStackParamList>();
 
 const HomeScreenStack = () => (
   <HomeStack.Navigator
     screenOptions={{headerShown: false}}
-    initialRouteName="HomeScreen">
+    initialRouteName="CitySelectionScreen">
     <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
     <HomeStack.Screen
       name="ProprtyDetailScreen"
@@ -29,6 +32,15 @@ const HomeScreenStack = () => (
       name="ReviewDetailsScreen"
       component={ReviewDetailsScreen}
     />
+    <HomeStack.Screen
+      name="CitySelectionScreen"
+      component={CitySelectionScreen}
+    />
+    <HomeStack.Screen
+      name="LocationSelectionScreen"
+      component={LocationSelectionScreen}
+    />
+    <HomeStack.Screen name="LocalitiesScreen" component={LocalitiesScreen} />
   </HomeStack.Navigator>
 );
 export {HomeScreenStack};
