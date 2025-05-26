@@ -36,3 +36,18 @@ export const handleResendOtp = async (payload: {phone: number}) => {
     throw error;
   }
 };
+
+export const handleAgentSignup = async (payload: {
+  phone: number;
+  name: string;
+}) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}${ENDPOINT.register_agent}`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
