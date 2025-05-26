@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ProprtyDetailScreenProps} from '../../../types/appTypes';
 import CustomSlider from '../../../components/CustomSlider';
 import CustomBack from '../../../components/CustomBack';
@@ -24,6 +24,7 @@ import {IMAGE} from '../../../assets/images';
 import StarRating from 'react-native-star-rating-widget';
 import HR from '../../../components/HR';
 import ReviewCard from '../../../components/ReviewCard';
+import {getReviewsList} from '../../../services/PropertyServices';
 
 const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const data = route?.params?.data;
@@ -100,6 +101,18 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const onStarRatingPress = (rating: any) => {
     setStarCount(rating);
   };
+  const handleReviewsdata = () => {
+    getReviewsList()
+      .then(res => {
+        console.log('res', res);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  };
+  useEffect(() => {
+    handleReviewsdata();
+  }, []);
 
   return (
     <ScrollView>

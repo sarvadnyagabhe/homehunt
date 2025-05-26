@@ -1,14 +1,22 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import MagicText from '../../MagicText';
-import CustomBack from '../../CustomBack';
+import MagicText from '../../../components/MagicText';
+import CustomBack from '../../../components/CustomBack';
 import {COLORS} from '../../../assets/colors';
 import OTPTextField from '../../../components/OTPTextField';
 import {TimerIcon} from '../../../assets/icons';
 import {OtpScreenProps} from '../../../types/authTypes';
+import {handleResendOtp, VerifyOtp} from '../../../services/authServices';
+import Toast from 'react-native-toast-message';
+import {useAppDispatch} from '../../../store';
+import {setToken} from '../../../store/slice/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OtpScreen = ({navigation}: OtpScreenProps) => {
+const OtpScreen = ({navigation, route}: OtpScreenProps) => {
+  const mobile = route?.params?.mobile;
+  const [otp, setOtp] = useState<string>('');
   const [timer, setTimer] = useState<number>(30);
+  const dispatch = useAppDispatch();
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -23,6 +31,57 @@ const OtpScreen = ({navigation}: OtpScreenProps) => {
       };
     }
   }, [timer]);
+
+  const handleVerifyOtp = () => {
+    const payload = {
+      phone: mobile,
+      otp: Number(otp),
+    };
+    VerifyOtp(payload)
+      .then(async res => {
+        console.log('Verify otp response:-', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.user?.message,
+        });
+        dispatch(setToken('token'));
+        await AsyncStorage.setItem('token', 'token');
+      })
+      .catch(error => {
+        console.log('error while verifying otp', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
+
+  const handleOtp = () => {
+    const payload = {
+      phone: mobile,
+    };
+    handleResendOtp(payload)
+      .then(res => {
+        console.log('res in resendOtp', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.user?.message,
+        });
+      })
+      .catch(error => {
+        console.log('error while re-sending otp ', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
+  useEffect(() => {
+    if (otp?.length == 6) {
+      handleVerifyOtp();
+    }
+  }, [otp?.length, otp]);
+
   return (
     <View style={styles.parent}>
       <CustomBack />
@@ -34,7 +93,11 @@ const OtpScreen = ({navigation}: OtpScreenProps) => {
           </MagicText>
         </View>
         <View style={styles.otpView}>
-          <OTPTextField cellCount={6} />
+          <OTPTextField
+            cellCount={6}
+            otpValue={otp}
+            onTextChange={number => setOtp(number)}
+          />
         </View>
       </View>
       <View
@@ -49,6 +112,7 @@ const OtpScreen = ({navigation}: OtpScreenProps) => {
           activeOpacity={0.6}
           onPress={() => {
             setTimer(30);
+            handleOtp();
           }}
           disabled={timer > 0 && timer < 30}>
           <MagicText>Didn't recieve otp? Resend OTP</MagicText>

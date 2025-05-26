@@ -10,6 +10,7 @@ import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
 import RootNavigator from './src/navigation';
 import {Provider} from 'react-redux';
 import {store} from './src/store';
+import Toast from 'react-native-toast-message';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
       <StatusBar barStyle={'dark-content'} />
       <Provider store={store}>
         <RootNavigator />
+        <Toast />
       </Provider>
     </View>
   );

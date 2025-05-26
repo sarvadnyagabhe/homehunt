@@ -2,6 +2,7 @@ import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
 import React from 'react';
 import MagicText from '../MagicText';
 import {COLORS} from '../../assets/colors';
+import {DelhiIcon} from '../../assets/icons';
 type CitySelectionCardType = {
   item: any;
   onSelect: (selectedCity: string) => void;
@@ -12,14 +13,15 @@ const CitySelectionCard = ({
 }: CitySelectionCardType) => {
   const width = Dimensions.get('screen').width / 2 - 30;
   const styles = getStyles(width);
-  const Icon = item?.icon;
+  // const Icon = item?.icon;
+
   return (
     <Pressable style={styles.parent} onPress={() => onSelect(item)}>
       <View style={styles.cardStyle}>
         <View style={styles.iconView}>
-          <Icon />
+          <DelhiIcon />
         </View>
-        <MagicText style={styles.cityName}>{item?.name}</MagicText>
+        <MagicText style={styles.cityName}>{item?.city_name}</MagicText>
       </View>
     </Pressable>
   );

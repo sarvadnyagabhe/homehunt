@@ -1,37 +1,35 @@
 import {
+  FlatList,
   PermissionsAndroid,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
 import React from 'react';
-import {LocalitiesScreenProps} from '../../types/authTypes';
-import {getCurrentLocation, getLocationPermission} from '../../utils';
-import CustomBack from '../../components/CustomBack';
-import MagicText from '../../components/MagicText';
-import SearchContainer from '../../components/SearchContainer';
-import {CurrentLocationIcon, LocationIcon} from '../../assets/icons';
-import HR from '../../components/HR';
-import {COLORS} from '../../assets/colors';
-import {useDispatch} from 'react-redux';
-import {setToken} from '../../store/slice/authSlice';
 
-const data = {
-  delhi: [
-    {id: 1, name: 'Dwarka, New Delhi'},
-    {id: 1, name: 'Laxmi Nagar, New Delhi'},
-    {id: 1, name: 'Uttam Nagar, New Delhi'},
-    {id: 1, name: 'Saket, New Delhi'},
-  ],
-};
+import {getCurrentLocation, getLocationPermission} from '../../../utils';
+import CustomBack from '../../../components/CustomBack';
+import MagicText from '../../../components/MagicText';
+import SearchContainer from '../../../components/SearchContainer';
+import {CurrentLocationIcon, LocationIcon} from '../../../assets/icons';
+import HR from '../../../components/HR';
+import {COLORS} from '../../../assets/colors';
+import {useDispatch} from 'react-redux';
+import {setToken} from '../../../store/slice/authSlice';
+import {LocalitiesScreenProps} from '../../../types/appTypes';
 
 const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
   const dispatch = useDispatch();
-  const locationData = route?.params?.data;
+  const item = route?.params?.item;
+  const filterdLocations = route?.params?.filterdLocations;
+
+  const filterdLocalities = filterdLocations?.filter(
+    (ele: any) => ele?.area_id == item?.area_id,
+  );
 
   const handleLocation = async () => {
     const hasPermission = await getLocationPermission();
-    console.log('hasPermission', hasPermission);
+
     if (hasPermission) {
       const location = getCurrentLocation();
       console.log('location', location);
@@ -41,7 +39,7 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
     <View style={styles.parent}>
       <CustomBack />
       <MagicText style={styles.mainText}>
-        Top localities in {locationData?.name}
+        Top localities in {item?.name}
       </MagicText>
       <SearchContainer
         style={styles.searchStyle}
@@ -60,22 +58,27 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
       <HR style={styles.hrView} />
 
       <View>
-        {data.delhi?.map(item => {
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                //❗️TODO: remove this after login flow completed(added temporary)
-                dispatch(setToken('token'));
-              }}>
-              <View style={styles.row}>
-                <View style={styles.locationIconView}>
-                  <LocationIcon />
+        <FlatList
+          data={filterdLocalities}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                onPress={() => {
+                  navigation.navigate('HomeScreen');
+                }}>
+                <View style={styles.row}>
+                  <View style={styles.locationIconView}>
+                    <LocationIcon />
+                  </View>
+                  <MagicText style={styles.locationText}>
+                    {item?.name}
+                  </MagicText>
                 </View>
-                <MagicText style={styles.locationText}>{item?.name}</MagicText>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+              </TouchableOpacity>
+            );
+          }}
+        />
       </View>
     </View>
   );
