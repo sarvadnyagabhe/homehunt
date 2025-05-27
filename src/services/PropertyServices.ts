@@ -10,4 +10,16 @@ const getReviewsList = async () => {
   }
 };
 
-export {getReviewsList};
+const AddNewReview = async payload => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}${ENDPOINT.add_reviews}`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {getReviewsList, AddNewReview};

@@ -11,6 +11,7 @@ import Toast from 'react-native-toast-message';
 import {useAppDispatch} from '../../../store';
 import {setToken} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {setAxiosInterceptor} from '../../../axios';
 
 const OtpScreen = ({navigation, route}: OtpScreenProps) => {
   const mobile = route?.params?.mobile;
@@ -44,8 +45,19 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
           type: 'success',
           text1: res?.user?.message,
         });
-        dispatch(setToken('token'));
-        await AsyncStorage.setItem('token', 'token');
+        dispatch(
+          setToken(
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0NjUxOTU4MiwiZXhwIjoxNzQ5MTExNTgyLCJ0eXBlIjoicmVmcmVzaCJ9.-FhsoKbP-0g2jjzc19f-CPzlDm9DkOGNQ7CF0ts1NFc',
+          ),
+        );
+        await AsyncStorage.setItem(
+          'token',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0NjUxOTU4MiwiZXhwIjoxNzQ5MTExNTgyLCJ0eXBlIjoicmVmcmVzaCJ9.-FhsoKbP-0g2jjzc19f-CPzlDm9DkOGNQ7CF0ts1NFc',
+        );
+        setAxiosInterceptor(
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0NjUxOTU4MiwiZXhwIjoxNzQ5MTExNTgyLCJ0eXBlIjoicmVmcmVzaCJ9.-FhsoKbP-0g2jjzc19f-CPzlDm9DkOGNQ7CF0ts1NFc',
+          dispatch,
+        );
       })
       .catch(error => {
         console.log('error while verifying otp', error);

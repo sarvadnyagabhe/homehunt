@@ -8,6 +8,7 @@ const ENDPOINT = {
   update_agent_profile: 'v1/auth/agent/profile-update',
   get_locations: 'v1/auth/localities',
   get_reviews: 'v1/auth/users/reviews',
+  add_reviews: 'v1/auth/users/reviews',
 };
 
 export {BASE_URL, ENDPOINT};

@@ -7,6 +7,10 @@ import {COLORS} from '../../../assets/colors';
 import CustomBack from '../../../components/CustomBack';
 import CircleBgCard from '../../../components/CircleBgCard';
 import Button from '../../../components/Button';
+import TextField from '../../../components/TextField';
+import {CameraIcon} from '../../../assets/icons';
+import {AddNewReview} from '../../../services/PropertyServices';
+import Toast from 'react-native-toast-message';
 
 const AddReviewScreen = ({navigation, route}: AddReviewScreenProps) => {
   const data = [
@@ -15,9 +19,13 @@ const AddReviewScreen = ({navigation, route}: AddReviewScreenProps) => {
     {label: 'Negotiation Skills'},
     {label: 'Professionlism'},
   ];
+  //TODO: temporary added,remove later
+  const agent_id = 21;
+
   const review = route?.params?.item;
   const [reviewCount, setReviewCount] = useState<any>(0);
   const [selectedReview, setSelectedReview] = useState<any>([]);
+  const [comment, setComment] = useState<string>('');
 
   useEffect(() => {
     setReviewCount(review);
@@ -35,6 +43,29 @@ const AddReviewScreen = ({navigation, route}: AddReviewScreenProps) => {
     setSelectedReview(newList);
   };
 
+  const handleReviewSubmit = () => {
+    const payload = {
+      agent_id: agent_id,
+      comment: comment,
+      rating: reviewCount,
+    };
+    AddNewReview(payload)
+      .then(res => {
+        console.log('res in handleReviewSubmit ', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.message,
+        });
+        navigation.goBack();
+      })
+      .catch(error => {
+        console.log('error in handleReviewSubmit: ', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
   return (
     <View style={styles.parent}>
       <View style={styles.row}>
@@ -97,10 +128,29 @@ const AddReviewScreen = ({navigation, route}: AddReviewScreenProps) => {
             );
           })}
         </View>
-        <Button
+        <View style={{marginTop: 18}}>
+          <TextField
+            placeholder="Describe your experience(Optinal)"
+            numberOfLines={4}
+            multiline={true}
+            style={styles.inputStyle}
+            onChangeText={text => setComment(text)}
+          />
+          {/* <View style={{alignSelf: 'flex-start', marginTop: 18}}>
+            <CircleBgCard roundViewStyle={styles.roundViewStyle}>
+              <CameraIcon />
+            </CircleBgCard>
+          </View> */}
+        </View>
+        {/* <Button
           label="Next"
           style={styles.btnStyle}
           onPress={() => navigation.navigate('ReviewDetailsScreen')}
+        /> */}
+        <Button
+          label="Submit"
+          style={styles.btnStyle}
+          onPress={() => handleReviewSubmit()}
         />
       </View>
     </View>
@@ -142,4 +192,5 @@ const styles = StyleSheet.create({
     width: '90%',
     alignItems: 'center',
   },
+  inputStyle: {height: 145, borderRadius: 16},
 });
