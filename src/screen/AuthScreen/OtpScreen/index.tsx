@@ -40,24 +40,15 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
     };
     VerifyOtp(payload)
       .then(async res => {
-        console.log('Verify otp response:-', res);
+        console.log('res in verify otp', res);
+
         Toast.show({
           type: 'success',
           text1: res?.user?.message,
         });
-        dispatch(
-          setToken(
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0NjUxOTU4MiwiZXhwIjoxNzQ5MTExNTgyLCJ0eXBlIjoicmVmcmVzaCJ9.-FhsoKbP-0g2jjzc19f-CPzlDm9DkOGNQ7CF0ts1NFc',
-          ),
-        );
-        await AsyncStorage.setItem(
-          'token',
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0NjUxOTU4MiwiZXhwIjoxNzQ5MTExNTgyLCJ0eXBlIjoicmVmcmVzaCJ9.-FhsoKbP-0g2jjzc19f-CPzlDm9DkOGNQ7CF0ts1NFc',
-        );
-        setAxiosInterceptor(
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTc0NjUxOTU4MiwiZXhwIjoxNzQ5MTExNTgyLCJ0eXBlIjoicmVmcmVzaCJ9.-FhsoKbP-0g2jjzc19f-CPzlDm9DkOGNQ7CF0ts1NFc',
-          dispatch,
-        );
+        dispatch(setToken(res?.tokens?.access?.token));
+        await AsyncStorage.setItem('token', res?.tokens?.access?.token);
+        setAxiosInterceptor(res?.tokens?.access?.token, dispatch);
       })
       .catch(error => {
         console.log('error while verifying otp', error);

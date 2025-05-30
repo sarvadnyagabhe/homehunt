@@ -16,7 +16,7 @@ export const handleLogin = async (payload: {phone: number}) => {
 export const VerifyOtp = async (payload: {phone: number; otp: number}) => {
   try {
     const response = await axios.post(
-      `${BASE_URL}${ENDPOINT.user_login}`,
+      `${BASE_URL}${ENDPOINT.verify_user}`,
       payload,
     );
     return response.data;
@@ -64,8 +64,6 @@ export const handleAgentDetails = async (agentId: number) => {
 };
 
 export const handleProfile = async (payload: any) => {
-  console.log('payload', payload);
-
   try {
     const response = await axios.patch(
       `${BASE_URL}${ENDPOINT.update_agent_profile}`,

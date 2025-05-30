@@ -25,13 +25,14 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
         setLocationsList(res?.data);
       })
       .catch(error => {
-        console.log('error in getting all locations', error);
+        console.log('error in getting all cities', error);
       });
   };
 
   useEffect(() => {
     getCityList();
   }, []);
+
   return (
     <View style={styles.parent}>
       {/* <CustomBack /> */}
@@ -43,7 +44,6 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
       <FlatList
         data={locationsList}
         numColumns={2}
-        // contentContainerStyle={styles.cityCardView}
         renderItem={({item, index}) => {
           return (
             <CitySelectionCard
@@ -51,9 +51,8 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
               item={item}
               onSelect={item => {
                 setSelectedCity(item);
-                navigation.navigate('LocationSelectionScreen', {
+                navigation.navigate('AreaSelectionScreen', {
                   item,
-                  locationsList,
                 });
               }}
             />

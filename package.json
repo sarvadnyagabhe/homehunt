@@ -20,6 +20,7 @@
     "axios": "^1.9.0",
     "formik": "^2.4.6",
     "install": "^0.13.0",
+    "jwt-decode": "^4.0.0",
     "react": "19.0.0",
     "react-native": "0.79.2",
     "react-native-confirmation-code-field": "^7.6.1",

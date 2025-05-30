@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import CustomBack from '../../../components/CustomBack';
 import MagicText from '../../../components/MagicText';
 import {COLORS} from '../../../assets/colors';
@@ -23,7 +23,7 @@ import {useFormik} from 'formik';
 import * as yup from 'yup';
 import Button from '../../../components/Button';
 import {ProfileScreennProps} from '../../../types/appTypes';
-import {useAppDispatch} from '../../../store';
+import {useAppDispatch, useAppSelector} from '../../../store';
 import {clearAuthState} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -31,11 +31,16 @@ import {
   handleProfile,
 } from '../../../services/authServices';
 import Toast from 'react-native-toast-message';
+import {jwtDecode} from 'jwt-decode';
+import FastImage from 'react-native-fast-image';
+
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   //TODO: take agentID from redux after which is needs to store after login
-  const agentId = 21;
+
   const isVerified = true;
   const dispatch = useAppDispatch();
+  const {token} = useAppSelector(state => state.auth);
+
   const handleValidation = yup.object().shape({
     name: yup.string().required('Name is required'),
     phone: yup.string().required('Phone is required'),
@@ -43,6 +48,22 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     whatsapp_number: yup.string().required('WhatsApp number is required'),
     city: yup.string().required('City is required'),
     experience_years: yup.string().required('Experience years is required'),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      phone: '',
+      email: '',
+      whatsapp_number: '',
+      city: '',
+      experience_years: '',
+      image_url: '',
+    },
+    validationSchema: handleValidation,
+    onSubmit: (values: any) => {
+      handleProfileUpdate(values);
+    },
   });
   const handleProfileUpdate = (values: any) => {
     handleProfile(values)
@@ -61,29 +82,14 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
         });
       });
   };
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      phone: '',
-      email: '',
-      whatsapp_number: '',
-      city: '',
-      experience_years: '',
-    },
-    validationSchema: handleValidation,
-    onSubmit: (values: any) => {
-      handleProfileUpdate(values);
-    },
-  });
-
   const handleLogout = async () => {
     dispatch(clearAuthState());
     await AsyncStorage.setItem('token', '');
   };
-  const getAgentDetails = () => {
-    handleAgentDetails(agentId)
+
+  const getAgentDetails = (decodedToken: any) => {
+    handleAgentDetails(decodedToken?.userId)
       .then(res => {
-        console.log('res in handleAgentDetails:', res);
         formik.setValues(res?.data);
       })
       .catch(error => {
@@ -92,7 +98,10 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   };
 
   useEffect(() => {
-    getAgentDetails();
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      getAgentDetails(decodedToken);
+    }
   }, []);
 
   return (
@@ -106,7 +115,14 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
         </View>
         <View style={styles.formView}>
           <View style={styles.roundView}>
-            <ProfileIcon />
+            {formik.values?.image_url ? (
+              <FastImage
+                source={{uri: formik.values?.image_url}}
+                style={{width: '100%', height: '100%', borderRadius: 100}}
+              />
+            ) : (
+              <ProfileIcon />
+            )}
             <View style={styles.absoluteView}>
               <CameraIcon />
             </View>
@@ -118,7 +134,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
             placeholder="Name"
             leftIcon={<FormProfileIcon />}
             style={styles.textFieldStyle}
-            value={formik.values.name}
+            value={formik.values?.name}
             onChangeText={name => formik.setFieldValue('name', name)}
           />
           {formik.errors.name && (
@@ -130,9 +146,9 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
           <TextField
             placeholder="Phone"
             leftIcon={<CallIcon />}
-            rightIcon={isVerified && <VerifiedIcon />}
+            rightIcon={formik.values?.verified && <VerifiedIcon />}
             style={styles.textFieldStyle}
-            value={formik.values.phone}
+            value={formik.values?.phone}
             maxLength={14}
             onChangeText={phone => formik.setFieldValue('phone', phone)}
           />
@@ -146,7 +162,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
             placeholder="Email"
             leftIcon={<EmailIcon />}
             style={styles.textFieldStyle}
-            value={formik.values.email}
+            value={formik.values?.email}
             onChangeText={email => formik.setFieldValue('email', email)}
           />
           {formik.errors.email && (
@@ -160,7 +176,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
             leftIcon={<CallIcon />}
             style={styles.textFieldStyle}
             maxLength={14}
-            value={formik.values.whatsapp_number}
+            value={formik.values?.whatsapp_number}
             onChangeText={number =>
               formik.setFieldValue('whatsapp_number', number)
             }
@@ -175,7 +191,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
             placeholder="City"
             leftIcon={<EmailIcon />}
             style={styles.textFieldStyle}
-            value={formik.values.city}
+            value={formik.values?.city}
             onChangeText={city => formik.setFieldValue('city', city)}
           />
           {formik.errors.city && (
@@ -188,7 +204,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
             placeholder="Experience Years"
             leftIcon={<EmailIcon />}
             style={styles.textFieldStyle}
-            value={formik.values.experience_years}
+            value={formik.values?.experience_years}
             onChangeText={experience_years =>
               formik.setFieldValue('experience_years', experience_years)
             }

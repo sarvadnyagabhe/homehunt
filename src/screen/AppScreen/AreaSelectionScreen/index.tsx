@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
 import CustomBack from '../../../components/CustomBack';
@@ -13,15 +13,14 @@ import {COLORS} from '../../../assets/colors';
 import {CurrentLocationIcon, LocationIcon} from '../../../assets/icons';
 import HR from '../../../components/HR';
 import {getCurrentLocation, getLocationPermission} from '../../../utils';
-import {LocationSelectionScreenProps} from '../../../types/appTypes';
+import {AreaSelectionScreenProps} from '../../../types/appTypes';
+import {getAllAreasList} from '../../../services/locationSelectionServices';
 
-const LocationSelectionScreen = ({
-  navigation,
-  route,
-}: LocationSelectionScreenProps) => {
-  const item = route?.params?.item;
-  const locationsList = route?.params?.locationsList;
+const AreaSelectionScreen = ({navigation, route}: AreaSelectionScreenProps) => {
+  const city = route?.params?.item;
+
   const [locationCoords, setLocationCoords] = useState<any>();
+  const [areaList, setAreaList] = useState<any>([]);
 
   const handleLocation = async () => {
     const hasPermission = await getLocationPermission();
@@ -31,15 +30,26 @@ const LocationSelectionScreen = ({
       setLocationCoords(location);
     }
   };
-  const filterdLocations = locationsList?.filter(
-    (ele: any) => ele?.city_id == item?.city_id,
-  );
+
+  const getAreaList = () => {
+    getAllAreasList(city.id)
+      .then(res => {
+        setAreaList(res?.data);
+      })
+      .catch(error => {
+        console.log('error in getting all areas', error);
+      });
+  };
+
+  useEffect(() => {
+    getAreaList();
+  }, []);
 
   return (
     <View style={styles.parent}>
       <CustomBack />
       <MagicText style={styles.mainText}>
-        Select your location in {item?.city_name}
+        Select your location in {city?.name}
       </MagicText>
       <SearchContainer
         style={styles.searchStyle}
@@ -59,14 +69,14 @@ const LocationSelectionScreen = ({
 
       <View>
         <FlatList
-          data={filterdLocations}
+          data={areaList}
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate('LocalitiesScreen', {
                     item,
-                    filterdLocations,
+                    city,
                   })
                 }>
                 <View style={styles.row} key={index}>
@@ -74,7 +84,7 @@ const LocationSelectionScreen = ({
                     <LocationIcon />
                   </View>
                   <MagicText style={styles.locationText}>
-                    {item?.parent_area_name}
+                    {item?.name}
                   </MagicText>
                 </View>
               </TouchableOpacity>
@@ -86,7 +96,7 @@ const LocationSelectionScreen = ({
   );
 };
 
-export default LocationSelectionScreen;
+export default AreaSelectionScreen;
 
 const styles = StyleSheet.create({
   parent: {
