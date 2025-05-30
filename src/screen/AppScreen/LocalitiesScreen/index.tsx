@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {getCurrentLocation, getLocationPermission} from '../../../utils';
 import CustomBack from '../../../components/CustomBack';
@@ -17,15 +17,14 @@ import {COLORS} from '../../../assets/colors';
 import {useDispatch} from 'react-redux';
 import {setToken} from '../../../store/slice/authSlice';
 import {LocalitiesScreenProps} from '../../../types/appTypes';
+import {getAllLocalitiesList} from '../../../services/locationSelectionServices';
 
 const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
-  const dispatch = useDispatch();
-  const item = route?.params?.item;
-  const filterdLocations = route?.params?.filterdLocations;
+  const [localitiesList, setLocalitiesList] = useState<any>([]);
 
-  const filterdLocalities = filterdLocations?.filter(
-    (ele: any) => ele?.area_id == item?.area_id,
-  );
+  const dispatch = useDispatch();
+  const area = route?.params?.item;
+  const city = route?.params?.city;
 
   const handleLocation = async () => {
     const hasPermission = await getLocationPermission();
@@ -35,11 +34,35 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
       console.log('location', location);
     }
   };
+
+  const getLocalitiesList = () => {
+    let payload = {
+      cityId: city?.id,
+      areaId: undefined,
+    };
+    if (city == 'Delhi') {
+      payload = {
+        ...payload,
+        areaId: area?.id,
+      };
+    }
+    getAllLocalitiesList(payload)
+      .then(res => {
+        setLocalitiesList(res?.data);
+      })
+      .catch(error => {
+        console.log('error in getting all areas', error);
+      });
+  };
+
+  useEffect(() => {
+    getLocalitiesList();
+  }, []);
   return (
     <View style={styles.parent}>
       <CustomBack />
       <MagicText style={styles.mainText}>
-        Top localities in {item?.name}
+        Top localities in {area?.name}
       </MagicText>
       <SearchContainer
         style={styles.searchStyle}
@@ -59,7 +82,7 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
 
       <View>
         <FlatList
-          data={filterdLocalities}
+          data={localitiesList}
           renderItem={({item, index}) => {
             return (
               <TouchableOpacity

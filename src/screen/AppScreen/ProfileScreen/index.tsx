@@ -1,5 +1,11 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import CustomBack from '../../../components/CustomBack';
 import MagicText from '../../../components/MagicText';
 import {COLORS} from '../../../assets/colors';
@@ -17,16 +23,31 @@ import {useFormik} from 'formik';
 import * as yup from 'yup';
 import Button from '../../../components/Button';
 import {ProfileScreennProps} from '../../../types/appTypes';
-import {useAppDispatch} from '../../../store';
+import {useAppDispatch, useAppSelector} from '../../../store';
 import {clearAuthState} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  handleAgentDetails,
+  handleProfile,
+} from '../../../services/authServices';
+import Toast from 'react-native-toast-message';
+import {jwtDecode} from 'jwt-decode';
+import FastImage from 'react-native-fast-image';
+
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
+  //TODO: take agentID from redux after which is needs to store after login
+
   const isVerified = true;
   const dispatch = useAppDispatch();
+  const {token} = useAppSelector(state => state.auth);
+
   const handleValidation = yup.object().shape({
     name: yup.string().required('Name is required'),
     phone: yup.string().required('Phone is required'),
     email: yup.string().required('Email is required'),
+    whatsapp_number: yup.string().required('WhatsApp number is required'),
+    city: yup.string().required('City is required'),
+    experience_years: yup.string().required('Experience years is required'),
   });
 
   const formik = useFormik({
@@ -34,109 +55,215 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
       name: '',
       phone: '',
       email: '',
+      whatsapp_number: '',
+      city: '',
+      experience_years: '',
+      image_url: '',
     },
     validationSchema: handleValidation,
-    onSubmit: (values: any) => {},
+    onSubmit: (values: any) => {
+      handleProfileUpdate(values);
+    },
   });
-
+  const handleProfileUpdate = (values: any) => {
+    handleProfile(values)
+      .then(res => {
+        console.log('res in handleProfileUpdate', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.user?.message,
+        });
+      })
+      .catch(error => {
+        console.log('error in handleProfileUpdate:', error?.response?.data);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
   const handleLogout = async () => {
     dispatch(clearAuthState());
     await AsyncStorage.setItem('token', '');
   };
 
+  const getAgentDetails = (decodedToken: any) => {
+    handleAgentDetails(decodedToken?.userId)
+      .then(res => {
+        formik.setValues(res?.data);
+      })
+      .catch(error => {
+        console.log('error in handleAgentDetails', error?.response?.data);
+      });
+  };
+
+  useEffect(() => {
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      getAgentDetails(decodedToken);
+    }
+  }, []);
+
   return (
     <View style={styles.parent}>
-      <View style={styles.row}>
-        <CustomBack />
-        <View style={styles.header}>
-          <MagicText style={styles.headerText}>Your Profile</MagicText>
-        </View>
-      </View>
-      <View style={styles.formView}>
-        <View style={styles.roundView}>
-          <ProfileIcon />
-          <View style={styles.absoluteView}>
-            <CameraIcon />
+      <ScrollView>
+        <View style={styles.row}>
+          <CustomBack />
+          <View style={styles.header}>
+            <MagicText style={styles.headerText}>Your Profile</MagicText>
           </View>
         </View>
-      </View>
-
-      <View style={{flex: 1, marginTop: 14}}>
-        <TextField
-          placeholder="Name"
-          leftIcon={<FormProfileIcon />}
-          style={styles.textFieldStyle}
-          value={formik.values.name}
-          onChangeText={name => formik.setFieldValue('name', name)}
-        />
-        {formik.errors.name && (
-          <MagicText style={styles.errorLabel}>{formik.errors.name}</MagicText>
-        )}
-
-        <TextField
-          placeholder="Phone"
-          leftIcon={<CallIcon />}
-          rightIcon={isVerified && <VerifiedIcon />}
-          style={styles.textFieldStyle}
-          value={formik.values.phone}
-          onChangeText={phone => formik.setFieldValue('phone', phone)}
-        />
-        {formik.errors.phone && (
-          <MagicText style={styles.errorLabel}>{formik.errors.phone}</MagicText>
-        )}
-
-        <TextField
-          placeholder="Email"
-          leftIcon={<EmailIcon />}
-          style={styles.textFieldStyle}
-          value={formik.values.email}
-          onChangeText={email => formik.setFieldValue('email', email)}
-        />
-        {formik.errors.email && (
-          <MagicText style={styles.errorLabel}>{formik.errors.email}</MagicText>
-        )}
-        <MagicText>Terms of service</MagicText>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('SavedScreen')}>
-          <View style={[styles.row, {marginTop: 22}]}>
-            <View style={styles.bookmarkRound}>
-              <BookmarkIcon color={COLORS.BLACK} />
+        <View style={styles.formView}>
+          <View style={styles.roundView}>
+            {formik.values?.image_url ? (
+              <FastImage
+                source={{uri: formik.values?.image_url}}
+                style={{width: '100%', height: '100%', borderRadius: 100}}
+              />
+            ) : (
+              <ProfileIcon />
+            )}
+            <View style={styles.absoluteView}>
+              <CameraIcon />
             </View>
-            <MagicText style={styles.savedText}>Saved Agents</MagicText>
           </View>
-        </TouchableOpacity>
+        </View>
 
-        <View style={{flex: 1, justifyContent: 'center'}}>
+        <View style={{flex: 1, marginTop: 14}}>
+          <TextField
+            placeholder="Name"
+            leftIcon={<FormProfileIcon />}
+            style={styles.textFieldStyle}
+            value={formik.values?.name}
+            onChangeText={name => formik.setFieldValue('name', name)}
+          />
+          {formik.errors.name && (
+            <MagicText style={styles.errorLabel}>
+              {formik.errors.name}
+            </MagicText>
+          )}
+
+          <TextField
+            placeholder="Phone"
+            leftIcon={<CallIcon />}
+            rightIcon={formik.values?.verified && <VerifiedIcon />}
+            style={styles.textFieldStyle}
+            value={formik.values?.phone}
+            maxLength={14}
+            onChangeText={phone => formik.setFieldValue('phone', phone)}
+          />
+          {formik.errors.phone && (
+            <MagicText style={styles.errorLabel}>
+              {formik.errors.phone}
+            </MagicText>
+          )}
+
+          <TextField
+            placeholder="Email"
+            leftIcon={<EmailIcon />}
+            style={styles.textFieldStyle}
+            value={formik.values?.email}
+            onChangeText={email => formik.setFieldValue('email', email)}
+          />
+          {formik.errors.email && (
+            <MagicText style={styles.errorLabel}>
+              {formik.errors.email}
+            </MagicText>
+          )}
+
+          <TextField
+            placeholder="WhatsApp Number"
+            leftIcon={<CallIcon />}
+            style={styles.textFieldStyle}
+            maxLength={14}
+            value={formik.values?.whatsapp_number}
+            onChangeText={number =>
+              formik.setFieldValue('whatsapp_number', number)
+            }
+          />
+          {formik.errors.whatsapp_number && (
+            <MagicText style={styles.errorLabel}>
+              {formik.errors.whatsapp_number}
+            </MagicText>
+          )}
+
+          <TextField
+            placeholder="City"
+            leftIcon={<EmailIcon />}
+            style={styles.textFieldStyle}
+            value={formik.values?.city}
+            onChangeText={city => formik.setFieldValue('city', city)}
+          />
+          {formik.errors.city && (
+            <MagicText style={styles.errorLabel}>
+              {formik.errors.city}
+            </MagicText>
+          )}
+
+          <TextField
+            placeholder="Experience Years"
+            leftIcon={<EmailIcon />}
+            style={styles.textFieldStyle}
+            value={formik.values?.experience_years}
+            onChangeText={experience_years =>
+              formik.setFieldValue('experience_years', experience_years)
+            }
+          />
+          {formik.errors.experience_years && (
+            <MagicText style={styles.errorLabel}>
+              {formik.errors.experience_years}
+            </MagicText>
+          )}
+
+          <MagicText>Terms of service</MagicText>
           <TouchableOpacity
-            onPress={() => navigation.navigate('ExpertsScreen')}
-            activeOpacity={0.7}>
-            <View style={styles.getHelpView}>
-              <MagicText style={styles.getHelpText}>Get Expert Help</MagicText>
-              <MagicText style={styles.sellbuyText}>
-                Sell, Buy or Rent
-              </MagicText>
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate('SavedScreen')}>
+            <View style={[styles.row, {marginTop: 22}]}>
+              <View style={styles.bookmarkRound}>
+                <BookmarkIcon color={COLORS.BLACK} />
+              </View>
+              <MagicText style={styles.savedText}>Saved Agents</MagicText>
             </View>
           </TouchableOpacity>
+          <Button
+            label="Update"
+            onPress={() => formik.handleSubmit()}
+            style={{marginTop: 14, marginBottom: 14}}
+          />
+
+          <View style={{flex: 1, justifyContent: 'center'}}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ExpertsScreen')}
+              activeOpacity={0.7}>
+              <View style={styles.getHelpView}>
+                <MagicText style={styles.getHelpText}>
+                  Get Expert Help
+                </MagicText>
+                <MagicText style={styles.sellbuyText}>
+                  Sell, Buy or Rent
+                </MagicText>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={[
+              styles.row,
+              {
+                flex: 1,
+                justifyContent: 'space-between',
+              },
+            ]}>
+            <MagicText style={styles.agentText}>Become Agent</MagicText>
+            <TouchableOpacity
+              onPress={() => {
+                handleLogout();
+              }}>
+              <MagicText style={styles.logout}>Log out</MagicText>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View
-          style={[
-            styles.row,
-            {
-              flex: 1,
-              justifyContent: 'space-between',
-            },
-          ]}>
-          <MagicText style={styles.agentText}>Become Agent</MagicText>
-          <TouchableOpacity
-            onPress={() => {
-              handleLogout();
-            }}>
-            <MagicText style={styles.logout}>Log out</MagicText>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -149,6 +276,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.WHITE,
     paddingTop: 12,
     paddingHorizontal: 14,
+    paddingVertical: 12,
   },
   row: {
     flexDirection: 'row',

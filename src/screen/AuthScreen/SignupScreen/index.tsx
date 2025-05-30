@@ -15,11 +15,12 @@ import TextField from '../../../components/TextField';
 import Button from '../../../components/Button';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
+import {handleAgentSignup} from '../../../services/authServices';
+import Toast from 'react-native-toast-message';
 const SignupScreen = ({navigation}: SignupScreenProps) => {
   const handleValidation = yup.object().shape({
     name: yup.string().required('Name is required'),
     phone: yup.string().required('Phone is required'),
-    email: yup.string().required('Email is required'),
   });
 
   const formik = useFormik({
@@ -30,9 +31,26 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
     },
     validationSchema: handleValidation,
     onSubmit: (values: any) => {
-      // handleAddNewAddress(values);
+      handleSignup(values);
     },
   });
+  const handleSignup = (values: {phone: number; name: string}) => {
+    handleAgentSignup(values)
+      .then(res => {
+        console.log('res in handleSignup:', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.user?.message,
+        });
+      })
+      .catch(error => {
+        console.log('error in handleSignup:', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
 
   return (
     <View style={styles.parent}>
@@ -74,6 +92,7 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
             leftIcon={<CallIcon />}
             style={styles.textFieldStyle}
             value={formik.values.phone}
+            maxLength={10}
             onChangeText={phone => formik.setFieldValue('phone', phone)}
           />
           {formik.errors.phone && (
@@ -89,11 +108,6 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
             value={formik.values.email}
             onChangeText={email => formik.setFieldValue('email', email)}
           />
-          {formik.errors.email && (
-            <MagicText style={styles.errorLabel}>
-              {formik.errors.email}
-            </MagicText>
-          )}
 
           <MagicText>Terms of service</MagicText>
           <View style={{}}>

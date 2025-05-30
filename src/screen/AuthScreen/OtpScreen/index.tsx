@@ -11,6 +11,7 @@ import Toast from 'react-native-toast-message';
 import {useAppDispatch} from '../../../store';
 import {setToken} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {setAxiosInterceptor} from '../../../axios';
 
 const OtpScreen = ({navigation, route}: OtpScreenProps) => {
   const mobile = route?.params?.mobile;
@@ -39,13 +40,15 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
     };
     VerifyOtp(payload)
       .then(async res => {
-        console.log('Verify otp response:-', res);
+        console.log('res in verify otp', res);
+
         Toast.show({
           type: 'success',
           text1: res?.user?.message,
         });
-        dispatch(setToken('token'));
-        await AsyncStorage.setItem('token', 'token');
+        dispatch(setToken(res?.tokens?.access?.token));
+        await AsyncStorage.setItem('token', res?.tokens?.access?.token);
+        setAxiosInterceptor(res?.tokens?.access?.token, dispatch);
       })
       .catch(error => {
         console.log('error while verifying otp', error);

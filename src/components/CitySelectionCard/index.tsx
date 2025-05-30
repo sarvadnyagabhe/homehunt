@@ -2,7 +2,13 @@ import {Dimensions, Pressable, StyleSheet, View} from 'react-native';
 import React from 'react';
 import MagicText from '../MagicText';
 import {COLORS} from '../../assets/colors';
-import {DelhiIcon} from '../../assets/icons';
+import {
+  DelhiIcon,
+  GhaziabadIcon,
+  GreaterNoidaIcon,
+  GurugramIcon,
+  NoidaIcon,
+} from '../../assets/icons';
 type CitySelectionCardType = {
   item: any;
   onSelect: (selectedCity: string) => void;
@@ -13,15 +19,35 @@ const CitySelectionCard = ({
 }: CitySelectionCardType) => {
   const width = Dimensions.get('screen').width / 2 - 30;
   const styles = getStyles(width);
-  // const Icon = item?.icon;
 
+  const getIcon = (cityName: string) => {
+    let Icon;
+    switch (cityName) {
+      case 'Delhi':
+        Icon = <DelhiIcon />;
+        break;
+      case 'Ghaziabad':
+        Icon = <GhaziabadIcon />;
+        break;
+      case 'Greater Noida':
+        Icon = <GreaterNoidaIcon />;
+        break;
+      case 'Gurugram':
+        Icon = <GurugramIcon />;
+        break;
+      case 'Noida':
+        Icon = <NoidaIcon />;
+        break;
+      default:
+        Icon = <DelhiIcon />;
+    }
+    return Icon;
+  };
   return (
     <Pressable style={styles.parent} onPress={() => onSelect(item)}>
       <View style={styles.cardStyle}>
-        <View style={styles.iconView}>
-          <DelhiIcon />
-        </View>
-        <MagicText style={styles.cityName}>{item?.city_name}</MagicText>
+        <View style={styles.iconView}>{getIcon(item?.name)}</View>
+        <MagicText style={styles.cityName}>{item?.name}</MagicText>
       </View>
     </Pressable>
   );

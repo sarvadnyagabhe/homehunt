@@ -25,7 +25,7 @@ type HomeScreenStackParamList = {
   SavedScreen: any;
   ReviewDetailsScreen: any;
   CitySelectionScreen: any;
-  LocationSelectionScreen: any;
+  AreaSelectionScreen: any;
   LocalitiesScreen: any;
 };
 
@@ -66,9 +66,9 @@ export type CitySelectionScreenProps = NativeStackScreenProps<
   'CitySelectionScreen'
 >;
 
-export type LocationSelectionScreenProps = NativeStackScreenProps<
+export type AreaSelectionScreenProps = NativeStackScreenProps<
   HomeScreenStackParamList,
-  'LocationSelectionScreen'
+  'AreaSelectionScreen'
 >;
 
 export type LocalitiesScreenProps = NativeStackScreenProps<

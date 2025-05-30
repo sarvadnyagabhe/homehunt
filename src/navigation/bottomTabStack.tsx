@@ -10,7 +10,7 @@ import ExpertsScreen from '../screen/AppScreen/ExpertsScreen';
 import SavedScreen from '../screen/AppScreen/SavedScreen';
 import ReviewDetailsScreen from '../screen/AppScreen/ReviewDetailsScreen';
 import CitySelectionScreen from '../screen/AppScreen/CitySelectionScreen';
-import LocationSelectionScreen from '../screen/AppScreen/LocationSelectionScreen';
+import AreaSelectionScreen from '../screen/AppScreen/AreaSelectionScreen';
 import LocalitiesScreen from '../screen/AppScreen/LocalitiesScreen';
 
 const HomeStack = createNativeStackNavigator<HomeScreenStackParamList>();
@@ -37,8 +37,8 @@ const HomeScreenStack = () => (
       component={CitySelectionScreen}
     />
     <HomeStack.Screen
-      name="LocationSelectionScreen"
-      component={LocationSelectionScreen}
+      name="AreaSelectionScreen"
+      component={AreaSelectionScreen}
     />
     <HomeStack.Screen name="LocalitiesScreen" component={LocalitiesScreen} />
   </HomeStack.Navigator>
