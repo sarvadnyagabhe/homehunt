@@ -1,6 +1,7 @@
 import {
   FlatList,
   PermissionsAndroid,
+  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -18,6 +19,7 @@ import {useDispatch} from 'react-redux';
 import {setToken} from '../../../store/slice/authSlice';
 import {LocalitiesScreenProps} from '../../../types/appTypes';
 import {getAllLocalitiesList} from '../../../services/locationSelectionServices';
+import {setLocation} from '../../../store/slice/locationSlice';
 
 const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
   const [localitiesList, setLocalitiesList] = useState<any>([]);
@@ -49,6 +51,7 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
     getAllLocalitiesList(payload)
       .then(res => {
         setLocalitiesList(res?.data);
+        console.log('res in localitiesList', res?.data);
       })
       .catch(error => {
         console.log('error in getting all areas', error);
@@ -59,51 +62,54 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
     getLocalitiesList();
   }, []);
   return (
-    <View style={styles.parent}>
-      <CustomBack />
-      <MagicText style={styles.mainText}>
-        Top localities in {area?.name}
-      </MagicText>
-      <SearchContainer
-        style={styles.searchStyle}
-        searchText="Search for area, street name, locality..."
-      />
-      <View style={styles.row}>
-        <View style={styles.currentLocationView}>
-          <CurrentLocationIcon />
-        </View>
-        <TouchableOpacity onPress={() => handleLocation()}>
-          <MagicText style={styles.currentLocationText}>
-            Choose Current Location
-          </MagicText>
-        </TouchableOpacity>
-      </View>
-      <HR style={styles.hrView} />
-
-      <View>
-        <FlatList
-          data={localitiesList}
-          renderItem={({item, index}) => {
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  navigation.navigate('HomeScreen');
-                }}>
-                <View style={styles.row}>
-                  <View style={styles.locationIconView}>
-                    <LocationIcon />
-                  </View>
-                  <MagicText style={styles.locationText}>
-                    {item?.name}
-                  </MagicText>
-                </View>
-              </TouchableOpacity>
-            );
-          }}
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.parent}>
+        <CustomBack />
+        <MagicText style={styles.mainText}>
+          Top localities in {area?.name}
+        </MagicText>
+        <SearchContainer
+          style={styles.searchStyle}
+          searchText="Search for area, street name, locality..."
         />
+        <View style={styles.row}>
+          <View style={styles.currentLocationView}>
+            <CurrentLocationIcon />
+          </View>
+          <TouchableOpacity onPress={() => handleLocation()}>
+            <MagicText style={styles.currentLocationText}>
+              Choose Current Location
+            </MagicText>
+          </TouchableOpacity>
+        </View>
+        <HR style={styles.hrView} />
+
+        <View>
+          <FlatList
+            data={localitiesList}
+            renderItem={({item, index}) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    dispatch(setLocation(item));
+                    navigation.navigate('HomeScreen');
+                  }}>
+                  <View style={styles.row}>
+                    <View style={styles.locationIconView}>
+                      <LocationIcon />
+                    </View>
+                    <MagicText style={styles.locationText}>
+                      {item?.name}
+                    </MagicText>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

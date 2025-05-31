@@ -1,99 +1,121 @@
 import {
   FlatList,
   Image,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {LocationIcon} from '../../../assets/icons';
 import {IMAGE} from '../../../assets/images';
 import {COLORS} from '../../../assets/colors';
 import MagicText from '../../../components/MagicText';
 import PropertyCard from '../../../components/PropertyCard';
 import {HomeScreenProps} from '../../../types/appTypes';
+import {useAppSelector} from '../../../store';
+import {getAllAgentList} from '../../../services/HomeService';
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
-  const data = [
-    {
-      id: 1,
-      agentName: 'Shri Sai Shyam Properties',
-      rating: '16',
-      address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
-      review: '2.4',
-      media: [
-        {id: 1, type: 'image', image: IMAGE.CARD_IMAGE},
-        {id: 2, type: 'image', image: IMAGE.CARD_IMAGE2},
-      ],
-      details:
-        'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
-    },
-    {
-      id: 2,
-      agentName: 'Laxman Properties',
-      rating: '10',
-      address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
-      review: '5.4',
-      media: [
-        {id: 1, type: 'image', image: IMAGE.CARD_IMAGE2},
-        {id: 2, type: 'image', image: IMAGE.CARD_IMAGE},
-      ],
-      details:
-        'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
-    },
-    {
-      id: 3,
-      agentName: 'Lokesh Properties',
-      rating: '11',
-      address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
-      review: '4.4',
-      media: [
-        {id: 1, type: 'image', image: IMAGE.CARD_IMAGE2},
-        {id: 2, type: 'image', image: IMAGE.CARD_IMAGE},
-      ],
-      details:
-        'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
-    },
-  ];
+  const {id} = useAppSelector(state => state.location.location);
+  // const data = [
+  //   {
+  //     id: 1,
+  //     agentName: 'Shri Sai Shyam Properties',
+  //     rating: '16',
+  //     address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
+  //     review: '2.4',
+  //     media: [
+  //       {id: 1, type: 'image', image: IMAGE.CARD_IMAGE},
+  //       {id: 2, type: 'image', image: IMAGE.CARD_IMAGE2},
+  //     ],
+  //     details:
+  //       'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
+  //   },
+  //   {
+  //     id: 2,
+  //     agentName: 'Laxman Properties',
+  //     rating: '10',
+  //     address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
+  //     review: '5.4',
+  //     media: [
+  //       {id: 1, type: 'image', image: IMAGE.CARD_IMAGE2},
+  //       {id: 2, type: 'image', image: IMAGE.CARD_IMAGE},
+  //     ],
+  //     details:
+  //       'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
+  //   },
+  //   {
+  //     id: 3,
+  //     agentName: 'Lokesh Properties',
+  //     rating: '11',
+  //     address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
+  //     review: '4.4',
+  //     media: [
+  //       {id: 1, type: 'image', image: IMAGE.CARD_IMAGE2},
+  //       {id: 2, type: 'image', image: IMAGE.CARD_IMAGE},
+  //     ],
+  //     details:
+  //       'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
+  //   },
+  // ];
+  const [agentList, setAgentList] = useState<any>([]);
+
+  const getAgentList = () => {
+    getAllAgentList(Number(id))
+      .then(res => {
+        console.log('res in getAgentList==>', res);
+        setAgentList(res);
+      })
+      .catch(error => console.log('error', error));
+  };
+
+  useEffect(() => {
+    getAgentList();
+  }, []);
+
   return (
-    <View style={styles.parent}>
-      <View style={styles.row}>
-        <View style={styles.searchBarStyle}>
-          <View style={[styles.row]}>
-            <LocationIcon />
-            <MagicText style={styles.searchText}>Saket, New Delhi</MagicText>
-            {/* <ForwardArrowIcon /> */}
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.parent}>
+        <View style={styles.row}>
+          <View style={styles.searchBarStyle}>
+            <View style={[styles.row]}>
+              <LocationIcon />
+              <MagicText style={styles.searchText}>Saket, New Delhi</MagicText>
+              {/* <ForwardArrowIcon /> */}
+            </View>
           </View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ProfileScreen')}>
+            <View style={styles.profileViewStyle}>
+              <Image
+                source={IMAGE.PROFILE_IMAGE}
+                style={styles.profileImgStyle}
+              />
+            </View>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
-          <View style={styles.profileViewStyle}>
-            <Image
-              source={IMAGE.PROFILE_IMAGE}
-              style={styles.profileImgStyle}
-            />
-          </View>
-        </TouchableOpacity>
+        <View style={styles.flatlistView}>
+          <FlatList
+            data={agentList}
+            showsVerticalScrollIndicator={false}
+            renderItem={({item, index}) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.8}
+                  onPress={() =>
+                    navigation.navigate('ProprtyDetailScreen', {data: item})
+                  }>
+                  <PropertyCard item={item} />
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
       </View>
-      <View style={styles.flatlistView}>
-        <FlatList
-          data={data}
-          showsVerticalScrollIndicator={false}
-          renderItem={({item, index}) => {
-            return (
-              <TouchableOpacity
-                key={index}
-                activeOpacity={0.8}
-                onPress={() =>
-                  navigation.navigate('ProprtyDetailScreen', {data: item})
-                }>
-                <PropertyCard item={item} />
-              </TouchableOpacity>
-            );
-          }}
-        />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
