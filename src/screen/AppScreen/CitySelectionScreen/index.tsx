@@ -16,6 +16,7 @@ import {getAllCityList} from '../../../services/locationSelectionServices';
 import {CitySelectionScreenProps} from '../../../types/appTypes';
 import {useAppDispatch} from '../../../store';
 import {setLocation} from '../../../store/slice/locationSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
   const [selectedCity, setSelectedCity] = useState<any>();
@@ -42,7 +43,7 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
         {/* <CustomBack /> */}
         <MagicText style={{fontSize: 24}}>Select your city</MagicText>
         <SearchContainer
-          searchText={'Search for city'}
+          placeholder={'Search for city'}
           style={styles.searchStyle}
         />
         <FlatList
@@ -53,7 +54,7 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
               <CitySelectionCard
                 key={index}
                 item={item}
-                onSelect={(item: any) => {
+                onSelect={async (item: any) => {
                   setSelectedCity(item);
                   if (item?.name == 'Delhi') {
                     navigation.navigate('AreaSelectionScreen', {
@@ -61,6 +62,10 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
                     });
                   } else {
                     dispatch(setLocation(item));
+                    await AsyncStorage.setItem(
+                      'location',
+                      JSON.stringify(item),
+                    );
                     navigation.navigate('HomeScreen', {
                       item,
                     });

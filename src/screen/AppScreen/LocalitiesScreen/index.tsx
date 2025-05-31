@@ -20,6 +20,7 @@ import {setToken} from '../../../store/slice/authSlice';
 import {LocalitiesScreenProps} from '../../../types/appTypes';
 import {getAllLocalitiesList} from '../../../services/locationSelectionServices';
 import {setLocation} from '../../../store/slice/locationSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
   const [localitiesList, setLocalitiesList] = useState<any>([]);
@@ -64,13 +65,13 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
-        <CustomBack />
+        <CustomBack onPress={() => navigation.goBack()} />
         <MagicText style={styles.mainText}>
           Top localities in {area?.name}
         </MagicText>
         <SearchContainer
+          placeholder="Search for area, street name, locality..."
           style={styles.searchStyle}
-          searchText="Search for area, street name, locality..."
         />
         <View style={styles.row}>
           <View style={styles.currentLocationView}>
@@ -91,8 +92,12 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
               return (
                 <TouchableOpacity
                   key={index}
-                  onPress={() => {
+                  onPress={async () => {
                     dispatch(setLocation(item));
+                    await AsyncStorage.setItem(
+                      'location',
+                      JSON.stringify(item),
+                    );
                     navigation.navigate('HomeScreen');
                   }}>
                   <View style={styles.row}>

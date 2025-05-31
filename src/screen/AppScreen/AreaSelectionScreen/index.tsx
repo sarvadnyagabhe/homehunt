@@ -49,13 +49,13 @@ const AreaSelectionScreen = ({navigation, route}: AreaSelectionScreenProps) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
-        <CustomBack />
+        <CustomBack onPress={() => navigation.goBack()} />
         <MagicText style={styles.mainText}>
           Select your area in {city?.name}
         </MagicText>
         <SearchContainer
+          placeholder="Search for area, street name, locality..."
           style={styles.searchStyle}
-          searchText="Search for area, street name, locality..."
         />
         <View style={styles.row}>
           <View style={styles.currentLocationView}>

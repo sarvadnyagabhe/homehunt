@@ -16,9 +16,12 @@ import PropertyCard from '../../../components/PropertyCard';
 import {HomeScreenProps} from '../../../types/appTypes';
 import {useAppSelector} from '../../../store';
 import {getAllAgentList} from '../../../services/HomeService';
+import SearchContainer from '../../../components/SearchContainer';
+import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
-  const {id} = useAppSelector(state => state.location.location);
+  const {id, name} = useAppSelector(state => state.location.location);
+
   // const data = [
   //   {
   //     id: 1,
@@ -61,31 +64,35 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   //   },
   // ];
   const [agentList, setAgentList] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getAgentList = () => {
+    setIsLoading(true);
     getAllAgentList(Number(id))
       .then(res => {
         console.log('res in getAgentList==>', res);
         setAgentList(res);
+        setIsLoading(false);
       })
-      .catch(error => console.log('error', error));
+      .catch(error => {
+        console.log('error', error);
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
     getAgentList();
   }, []);
 
+  if (isLoading) {
+    return <LoadingAndErrorComponent />;
+  }
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
         <View style={styles.row}>
-          <View style={styles.searchBarStyle}>
-            <View style={[styles.row]}>
-              <LocationIcon />
-              <MagicText style={styles.searchText}>Saket, New Delhi</MagicText>
-              {/* <ForwardArrowIcon /> */}
-            </View>
-          </View>
+          <SearchContainer value={name} style={{flex: 1}} />
           <TouchableOpacity
             onPress={() => navigation.navigate('ProfileScreen')}>
             <View style={styles.profileViewStyle}>

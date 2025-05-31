@@ -28,6 +28,7 @@ import HR from '../../../components/HR';
 import ReviewCard from '../../../components/ReviewCard';
 import {getReviewsList} from '../../../services/PropertyServices';
 import {getAgentDetailsById} from '../../../services/HomeService';
+import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 
 const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const agent = route?.params?.data;
@@ -101,15 +102,19 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const [reviewData, setReviewData] = useState<any>(reviewsData);
   const [starCount, setStarCount] = useState<any>(0);
   const [reviewCount, setReviewCount] = useState<any>(3);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const styles = getStyle(width);
   const getAgentDetails = () => {
+    setIsLoading(true);
     getAgentDetailsById(agent.agent_id)
       .then(res => {
         console.log('res in getagent details', res);
         setAgentDetails(res?.data);
+        setIsLoading(false);
       })
       .catch(error => {
         console.log('error', error);
+        setIsLoading(false);
       });
   };
 
@@ -130,6 +135,10 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
     getAgentDetails();
   }, []);
 
+  if (isLoading) {
+    return <LoadingAndErrorComponent />;
+  }
+
   return (
     <SafeAreaView>
       <ScrollView>
@@ -143,7 +152,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                 justifyContent: 'space-between',
               },
             ]}>
-            <CustomBack />
+            <CustomBack onPress={() => navigation.goBack()} />
             <View style={styles.row}>
               <BookmarkIcon color={COLORS.GREEN} />
               <View style={{marginLeft: 14}}>
@@ -285,6 +294,7 @@ const getStyle = (width: number) => {
     parent: {
       flex: 1,
       backgroundColor: COLORS.WHITE,
+      paddingTop: 12,
     },
     row: {
       flexDirection: 'row',
