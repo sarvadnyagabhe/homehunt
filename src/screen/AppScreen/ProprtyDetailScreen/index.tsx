@@ -21,7 +21,6 @@ import {
   CallIcon,
   GoogleLocationIcon,
   ShareIcon,
-  WhatsAppIcon,
 } from '../../../assets/icons';
 import MagicText from '../../../components/MagicText';
 import RatingCard from '../../../components/RatingCard';
