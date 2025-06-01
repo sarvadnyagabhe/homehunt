@@ -7,4 +7,5 @@ export const IMAGE = {
   FILL_CALL_IMAGE: require('./FillCallIImage.png'),
   REVIEW_PROFILE_1: require('./reviewProfile1.jpg'),
   REVIEW_PROFILE_2: require('./reviewProfile2.jpg'),
+  Whatapp_Logo: require('./WhatsAppLogo.png'),
 };

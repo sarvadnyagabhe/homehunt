@@ -1,7 +1,9 @@
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
+  Linking,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -19,6 +21,7 @@ import {
   CallIcon,
   GoogleLocationIcon,
   ShareIcon,
+  WhatsAppIcon,
 } from '../../../assets/icons';
 import MagicText from '../../../components/MagicText';
 import RatingCard from '../../../components/RatingCard';
@@ -206,17 +209,33 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
               {agentDetails?.details}
             </MagicText>
 
-            <View
-              style={[
-                styles.row,
-                {justifyContent: 'space-evenly', marginTop: 20},
-              ]}>
-              <View style={styles.locAndCallView}>
+            <View style={[styles.row, {marginTop: 20}]}>
+              <TouchableOpacity style={styles.locAndCallView}>
                 <GoogleLocationIcon />
-              </View>
-              <View style={styles.locAndCallView}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(`tel:${agentDetails?.phone}`).catch(err =>
+                    console.error('Error opening dialer:', err),
+                  );
+                }}
+                style={styles.locAndCallView}>
                 <Image source={IMAGE.FILL_CALL_IMAGE} />
-              </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(
+                    `whatsapp://send?phone=${agentDetails?.whatsapp_number}`,
+                  ).catch(() => {
+                    Alert.alert(
+                      'Error',
+                      'Make sure WhatsApp is installed on your device',
+                    );
+                  });
+                }}
+                style={styles.locAndCallView}>
+                <Image source={IMAGE.Whatapp_Logo} />
+              </TouchableOpacity>
             </View>
             <View style={styles.reviewView}>
               <MagicText style={styles.reviewText}>Start Your Review</MagicText>
@@ -322,13 +341,16 @@ const getStyle = (width: number) => {
     distanceText: {fontSize: 14, marginLeft: 8},
     detailText: {fontSize: 14, marginTop: 16, lineHeight: 20},
     locAndCallView: {
-      width: '40%',
+      // width: '40%',
+      flex: 1,
       height: 70,
       borderRadius: 12,
       alignContent: 'center',
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: COLORS.WHITE_SMOKE,
+      marginRight: 4,
+      marginLeft: 4,
     },
     reviewView: {marginTop: 16},
     reviewText: {fontSize: 16, fontWeight: '700', marginBottom: 6},
