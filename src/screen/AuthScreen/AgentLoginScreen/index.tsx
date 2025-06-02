@@ -24,6 +24,7 @@ const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
     const payload = {
       phone: mobile,
     };
+
     handleAgentLogin(payload)
       .then(res => {
         console.log('res', res);

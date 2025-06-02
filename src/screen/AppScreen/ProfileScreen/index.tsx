@@ -34,6 +34,8 @@ import {
 import Toast from 'react-native-toast-message';
 import {jwtDecode} from 'jwt-decode';
 import FastImage from 'react-native-fast-image';
+import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   //TODO: take agentID from redux after which is needs to store after login
@@ -41,6 +43,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   const isVerified = true;
   const dispatch = useAppDispatch();
   const {token} = useAppSelector(state => state.auth);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleValidation = yup.object().shape({
     name: yup.string().required('Name is required'),
@@ -89,11 +92,14 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   };
 
   const getAgentDetails = (decodedToken: any) => {
+    setIsLoading(true);
     handleAgentDetails(decodedToken?.userId)
       .then(res => {
+        setIsLoading(false);
         formik.setValues(res?.data);
       })
       .catch(error => {
+        setIsLoading(false);
         console.log('error in handleAgentDetails', error?.response?.data);
       });
   };
@@ -105,6 +111,26 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     }
   }, []);
 
+  const openGallery = () => {
+    const options: any = {
+      mediaType: 'photo',
+      selectionLimit: 1,
+    };
+
+    launchImageLibrary(options, (response: any) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else {
+        console.log('Image URI: ', response.assets[0].uri);
+        formik.setFieldValue('image_url', response.assets[0].uri);
+      }
+    });
+  };
+  if (isLoading) {
+    return <LoadingAndErrorComponent />;
+  }
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
@@ -126,7 +152,9 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
                 <ProfileIcon />
               )}
               <View style={styles.absoluteView}>
-                <CameraIcon />
+                <TouchableOpacity onPress={() => openGallery()}>
+                  <CameraIcon />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -254,6 +282,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
                 {
                   flex: 1,
                   justifyContent: 'space-between',
+                  marginTop: 12,
                 },
               ]}>
               <MagicText style={styles.agentText}>Become Agent</MagicText>

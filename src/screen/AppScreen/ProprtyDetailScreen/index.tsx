@@ -2,12 +2,10 @@ import {
   Alert,
   Dimensions,
   FlatList,
-  Image,
   Linking,
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -19,8 +17,10 @@ import {COLORS} from '../../../assets/colors';
 import {
   BookmarkIcon,
   CallIcon,
+  FillCallIcon,
   GoogleLocationIcon,
   ShareIcon,
+  WhatAppIcon,
 } from '../../../assets/icons';
 import MagicText from '../../../components/MagicText';
 import RatingCard from '../../../components/RatingCard';
@@ -31,7 +31,8 @@ import ReviewCard from '../../../components/ReviewCard';
 import {getReviewsList} from '../../../services/PropertyServices';
 import {getAgentDetailsById} from '../../../services/HomeService';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
-
+import FastImage from 'react-native-fast-image';
+import Share from 'react-native-share';
 const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const agent = route?.params?.data;
   const width = Dimensions.get('window').width - 36;
@@ -140,7 +141,18 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   if (isLoading) {
     return <LoadingAndErrorComponent />;
   }
+  const handleShare = () => {
+    const shareOptions = {
+      title: 'Check this out!',
+      // message: '',
+      url: 'https://example.com',
+      // social: Share.Social., // Optional, for specific platforms
+    };
 
+    Share.open(shareOptions)
+      .then(res => console.log(res))
+      .catch(err => err && console.log(err));
+  };
   return (
     <SafeAreaView>
       <ScrollView>
@@ -158,7 +170,9 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
             <View style={styles.row}>
               <BookmarkIcon color={COLORS.GREEN} />
               <View style={{marginLeft: 14}}>
-                <ShareIcon />
+                <TouchableOpacity onPress={() => handleShare()}>
+                  <ShareIcon />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -167,7 +181,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
             sliderData={{uri: agentDetails?.image_url}}
             isHome={true}
           /> */}
-            <Image
+            <FastImage
               source={{uri: agentDetails?.image_url}}
               style={styles.imageStyle}
             />
@@ -219,7 +233,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                   );
                 }}
                 style={styles.locAndCallView}>
-                <Image source={IMAGE.FILL_CALL_IMAGE} />
+                <FillCallIcon />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -233,7 +247,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                   });
                 }}
                 style={styles.locAndCallView}>
-                <Image source={IMAGE.Whatapp_Logo} />
+                <WhatAppIcon />
               </TouchableOpacity>
             </View>
             <View style={styles.reviewView}>

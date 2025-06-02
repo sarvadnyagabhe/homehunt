@@ -1,4 +1,4 @@
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import MagicText from '../../../components/MagicText';
 import CustomBack from '../../../components/CustomBack';
@@ -25,23 +25,25 @@ const SavedScreen = ({navigation}: SavedScreenProps) => {
     },
   ];
   return (
-    <View style={styles.parent}>
-      <View style={styles.row}>
-        <CustomBack />
-        <View style={styles.header}>
-          <MagicText style={styles.headerText}>Saved Agents</MagicText>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.parent}>
+        <View style={styles.row}>
+          <CustomBack onPress={() => navigation.goBack()} />
+          <View style={styles.header}>
+            <MagicText style={styles.headerText}>Saved Agents</MagicText>
+          </View>
+        </View>
+
+        <View>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('ProprtyDetailScreen', {data: data[0]})
+            }>
+            <PropertyCard item={data[0]} />
+          </TouchableOpacity>
         </View>
       </View>
-
-      <View>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('ProprtyDetailScreen', {data: data[0]})
-          }>
-          <PropertyCard item={data[0]} />
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

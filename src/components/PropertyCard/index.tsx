@@ -1,10 +1,11 @@
-import {Dimensions, Image, StyleSheet, View} from 'react-native';
+import {Dimensions, StyleSheet, View} from 'react-native';
 import React from 'react';
 import MagicText from '../MagicText';
 import RatingCard from '../RatingCard';
 import {COLORS} from '../../assets/colors';
 import {BookmarkIcon, GoogleLocationIcon} from '../../assets/icons';
 import CustomSlider from '../CustomSlider';
+import FastImage from 'react-native-fast-image';
 type PropertyCardType = {
   item: any;
 };
@@ -19,7 +20,7 @@ const PropertyCard = ({item}: PropertyCardType) => {
           sliderData={item?.media}
           containerStyle={styles.imageStyle}
         /> */}
-        <Image source={{uri: item?.image_url}} style={styles.imageStyle} />
+        <FastImage source={{uri: item?.image_url}} style={styles.imageStyle} />
         <View style={styles.distanceAbosluteView}>
           <View>
             <MagicText style={styles.distanceText}>10 KM Away</MagicText>

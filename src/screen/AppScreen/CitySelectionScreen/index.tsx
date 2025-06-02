@@ -17,18 +17,24 @@ import {CitySelectionScreenProps} from '../../../types/appTypes';
 import {useAppDispatch} from '../../../store';
 import {setLocation} from '../../../store/slice/locationSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 
 const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
   const [selectedCity, setSelectedCity] = useState<any>();
   const [locationsList, setLocationsList] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
   const getCityList = () => {
+    setIsLoading(true);
     getAllCityList()
       .then(res => {
         setLocationsList(res?.data);
         console.log('res===>', res);
+        setIsLoading(false);
       })
       .catch(error => {
+        setIsLoading(false);
         console.log('error in getting all cities', error);
       });
   };
@@ -36,7 +42,9 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
   useEffect(() => {
     getCityList();
   }, []);
-
+  if (isLoading) {
+    return <LoadingAndErrorComponent />;
+  }
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
