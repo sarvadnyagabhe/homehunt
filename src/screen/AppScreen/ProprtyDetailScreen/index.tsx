@@ -1,9 +1,11 @@
 import {
+  Alert,
+  Dimensions,
   FlatList,
-  Image,
+  Linking,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -15,8 +17,10 @@ import {COLORS} from '../../../assets/colors';
 import {
   BookmarkIcon,
   CallIcon,
+  FillCallIcon,
   GoogleLocationIcon,
   ShareIcon,
+  WhatAppIcon,
 } from '../../../assets/icons';
 import MagicText from '../../../components/MagicText';
 import RatingCard from '../../../components/RatingCard';
@@ -25,9 +29,13 @@ import StarRating from 'react-native-star-rating-widget';
 import HR from '../../../components/HR';
 import ReviewCard from '../../../components/ReviewCard';
 import {getReviewsList} from '../../../services/PropertyServices';
-
+import {getAgentDetailsById} from '../../../services/HomeService';
+import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
+import FastImage from 'react-native-fast-image';
+import Share from 'react-native-share';
 const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
-  const data = route?.params?.data;
+  const agent = route?.params?.data;
+  const width = Dimensions.get('window').width - 36;
   const reviewsData = {
     data: [
       {
@@ -93,11 +101,26 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
     ],
     avergeReview: 4.5,
   };
-
+  const [agentDetails, setAgentDetails] = useState<any>([]);
   const [reviewData, setReviewData] = useState<any>(reviewsData);
-
   const [starCount, setStarCount] = useState<any>(0);
   const [reviewCount, setReviewCount] = useState<any>(3);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const styles = getStyle(width);
+  const getAgentDetails = () => {
+    setIsLoading(true);
+    getAgentDetailsById(agent.agent_id)
+      .then(res => {
+        console.log('res in getagent details', res);
+        setAgentDetails(res?.data);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.log('error', error);
+        setIsLoading(false);
+      });
+  };
+
   const onStarRatingPress = (rating: any) => {
     setStarCount(rating);
   };
@@ -112,191 +135,254 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   };
   useEffect(() => {
     handleReviewsdata();
+    getAgentDetails();
   }, []);
 
-  return (
-    <ScrollView>
-      <View style={styles.parent}>
-        <View
-          style={[
-            styles.row,
-            {
-              paddingHorizontal: 14,
-              marginBottom: 8,
-              justifyContent: 'space-between',
-            },
-          ]}>
-          <CustomBack />
-          <View style={styles.row}>
-            <BookmarkIcon color={COLORS.GREEN} />
-            <View style={{marginLeft: 14}}>
-              <ShareIcon />
-            </View>
-          </View>
-        </View>
-        <View>
-          <CustomSlider sliderData={data?.media} isHome={true} />
-          <View style={styles.distanceAbosluteView}>
-            <View>
-              <MagicText style={styles.distanceText}>10 KM Away</MagicText>
-            </View>
-          </View>
-        </View>
-        <View style={styles.mainView}>
-          <View
-            style={[
-              styles.row,
-              {justifyContent: 'space-between', marginBottom: 8},
-            ]}>
-            <View style={{flex: 1, justifyContent: 'center'}}>
-              <MagicText style={styles.heading}>{data?.agentName}</MagicText>
-            </View>
-            <RatingCard rating={data?.review} />
-          </View>
-          <View style={[styles.row, {justifyContent: 'space-between'}]}>
-            <MagicText style={styles.ratingText}>
-              {data?.rating} Ratings
-            </MagicText>
-          </View>
-          <View style={[styles.row, {marginTop: 12}]}>
-            <GoogleLocationIcon />
-            <MagicText style={styles.addressText}>{data?.address}</MagicText>
-          </View>
-          <MagicText style={styles.detailText}>{data?.details}</MagicText>
+  if (isLoading) {
+    return <LoadingAndErrorComponent />;
+  }
+  const handleShare = () => {
+    const shareOptions = {
+      title: 'Check this out!',
+      // message: '',
+      url: 'https://example.com',
+      // social: Share.Social., // Optional, for specific platforms
+    };
 
+    Share.open(shareOptions)
+      .then(res => console.log(res))
+      .catch(err => err && console.log(err));
+  };
+  return (
+    <SafeAreaView>
+      <ScrollView>
+        <View style={styles.parent}>
           <View
             style={[
               styles.row,
-              {justifyContent: 'space-evenly', marginTop: 20},
+              {
+                paddingHorizontal: 14,
+                marginBottom: 8,
+                justifyContent: 'space-between',
+              },
             ]}>
-            <View style={styles.locAndCallView}>
-              <GoogleLocationIcon />
-            </View>
-            <View style={styles.locAndCallView}>
-              <Image source={IMAGE.FILL_CALL_IMAGE} />
-            </View>
-          </View>
-          <View style={styles.reviewView}>
-            <MagicText style={styles.reviewText}>Start Your Review</MagicText>
-            <StarRating
-              onChange={rating => {
-                onStarRatingPress(rating);
-                navigation.navigate('AddReviewScreen', {item: rating});
-              }}
-              enableHalfStar={true}
-              rating={starCount}
-              maxStars={5}
-              starSize={36}
-              emptyColor={COLORS.GRAY}
-              starStyle={{width: 22, marginLeft: 0, marginRight: 16}}
-              style={{
-                marginBottom: 6,
-              }}
-            />
-          </View>
-          <HR />
-          <View>
-            <View style={styles.totalReviewView}>
-              <MagicText style={{fontSize: 14}}>Review & Ratings</MagicText>
-              <View style={[styles.row, styles.reviewView]}>
-                <MagicText style={{fontSize: 32, fontWeight: '700'}}>
-                  {reviewData?.avergeReview}
-                </MagicText>
-                <View style={{marginLeft: 12}}>
-                  <StarRating
-                    onChange={() => {}}
-                    enableHalfStar={true}
-                    rating={reviewData?.avergeReview}
-                    maxStars={5}
-                    starSize={18}
-                    emptyColor={COLORS.GRAY}
-                    starStyle={{width: 8, marginLeft: 0, marginRight: 10}}
-                    style={{
-                      marginBottom: 2,
-                    }}
-                  />
-                  <MagicText style={{fontSize: 13}}>
-                    ({reviewData?.data?.length})
-                  </MagicText>
-                </View>
-              </View>
-            </View>
-            <FlatList
-              data={reviewData?.data?.slice(0, reviewCount)}
-              nestedScrollEnabled={false}
-              renderItem={({item, index}) => {
-                return <ReviewCard key={index} item={item} />;
-              }}
-            />
-            {reviewData?.data?.length > reviewCount && (
-              <View style={styles.viewAllView}>
-                <TouchableOpacity
-                  onPress={() => setReviewCount(reviewData?.data?.length)}>
-                  <MagicText style={styles.viewAllText}>
-                    View all reviews
-                  </MagicText>
+            <CustomBack onPress={() => navigation.goBack()} />
+            <View style={styles.row}>
+              <BookmarkIcon color={COLORS.GREEN} />
+              <View style={{marginLeft: 14}}>
+                <TouchableOpacity onPress={() => handleShare()}>
+                  <ShareIcon />
                 </TouchableOpacity>
               </View>
-            )}
+            </View>
+          </View>
+          <View>
+            {/* <CustomSlider
+            sliderData={{uri: agentDetails?.image_url}}
+            isHome={true}
+          /> */}
+            <FastImage
+              source={{uri: agentDetails?.image_url}}
+              style={styles.imageStyle}
+            />
+            <View style={styles.distanceAbosluteView}>
+              <View>
+                <MagicText style={styles.distanceText}>10 KM Away</MagicText>
+              </View>
+            </View>
+          </View>
+          <View style={styles.mainView}>
+            <View
+              style={[
+                styles.row,
+                {justifyContent: 'space-between', marginBottom: 8},
+              ]}>
+              <View style={{flex: 1, justifyContent: 'center'}}>
+                <MagicText style={styles.heading}>
+                  {agentDetails?.name}
+                </MagicText>
+              </View>
+              <RatingCard rating={agentDetails?.rating} />
+            </View>
+            <View style={[styles.row, {justifyContent: 'space-between'}]}>
+              <MagicText style={styles.ratingText}>
+                {agentDetails?.rating} Ratings
+              </MagicText>
+            </View>
+            <View style={[styles.row, {marginTop: 12}]}>
+              <GoogleLocationIcon />
+              <MagicText style={styles.addressText}>
+                {agentDetails?.address}
+              </MagicText>
+              <MagicText style={styles.addressText}>
+                {agentDetails?.city}
+              </MagicText>
+            </View>
+            <MagicText style={styles.detailText}>
+              {agentDetails?.details}
+            </MagicText>
+
+            <View style={[styles.row, {marginTop: 20}]}>
+              <TouchableOpacity style={styles.locAndCallView}>
+                <GoogleLocationIcon />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(`tel:${agentDetails?.phone}`).catch(err =>
+                    console.error('Error opening dialer:', err),
+                  );
+                }}
+                style={styles.locAndCallView}>
+                <FillCallIcon />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  Linking.openURL(
+                    `whatsapp://send?phone=${agentDetails?.whatsapp_number}`,
+                  ).catch(() => {
+                    Alert.alert(
+                      'Error',
+                      'Make sure WhatsApp is installed on your device',
+                    );
+                  });
+                }}
+                style={styles.locAndCallView}>
+                <WhatAppIcon />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.reviewView}>
+              <MagicText style={styles.reviewText}>Start Your Review</MagicText>
+              <StarRating
+                onChange={rating => {
+                  onStarRatingPress(rating);
+                  navigation.navigate('AddReviewScreen', {item: rating});
+                }}
+                enableHalfStar={true}
+                rating={starCount}
+                maxStars={5}
+                starSize={36}
+                emptyColor={COLORS.GRAY}
+                starStyle={{width: 22, marginLeft: 0, marginRight: 16}}
+                style={{
+                  marginBottom: 6,
+                }}
+              />
+            </View>
+            <HR />
+            <View>
+              <View style={styles.totalReviewView}>
+                <MagicText style={{fontSize: 14}}>Review & Ratings</MagicText>
+                <View style={[styles.row, styles.reviewView]}>
+                  <MagicText style={{fontSize: 32, fontWeight: '700'}}>
+                    {reviewData?.avergeReview}
+                  </MagicText>
+                  <View style={{marginLeft: 12}}>
+                    <StarRating
+                      onChange={() => {}}
+                      enableHalfStar={true}
+                      rating={reviewData?.avergeReview}
+                      maxStars={5}
+                      starSize={18}
+                      emptyColor={COLORS.GRAY}
+                      starStyle={{width: 8, marginLeft: 0, marginRight: 10}}
+                      style={{
+                        marginBottom: 2,
+                      }}
+                    />
+                    <MagicText style={{fontSize: 13}}>
+                      ({reviewData?.data?.length})
+                    </MagicText>
+                  </View>
+                </View>
+              </View>
+              <FlatList
+                data={reviewData?.data?.slice(0, reviewCount)}
+                nestedScrollEnabled={false}
+                renderItem={({item, index}) => {
+                  return <ReviewCard key={index} item={item} />;
+                }}
+              />
+              {reviewData?.data?.length > reviewCount && (
+                <View style={styles.viewAllView}>
+                  <TouchableOpacity
+                    onPress={() => setReviewCount(reviewData?.data?.length)}>
+                    <MagicText style={styles.viewAllText}>
+                      View all reviews
+                    </MagicText>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 export default ProprtyDetailScreen;
-
-const styles = StyleSheet.create({
-  parent: {
-    flex: 1,
-    backgroundColor: COLORS.WHITE,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  mainView: {paddingHorizontal: 14, marginTop: 18},
-  heading: {
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  ratingText: {fontSize: 14, color: COLORS.TEXT_GRAY},
-  addressText: {fontSize: 16, color: COLORS.TEXT_GRAY, marginLeft: 10},
-  distanceAbosluteView: {
-    position: 'absolute',
-    backgroundColor: COLORS.WHITE_SMOKE,
-    bottom: 12,
-    left: 0,
-    width: '28%',
-    borderBottomColor: COLORS.WHITE_SMOKE,
-    elevation: 4,
-    borderBottomRightRadius: 20,
-    borderTopRightRadius: 20,
-    paddingVertical: 2,
-  },
-  distanceText: {fontSize: 14, marginLeft: 8},
-  detailText: {fontSize: 14, marginTop: 16, lineHeight: 20},
-  locAndCallView: {
-    width: '40%',
-    height: 70,
-    borderRadius: 12,
-    alignContent: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.WHITE_SMOKE,
-  },
-  reviewView: {marginTop: 16},
-  reviewText: {fontSize: 16, fontWeight: '700', marginBottom: 6},
-  totalReviewView: {marginBottom: 12},
-  viewAllView: {
-    height: 50,
-    borderRadius: 24,
-    alignContent: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.WHITE_SMOKE,
-    marginBottom: 18,
-  },
-  viewAllText: {fontSize: 14},
-});
+const getStyle = (width: number) => {
+  return StyleSheet.create({
+    parent: {
+      flex: 1,
+      backgroundColor: COLORS.WHITE,
+      paddingTop: 12,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    mainView: {paddingHorizontal: 14, marginTop: 18},
+    heading: {
+      fontSize: 20,
+      fontWeight: '800',
+    },
+    ratingText: {fontSize: 14, color: COLORS.TEXT_GRAY},
+    addressText: {fontSize: 16, color: COLORS.TEXT_GRAY, marginLeft: 10},
+    distanceAbosluteView: {
+      position: 'absolute',
+      backgroundColor: COLORS.WHITE_SMOKE,
+      bottom: 12,
+      left: 0,
+      width: '28%',
+      borderBottomColor: COLORS.WHITE_SMOKE,
+      elevation: 4,
+      borderBottomRightRadius: 20,
+      borderTopRightRadius: 20,
+      paddingVertical: 2,
+    },
+    distanceText: {fontSize: 14, marginLeft: 8},
+    detailText: {fontSize: 14, marginTop: 16, lineHeight: 20},
+    locAndCallView: {
+      // width: '40%',
+      flex: 1,
+      height: 70,
+      borderRadius: 12,
+      alignContent: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: COLORS.WHITE_SMOKE,
+      marginRight: 4,
+      marginLeft: 4,
+    },
+    reviewView: {marginTop: 16},
+    reviewText: {fontSize: 16, fontWeight: '700', marginBottom: 6},
+    totalReviewView: {marginBottom: 12},
+    viewAllView: {
+      height: 50,
+      borderRadius: 24,
+      alignContent: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: COLORS.WHITE_SMOKE,
+      marginBottom: 18,
+    },
+    viewAllText: {fontSize: 14},
+    imageStyle: {
+      width: width,
+      height: 220,
+      borderTopRightRadius: 22,
+      borderTopLeftRadius: 22,
+    },
+  });
+};

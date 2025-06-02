@@ -4,11 +4,17 @@ export type AuthStackParamList = {
   LoginScreen: undefined;
   OtpScreen: any;
   SignupScreen: any;
+  AgentLoginScreen: any;
 };
 
 export type LoginScreenProps = NativeStackScreenProps<
   AuthStackParamList,
   'LoginScreen'
+>;
+
+export type AgentLoginScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'AgentLoginScreen'
 >;
 
 export type OtpScreenProps = NativeStackScreenProps<

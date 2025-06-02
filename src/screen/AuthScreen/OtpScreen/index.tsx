@@ -1,4 +1,10 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import CustomBack from '../../../components/CustomBack';
@@ -6,7 +12,12 @@ import {COLORS} from '../../../assets/colors';
 import OTPTextField from '../../../components/OTPTextField';
 import {TimerIcon} from '../../../assets/icons';
 import {OtpScreenProps} from '../../../types/authTypes';
-import {handleResendOtp, VerifyOtp} from '../../../services/authServices';
+import {
+  handleAgentResendOtp,
+  handleUserResendOtp,
+  VerifyAgentOtp,
+  VerifyUserOtp,
+} from '../../../services/authServices';
 import Toast from 'react-native-toast-message';
 import {useAppDispatch} from '../../../store';
 import {setToken} from '../../../store/slice/authSlice';
@@ -15,6 +26,7 @@ import {setAxiosInterceptor} from '../../../axios';
 
 const OtpScreen = ({navigation, route}: OtpScreenProps) => {
   const mobile = route?.params?.mobile;
+  const prevScreen = route?.params?.screen;
   const [otp, setOtp] = useState<string>('');
   const [timer, setTimer] = useState<number>(30);
   const dispatch = useAppDispatch();
@@ -33,25 +45,26 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
     }
   }, [timer]);
 
-  const handleVerifyOtp = () => {
+  //service for user
+  const handleUserVerifyOtp = () => {
     const payload = {
       phone: mobile,
       otp: Number(otp),
     };
-    VerifyOtp(payload)
+    VerifyUserOtp(payload)
       .then(async res => {
-        console.log('res in verify otp', res);
+        console.log('res in verify otp in handleUserVerifyOtp', res);
 
         Toast.show({
           type: 'success',
-          text1: res?.user?.message,
+          text1: res?.message,
         });
         dispatch(setToken(res?.tokens?.access?.token));
         await AsyncStorage.setItem('token', res?.tokens?.access?.token);
         setAxiosInterceptor(res?.tokens?.access?.token, dispatch);
       })
       .catch(error => {
-        console.log('error while verifying otp', error);
+        console.log('error while verifying otp in handleUserVerifyOtp', error);
         Toast.show({
           type: 'error',
           text1: error?.response?.data?.message,
@@ -59,69 +72,128 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
       });
   };
 
-  const handleOtp = () => {
+  const handleUserOtp = () => {
     const payload = {
       phone: mobile,
     };
-    handleResendOtp(payload)
+    handleUserResendOtp(payload)
       .then(res => {
-        console.log('res in resendOtp', res);
+        console.log('res in resendOtp in handleUserOtp', res);
         Toast.show({
           type: 'success',
           text1: res?.user?.message,
         });
       })
       .catch(error => {
-        console.log('error while re-sending otp ', error);
+        console.log('error while re-sending otp in handleUserOtp', error);
         Toast.show({
           type: 'error',
           text1: error?.response?.data?.message,
         });
       });
   };
+
+  //service for agent
+  const handleAgentVerifyOtp = () => {
+    const payload = {
+      phone: mobile,
+      otp: Number(otp),
+    };
+    VerifyAgentOtp(payload)
+      .then(async res => {
+        console.log('res in verify otp in handleAgentVerifyOtp', res);
+
+        Toast.show({
+          type: 'success',
+          text1: res?.message,
+        });
+        dispatch(setToken(res?.tokens?.access?.token));
+        await AsyncStorage.setItem('token', res?.tokens?.access?.token);
+        setAxiosInterceptor(res?.tokens?.access?.token, dispatch);
+      })
+      .catch(error => {
+        console.log('error while verifying otp in handleAgentVerifyOtp', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
+
+  const handleAgentResentOtp = () => {
+    const payload = {
+      phone: mobile,
+    };
+    handleAgentResendOtp(payload)
+      .then(res => {
+        console.log('res in handleAgentResOtp', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.user?.message,
+        });
+      })
+      .catch(error => {
+        console.log('error while re-sending otp in handleAgentResOtp', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
+
   useEffect(() => {
     if (otp?.length == 6) {
-      handleVerifyOtp();
+      if (prevScreen == 'user') {
+        handleUserVerifyOtp();
+      } else {
+        handleAgentVerifyOtp();
+      }
     }
   }, [otp?.length, otp]);
 
   return (
-    <View style={styles.parent}>
-      <CustomBack />
-      <View style={{flex: 1, marginTop: 22}}>
-        <MagicText style={styles.codeText}>Enter the code</MagicText>
-        <View style={styles.titleView}>
-          <MagicText style={styles.title}>
-            Enter the 4 digit code that we just sent to +91 701 185 1822
-          </MagicText>
-        </View>
-        <View style={styles.otpView}>
-          <OTPTextField
-            cellCount={6}
-            otpValue={otp}
-            onTextChange={number => setOtp(number)}
-          />
-        </View>
-      </View>
-      <View
-        style={{flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <View style={styles.roundView}>
-          <View style={styles.row}>
-            <TimerIcon />
-            <MagicText>{timer}</MagicText>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.parent}>
+        <CustomBack />
+        <View style={{flex: 1, marginTop: 22}}>
+          <MagicText style={styles.codeText}>Enter the code</MagicText>
+          <View style={styles.titleView}>
+            <MagicText style={styles.title}>
+              Enter the 4 digit code that we just sent to +91 701 185 1822
+            </MagicText>
+          </View>
+          <View style={styles.otpView}>
+            <OTPTextField
+              cellCount={6}
+              otpValue={otp}
+              onTextChange={number => setOtp(number)}
+            />
           </View>
         </View>
-        <TouchableOpacity
-          activeOpacity={0.6}
-          onPress={() => {
-            setTimer(30);
-            handleOtp();
-          }}
-          disabled={timer > 0 && timer < 30}>
-          <MagicText>Didn't recieve otp? Resend OTP</MagicText>
-        </TouchableOpacity>
+        <View
+          style={{flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <View style={styles.roundView}>
+            <View style={styles.row}>
+              <TimerIcon />
+              <MagicText>{timer}</MagicText>
+            </View>
+          </View>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={() => {
+              setTimer(30);
+              if (prevScreen == 'user') {
+                handleUserOtp();
+              } else {
+                handleAgentResentOtp();
+              }
+            }}
+            disabled={timer > 0 && timer < 30}>
+            <MagicText>Didn't recieve otp? Resend OTP</MagicText>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

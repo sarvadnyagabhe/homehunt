@@ -1,4 +1,4 @@
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
@@ -14,17 +14,27 @@ import {
 
 import {getAllCityList} from '../../../services/locationSelectionServices';
 import {CitySelectionScreenProps} from '../../../types/appTypes';
+import {useAppDispatch} from '../../../store';
+import {setLocation} from '../../../store/slice/locationSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 
 const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
   const [selectedCity, setSelectedCity] = useState<any>();
   const [locationsList, setLocationsList] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const dispatch = useAppDispatch();
   const getCityList = () => {
+    setIsLoading(true);
     getAllCityList()
       .then(res => {
         setLocationsList(res?.data);
+        console.log('res===>', res);
+        setIsLoading(false);
       })
       .catch(error => {
+        setIsLoading(false);
         console.log('error in getting all cities', error);
       });
   };
@@ -32,34 +42,49 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
   useEffect(() => {
     getCityList();
   }, []);
-
+  if (isLoading) {
+    return <LoadingAndErrorComponent />;
+  }
   return (
-    <View style={styles.parent}>
-      {/* <CustomBack /> */}
-      <MagicText style={{fontSize: 24}}>Select your city</MagicText>
-      <SearchContainer
-        searchText={'Search for city'}
-        style={styles.searchStyle}
-      />
-      <FlatList
-        data={locationsList}
-        numColumns={2}
-        renderItem={({item, index}) => {
-          return (
-            <CitySelectionCard
-              key={index}
-              item={item}
-              onSelect={item => {
-                setSelectedCity(item);
-                navigation.navigate('AreaSelectionScreen', {
-                  item,
-                });
-              }}
-            />
-          );
-        }}
-      />
-    </View>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.parent}>
+        {/* <CustomBack /> */}
+        <MagicText style={{fontSize: 24}}>Select your city</MagicText>
+        <SearchContainer
+          placeholder={'Search for city'}
+          style={styles.searchStyle}
+        />
+        <FlatList
+          data={locationsList}
+          numColumns={2}
+          renderItem={({item, index}) => {
+            return (
+              <CitySelectionCard
+                key={index}
+                item={item}
+                onSelect={async (item: any) => {
+                  setSelectedCity(item);
+                  if (item?.name == 'Delhi') {
+                    navigation.navigate('AreaSelectionScreen', {
+                      item,
+                    });
+                  } else {
+                    dispatch(setLocation(item));
+                    await AsyncStorage.setItem(
+                      'location',
+                      JSON.stringify(item),
+                    );
+                    navigation.navigate('HomeScreen', {
+                      item,
+                    });
+                  }
+                }}
+              />
+            );
+          }}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 

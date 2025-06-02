@@ -1,14 +1,18 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {BackArrowIcon} from '../../assets/icons';
 import {COLORS} from '../../assets/colors';
-
-const CustomBack = () => {
+type CustomBackType = {
+  onPress: () => void;
+};
+const CustomBack = ({onPress = () => {}}: CustomBackType) => {
   return (
     <View>
-      <View style={styles.roundView}>
-        <BackArrowIcon />
-      </View>
+      <TouchableOpacity onPress={() => onPress()}>
+        <View style={styles.roundView}>
+          <BackArrowIcon />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };

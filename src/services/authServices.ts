@@ -1,7 +1,18 @@
 import axios from 'axios';
 import {BASE_URL, ENDPOINT} from '../constant/urls';
 
-export const handleLogin = async (payload: {phone: number}) => {
+export const handleAgentLogin = async (payload: {phone: number}) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}${ENDPOINT.agent_login}`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const handleUserLogin = async (payload: {phone: number}) => {
   try {
     const response = await axios.post(
       `${BASE_URL}${ENDPOINT.user_login}`,
@@ -13,7 +24,7 @@ export const handleLogin = async (payload: {phone: number}) => {
   }
 };
 
-export const VerifyOtp = async (payload: {phone: number; otp: number}) => {
+export const VerifyUserOtp = async (payload: {phone: number; otp: number}) => {
   try {
     const response = await axios.post(
       `${BASE_URL}${ENDPOINT.verify_user}`,
@@ -25,10 +36,36 @@ export const VerifyOtp = async (payload: {phone: number; otp: number}) => {
   }
 };
 
-export const handleResendOtp = async (payload: {phone: number}) => {
+export const VerifyAgentOtp = async (payload: {phone: number; otp: number}) => {
   try {
     const response = await axios.post(
-      `${BASE_URL}${ENDPOINT.resend_otp}`,
+      `${BASE_URL}${ENDPOINT.verify_agent}`,
+      payload,
+    );
+    console.log(response.data);
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const handleUserResendOtp = async (payload: {phone: number}) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}${ENDPOINT.resend_user_otp}`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const handleAgentResendOtp = async (payload: {phone: number}) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}${ENDPOINT.resend_agent_otp}`,
       payload,
     );
     return response.data;

@@ -1,6 +1,7 @@
 import {
   FlatList,
   PermissionsAndroid,
+  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -46,53 +47,55 @@ const AreaSelectionScreen = ({navigation, route}: AreaSelectionScreenProps) => {
   }, []);
 
   return (
-    <View style={styles.parent}>
-      <CustomBack />
-      <MagicText style={styles.mainText}>
-        Select your location in {city?.name}
-      </MagicText>
-      <SearchContainer
-        style={styles.searchStyle}
-        searchText="Search for area, street name, locality..."
-      />
-      <View style={styles.row}>
-        <View style={styles.currentLocationView}>
-          <CurrentLocationIcon />
-        </View>
-        <TouchableOpacity onPress={() => handleLocation()}>
-          <MagicText style={styles.currentLocationText}>
-            Choose Current Location
-          </MagicText>
-        </TouchableOpacity>
-      </View>
-      <HR style={styles.hrView} />
-
-      <View>
-        <FlatList
-          data={areaList}
-          renderItem={({item, index}) => {
-            return (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate('LocalitiesScreen', {
-                    item,
-                    city,
-                  })
-                }>
-                <View style={styles.row} key={index}>
-                  <View style={styles.locationIconView}>
-                    <LocationIcon />
-                  </View>
-                  <MagicText style={styles.locationText}>
-                    {item?.name}
-                  </MagicText>
-                </View>
-              </TouchableOpacity>
-            );
-          }}
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.parent}>
+        <CustomBack onPress={() => navigation.goBack()} />
+        <MagicText style={styles.mainText}>
+          Select your area in {city?.name}
+        </MagicText>
+        <SearchContainer
+          placeholder="Search for area, street name, locality..."
+          style={styles.searchStyle}
         />
+        <View style={styles.row}>
+          <View style={styles.currentLocationView}>
+            <CurrentLocationIcon />
+          </View>
+          <TouchableOpacity onPress={() => handleLocation()}>
+            <MagicText style={styles.currentLocationText}>
+              Choose Current Location
+            </MagicText>
+          </TouchableOpacity>
+        </View>
+        <HR style={styles.hrView} />
+
+        <View>
+          <FlatList
+            data={areaList}
+            renderItem={({item, index}) => {
+              return (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('LocalitiesScreen', {
+                      item,
+                      city,
+                    })
+                  }>
+                  <View style={styles.row} key={index}>
+                    <View style={styles.locationIconView}>
+                      <LocationIcon />
+                    </View>
+                    <MagicText style={styles.locationText}>
+                      {item?.name}
+                    </MagicText>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

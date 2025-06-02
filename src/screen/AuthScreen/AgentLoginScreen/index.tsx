@@ -8,30 +8,31 @@ import {
 import React, {useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import {COLORS} from '../../../assets/colors';
-import CustomBack from '../../../components/CustomBack';
+
 import {IMAGE} from '../../../assets/images';
 import TextField from '../../../components/TextField';
 import {CallIcon} from '../../../assets/icons';
 import Button from '../../../components/Button';
-import {LoginScreenProps} from '../../../types/authTypes';
-import {handleUserLogin} from '../../../services/authServices';
+import {AgentLoginScreenProps} from '../../../types/authTypes';
 import Toast from 'react-native-toast-message';
+import {handleAgentLogin} from '../../../services/authServices';
 
-const LoginScreen = ({navigation}: LoginScreenProps) => {
+const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
   const [mobile, setMobile] = useState<any>();
 
   const handleSignIn = () => {
     const payload = {
       phone: mobile,
     };
-    handleUserLogin(payload)
+
+    handleAgentLogin(payload)
       .then(res => {
         console.log('res', res);
         Toast.show({
           type: 'success',
           text1: res?.user?.message,
         });
-        navigation.navigate('OtpScreen', {mobile, screen: 'user'});
+        navigation.navigate('OtpScreen', {mobile, screen: 'agent'});
       })
       .catch(error => {
         console.log('error', error?.response?.data?.message);
@@ -47,7 +48,7 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
         <View style={styles.row}>
           {/* <CustomBack /> */}
           <View style={styles.signinView}>
-            <MagicText style={styles.signinText}>Sign In</MagicText>
+            <MagicText style={styles.signinText}>Agent Sign In</MagicText>
           </View>
         </View>
         <View>
@@ -77,9 +78,8 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('AgentLoginScreen')}>
-            <MagicText style={styles.agentText}>Continue as Agent</MagicText>
+          <TouchableOpacity onPress={() => navigation.navigate('SignupScreen')}>
+            <MagicText style={styles.agentText}>New To App? Sign up</MagicText>
           </TouchableOpacity>
         </View>
       </View>
@@ -87,7 +87,7 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
   );
 };
 
-export default LoginScreen;
+export default AgentLoginScreen;
 
 const styles = StyleSheet.create({
   parent: {

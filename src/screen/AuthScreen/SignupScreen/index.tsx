@@ -1,4 +1,4 @@
-import {StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import React from 'react';
 import {SignupScreenProps} from '../../../types/authTypes';
 import MagicText from '../../../components/MagicText';
@@ -53,73 +53,75 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
   };
 
   return (
-    <View style={styles.parent}>
-      <View style={styles.row}>
-        <CustomBack />
-        <View style={styles.signinView}>
-          <MagicText style={styles.signinText}>Sign Up</MagicText>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.parent}>
+        <View style={styles.row}>
+          <CustomBack />
+          <View style={styles.signinView}>
+            <MagicText style={styles.signinText}>Sign Up</MagicText>
+          </View>
         </View>
-      </View>
-      <View style={styles.mainView}>
-        <MagicText style={styles.heading}>Create your account</MagicText>
-        <MagicText style={styles.informationText}>
-          Fill your information to continue
-        </MagicText>
-        <View style={styles.formView}>
-          <View style={styles.roundView}>
-            <ProfileIcon />
-            <View style={styles.absoluteView}>
-              <CameraIcon />
+        <View style={styles.mainView}>
+          <MagicText style={styles.heading}>Create your account</MagicText>
+          <MagicText style={styles.informationText}>
+            Fill your information to continue
+          </MagicText>
+          <View style={styles.formView}>
+            <View style={styles.roundView}>
+              <ProfileIcon />
+              <View style={styles.absoluteView}>
+                <CameraIcon />
+              </View>
+            </View>
+          </View>
+          <View>
+            <TextField
+              placeholder="Name"
+              leftIcon={<FormProfileIcon />}
+              style={styles.textFieldStyle}
+              value={formik.values.name}
+              onChangeText={name => formik.setFieldValue('name', name)}
+            />
+            {formik.errors.name && (
+              <MagicText style={styles.errorLabel}>
+                {formik.errors.name}
+              </MagicText>
+            )}
+
+            <TextField
+              placeholder="Phone"
+              leftIcon={<CallIcon />}
+              style={styles.textFieldStyle}
+              value={formik.values.phone}
+              maxLength={10}
+              onChangeText={phone => formik.setFieldValue('phone', phone)}
+            />
+            {formik.errors.phone && (
+              <MagicText style={styles.errorLabel}>
+                {formik.errors.phone}
+              </MagicText>
+            )}
+
+            <TextField
+              placeholder="Email"
+              leftIcon={<EmailIcon />}
+              style={styles.textFieldStyle}
+              value={formik.values.email}
+              onChangeText={email => formik.setFieldValue('email', email)}
+            />
+
+            <MagicText>Terms of service</MagicText>
+            <View style={{}}>
+              <Button
+                label="Register"
+                style={styles.btnStyle}
+                onPress={() => formik.handleSubmit()}
+              />
             </View>
           </View>
         </View>
-        <View>
-          <TextField
-            placeholder="Name"
-            leftIcon={<FormProfileIcon />}
-            style={styles.textFieldStyle}
-            value={formik.values.name}
-            onChangeText={name => formik.setFieldValue('name', name)}
-          />
-          {formik.errors.name && (
-            <MagicText style={styles.errorLabel}>
-              {formik.errors.name}
-            </MagicText>
-          )}
-
-          <TextField
-            placeholder="Phone"
-            leftIcon={<CallIcon />}
-            style={styles.textFieldStyle}
-            value={formik.values.phone}
-            maxLength={10}
-            onChangeText={phone => formik.setFieldValue('phone', phone)}
-          />
-          {formik.errors.phone && (
-            <MagicText style={styles.errorLabel}>
-              {formik.errors.phone}
-            </MagicText>
-          )}
-
-          <TextField
-            placeholder="Email"
-            leftIcon={<EmailIcon />}
-            style={styles.textFieldStyle}
-            value={formik.values.email}
-            onChangeText={email => formik.setFieldValue('email', email)}
-          />
-
-          <MagicText>Terms of service</MagicText>
-          <View style={{}}>
-            <Button
-              label="Register"
-              style={styles.btnStyle}
-              onPress={() => formik.handleSubmit()}
-            />
-          </View>
-        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

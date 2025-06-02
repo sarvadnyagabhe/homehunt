@@ -5,6 +5,7 @@ import RatingCard from '../RatingCard';
 import {COLORS} from '../../assets/colors';
 import {BookmarkIcon, GoogleLocationIcon} from '../../assets/icons';
 import CustomSlider from '../CustomSlider';
+import FastImage from 'react-native-fast-image';
 type PropertyCardType = {
   item: any;
 };
@@ -15,10 +16,11 @@ const PropertyCard = ({item}: PropertyCardType) => {
   return (
     <View style={styles.parent}>
       <View style={{}}>
-        <CustomSlider
+        {/* <CustomSlider
           sliderData={item?.media}
           containerStyle={styles.imageStyle}
-        />
+        /> */}
+        <FastImage source={{uri: item?.image_url}} style={styles.imageStyle} />
         <View style={styles.distanceAbosluteView}>
           <View>
             <MagicText style={styles.distanceText}>10 KM Away</MagicText>
@@ -44,7 +46,7 @@ const PropertyCard = ({item}: PropertyCardType) => {
             {justifyContent: 'space-between', marginBottom: 8},
           ]}>
           <View style={{flex: 1, justifyContent: 'center'}}>
-            <MagicText style={styles.heading}>{item?.agentName}</MagicText>
+            <MagicText style={styles.heading}>{item?.name}</MagicText>
           </View>
           <RatingCard rating={item?.review} />
         </View>
@@ -55,7 +57,9 @@ const PropertyCard = ({item}: PropertyCardType) => {
         </View>
         <View style={[styles.row, {marginTop: 12}]}>
           <GoogleLocationIcon />
-          <MagicText style={styles.addressText}>{item?.address}</MagicText>
+          <MagicText style={styles.addressText}>
+            {item?.office_address}
+          </MagicText>
         </View>
       </View>
     </View>
@@ -93,7 +97,12 @@ const getStyles = (width: number) => {
     row: {
       flexDirection: 'row',
     },
-    addressText: {fontSize: 16, color: COLORS.TEXT_GRAY, marginLeft: 10},
+    addressText: {
+      fontSize: 16,
+      color: COLORS.TEXT_GRAY,
+      marginLeft: 10,
+      height: 40,
+    },
 
     distanceAbosluteView: {
       position: 'absolute',

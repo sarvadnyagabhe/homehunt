@@ -6,6 +6,7 @@ import CameraIcon from './CameraIcon';
 import CurrentLocationIcon from './CurrentLocationIcon';
 import DelhiIcon from './DelhiIcon';
 import EmailIcon from './EmailIcon';
+import FillCallIcon from './FillCallIcon';
 import FormProfileIcon from './FormProfileIcon';
 import ForwardArrowIcon from './ForwardArrowIcon';
 import GhaziabadIcon from './GhaziabadIcon';
@@ -22,6 +23,7 @@ import ShareIcon from './ShareIcon';
 import StarIcon from './StarIcon';
 import TimerIcon from './TimerIcon';
 import VerifiedIcon from './VerifiedIcon';
+import WhatAppIcon from './WhatAppIcon';
 
 export {
   DelhiIcon,
@@ -48,4 +50,6 @@ export {
   FormProfileIcon,
   EmailIcon,
   VerifiedIcon,
+  WhatAppIcon,
+  FillCallIcon,
 };
