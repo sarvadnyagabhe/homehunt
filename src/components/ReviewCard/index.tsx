@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   reviewerView: {marginLeft: 10},
   reviewerName: {fontSize: 14, fontWeight: '700', marginBottom: 2},
-  mediaStyle: {width: '100%', height: 226},
+  mediaStyle: {width: '100%', height: 226, borderRadius: 20},
   reviewText: {fontSize: 14, marginBottom: 12},
   totalReviewsText: {fontSize: 12, color: COLORS.TEXT_GRAY},
 });

@@ -36,6 +36,8 @@ import {jwtDecode} from 'jwt-decode';
 import FastImage from 'react-native-fast-image';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {deleteUser} from '../../../services/HomeService';
+import HR from '../../../components/HR';
 
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   //TODO: take agentID from redux after which is needs to store after login
@@ -127,6 +129,17 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
         formik.setFieldValue('image_url', response.assets[0].uri);
       }
     });
+  };
+
+  const handleDeleteUser = () => {
+    const payload = {};
+    deleteUser(payload)
+      .then(res => {
+        console.log('res in delete user');
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
   };
   if (isLoading) {
     return <LoadingAndErrorComponent />;
@@ -276,6 +289,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
                 </View>
               </TouchableOpacity>
             </View>
+
             <View
               style={[
                 styles.row,
@@ -292,6 +306,45 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
                 }}>
                 <MagicText style={styles.logout}>Log out</MagicText>
               </TouchableOpacity>
+            </View>
+          </View>
+          <Button
+            label="Delete"
+            type="OUTLINE"
+            onPress={() => handleDeleteUser()}
+            labelStyle={{fontSize: 14, fontWeight: '800'}}
+            style={{
+              marginTop: 14,
+              marginBottom: 14,
+              borderColor: COLORS.RED,
+            }}
+          />
+          <HR />
+          <View style={{marginBottom: 20}}>
+            <MagicText
+              style={{
+                fontSize: 18,
+                fontWeight: '800',
+                textAlign: 'center',
+                marginBottom: 20,
+              }}>
+              Contact us
+            </MagicText>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              <MagicText style={styles.contactText}>Email</MagicText>
+              <MagicText style={styles.contactValueText}>
+                contactus@gmail.com
+              </MagicText>
+            </View>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <MagicText style={styles.contactText}>Phone Number</MagicText>
+              <MagicText style={styles.contactValueText}>8899776655</MagicText>
             </View>
           </View>
         </ScrollView>
@@ -370,4 +423,6 @@ const styles = StyleSheet.create({
   savedText: {fontSize: 14},
   agentText: {fontSize: 16, fontWeight: '700', color: COLORS.GREEN},
   logout: {fontSize: 16, fontWeight: '700', color: COLORS.RED},
+  contactText: {fontSize: 14, fontWeight: '700', marginBottom: 8},
+  contactValueText: {fontSize: 14, fontWeight: '600'},
 });

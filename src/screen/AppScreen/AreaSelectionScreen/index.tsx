@@ -49,14 +49,14 @@ const AreaSelectionScreen = ({navigation, route}: AreaSelectionScreenProps) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
-        <CustomBack onPress={() => navigation.goBack()} />
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <CustomBack onPress={() => navigation.goBack()} />
+          <MagicText style={styles.locationCrumb}>{`${city?.name}`}</MagicText>
+        </View>
         <MagicText style={styles.mainText}>
           Select your area in {city?.name}
         </MagicText>
-        <SearchContainer
-          placeholder="Search for area, street name, locality..."
-          style={styles.searchStyle}
-        />
+        <SearchContainer placeholder={city?.name} style={styles.searchStyle} />
         <View style={styles.row}>
           <View style={styles.currentLocationView}>
             <CurrentLocationIcon />
@@ -129,4 +129,5 @@ const styles = StyleSheet.create({
   currentLocationText: {fontSize: 14, color: COLORS.TEXT_GRAY},
   locationText: {fontSize: 14},
   hrView: {marginTop: 24},
+  locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
 });

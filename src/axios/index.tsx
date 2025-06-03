@@ -32,8 +32,6 @@ export const setAxiosInterceptor = async (token: any, dispatch: Dispatch) => {
       return response;
     },
     async function (error: AxiosError) {
-      console.log('error', error);
-
       if (error?.response?.status == 401) {
         await AsyncStorage.clear();
         dispatch(clearAuthState());

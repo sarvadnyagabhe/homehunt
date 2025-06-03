@@ -2,6 +2,7 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  Image,
   Linking,
   SafeAreaView,
   ScrollView,
@@ -29,10 +30,14 @@ import StarRating from 'react-native-star-rating-widget';
 import HR from '../../../components/HR';
 import ReviewCard from '../../../components/ReviewCard';
 import {getReviewsList} from '../../../services/PropertyServices';
-import {getAgentDetailsById} from '../../../services/HomeService';
+import {
+  getAgentDetailsById,
+  handleInteraction,
+} from '../../../services/HomeService';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 import FastImage from 'react-native-fast-image';
 import Share from 'react-native-share';
+import SearchContainer from '../../../components/SearchContainer';
 const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const agent = route?.params?.data;
   const width = Dimensions.get('window').width - 36;
@@ -153,6 +158,20 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
       .then(res => console.log(res))
       .catch(err => err && console.log(err));
   };
+
+  const handleUserInteraction = (appName: string) => {
+    const payload = {
+      agentId: agent?.agent_id,
+      click_type: appName,
+      clicked_from: 'mobile',
+    };
+    handleInteraction(payload)
+      .then(res => {
+        console.log('res in handleUserInteraction', res);
+      })
+      .catch(error => console.log('error in handleUserInteraction', error));
+  };
+
   return (
     <SafeAreaView>
       <ScrollView>
@@ -169,11 +188,20 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
             <CustomBack onPress={() => navigation.goBack()} />
             <View style={styles.row}>
               <BookmarkIcon color={COLORS.GREEN} />
-              <View style={{marginLeft: 14}}>
+              <View style={{marginLeft: 14, marginRight: 14}}>
                 <TouchableOpacity onPress={() => handleShare()}>
                   <ShareIcon />
                 </TouchableOpacity>
               </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ProfileScreen')}>
+                <View style={styles.profileViewStyle}>
+                  <Image
+                    source={IMAGE.PROFILE_IMAGE}
+                    style={styles.profileImgStyle}
+                  />
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View>
@@ -223,31 +251,40 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
             </MagicText>
 
             <View style={[styles.row, {marginTop: 20}]}>
-              <TouchableOpacity style={styles.locAndCallView}>
-                <GoogleLocationIcon />
-              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
                   Linking.openURL(`tel:${agentDetails?.phone}`).catch(err =>
                     console.error('Error opening dialer:', err),
                   );
+                  handleUserInteraction('call');
                 }}
                 style={styles.locAndCallView}>
                 <FillCallIcon />
               </TouchableOpacity>
+
               <TouchableOpacity
                 onPress={() => {
                   Linking.openURL(
                     `whatsapp://send?phone=${agentDetails?.whatsapp_number}`,
-                  ).catch(() => {
-                    Alert.alert(
-                      'Error',
-                      'Make sure WhatsApp is installed on your device',
-                    );
-                  });
+                  )
+                    .catch(() => {
+                      Alert.alert(
+                        'Error',
+                        'Make sure WhatsApp is installed on your device',
+                      );
+                    })
+                    .then(() => {
+                      handleUserInteraction('whatsapp');
+                    });
                 }}
                 style={styles.locAndCallView}>
                 <WhatAppIcon />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.locAndCallView}
+                onPress={() => handleUserInteraction('location')}>
+                <GoogleLocationIcon />
               </TouchableOpacity>
             </View>
             <View style={styles.reviewView}>
@@ -384,5 +421,7 @@ const getStyle = (width: number) => {
       borderTopRightRadius: 22,
       borderTopLeftRadius: 22,
     },
+    profileViewStyle: {width: 40, height: 40},
+    profileImgStyle: {width: '100%', height: '100%', borderRadius: 30},
   });
 };

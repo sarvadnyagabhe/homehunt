@@ -1,7 +1,12 @@
 import * as React from 'react';
 import Svg, {SvgProps, Rect, Path} from 'react-native-svg';
 const WhatAppIcon = (props: SvgProps) => (
-  <Svg aria-label="WhatsApp" viewBox="0 0 512 512" {...props}>
+  <Svg
+    aria-label="WhatsApp"
+    viewBox="0 0 512 512"
+    {...props}
+    width={54}
+    height={54}>
     <Path
       fill="#25d366"
       stroke="#fff"

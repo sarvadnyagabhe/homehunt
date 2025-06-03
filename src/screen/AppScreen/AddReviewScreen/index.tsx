@@ -1,4 +1,5 @@
 import {
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -17,6 +18,7 @@ import TextField from '../../../components/TextField';
 import {CameraIcon} from '../../../assets/icons';
 import {AddNewReview} from '../../../services/PropertyServices';
 import Toast from 'react-native-toast-message';
+import {IMAGE} from '../../../assets/images';
 
 const AddReviewScreen = ({navigation, route}: AddReviewScreenProps) => {
   const data = [
@@ -80,6 +82,15 @@ const AddReviewScreen = ({navigation, route}: AddReviewScreenProps) => {
           <View style={styles.header}>
             <MagicText style={styles.headerText}>Goodwill Properties</MagicText>
           </View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ProfileScreen')}>
+            <View style={styles.profileViewStyle}>
+              <Image
+                source={IMAGE.PROFILE_IMAGE}
+                style={styles.profileImgStyle}
+              />
+            </View>
+          </TouchableOpacity>
         </View>
 
         <View style={{marginTop: 20}}>
@@ -182,8 +193,8 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
     alignItems: 'center',
-    marginLeft: -22,
-    marginRight: 22,
+    // marginLeft: -22,
+    // marginRight: 22,
   },
   headerText: {
     fontSize: 14,
@@ -201,4 +212,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputStyle: {height: 145, borderRadius: 16},
+  profileViewStyle: {width: 40, height: 40},
+  profileImgStyle: {width: '100%', height: '100%', borderRadius: 30},
 });

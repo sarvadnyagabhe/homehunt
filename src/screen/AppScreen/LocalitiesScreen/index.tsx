@@ -65,7 +65,13 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
-        <CustomBack onPress={() => navigation.goBack()} />
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <CustomBack onPress={() => navigation.goBack()} />
+          <MagicText
+            style={
+              styles.locationCrumb
+            }>{`${city?.name} > ${area?.name}`}</MagicText>
+        </View>
         <MagicText style={styles.mainText}>
           Top localities in {area?.name}
         </MagicText>
@@ -148,4 +154,5 @@ const styles = StyleSheet.create({
   currentLocationText: {fontSize: 14, color: COLORS.TEXT_GRAY},
   locationText: {fontSize: 14},
   hrView: {marginTop: 24},
+  locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
 });

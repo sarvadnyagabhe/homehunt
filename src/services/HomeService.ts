@@ -23,4 +23,28 @@ const getAgentDetailsById = async (id: number) => {
   }
 };
 
-export {getAllAgentList, getAgentDetailsById};
+const handleInteraction = async (payload: any) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}${ENDPOINT.user_interaction}`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteUser = async (payload: any) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}${ENDPOINT.delete_agent}`,
+      payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {getAllAgentList, getAgentDetailsById, handleInteraction, deleteUser};

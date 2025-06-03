@@ -18,6 +18,12 @@ const ENDPOINT = {
   get_agent_by_location: 'v1/auth/users/by-location',
   get_agent_details: 'v1/auth/users/agent-detail',
   update_agent_profile: 'v1/auth/agent/profile-update',
+
+  //delete
+  delete_user: 'v1/auth/agent/delete-account',
+  delete_agent: 'v1/auth/users/delete-account',
+
+  user_interaction: 'v1/auth/users/interactions/click',
   get_city: 'v1/auth/cities',
   get_areas: 'v1/auth/areas',
   get_localities: 'v1/auth/localities',
