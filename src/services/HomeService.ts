@@ -38,7 +38,7 @@ const handleInteraction = async (payload: any) => {
 const deleteUser = async (payload: any) => {
   try {
     const response = await axios.post(
-      `${BASE_URL}${ENDPOINT.delete_agent}`,
+      `${BASE_URL}${ENDPOINT.verify_delete_user}`,
       payload,
     );
     return response.data;

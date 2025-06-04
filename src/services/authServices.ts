@@ -89,10 +89,36 @@ export const handleAgentSignup = async (payload: {
   }
 };
 
-export const handleAgentDetails = async (agentId: number) => {
+export const handleAgentDetails = async (agentId: any) => {
   try {
     const response = await axios.get(
       `${BASE_URL}${ENDPOINT.get_agent_details}/${agentId}`,
+    );
+    console.log('agentId', agentId, response?.data);
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const handleUserDetails = async (agentId: any) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}${ENDPOINT.get_user_details}/${agentId}`,
+    );
+    console.log('user', agentId, response?.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const handleAgentUpdateProfile = async (payload: any) => {
+  try {
+    const response = await axios.patch(
+      `${BASE_URL}${ENDPOINT.update_agent_profile}`,
+      payload,
     );
     return response.data;
   } catch (error) {
@@ -100,7 +126,7 @@ export const handleAgentDetails = async (agentId: number) => {
   }
 };
 
-export const handleProfile = async (payload: any) => {
+export const handleUserUpdateProfile = async (payload: any) => {
   try {
     const response = await axios.patch(
       `${BASE_URL}${ENDPOINT.update_agent_profile}`,

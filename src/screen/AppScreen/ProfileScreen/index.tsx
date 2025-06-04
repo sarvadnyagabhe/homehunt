@@ -29,7 +29,10 @@ import {clearAuthState} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   handleAgentDetails,
+  handleAgentUpdateProfile,
   handleProfile,
+  handleUserDetails,
+  handleUserUpdateProfile,
 } from '../../../services/authServices';
 import Toast from 'react-native-toast-message';
 import {jwtDecode} from 'jwt-decode';
@@ -44,7 +47,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
 
   const isVerified = true;
   const dispatch = useAppDispatch();
-  const {token} = useAppSelector(state => state.auth);
+  const {token, userData} = useAppSelector(state => state.auth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleValidation = yup.object().shape({
@@ -54,6 +57,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     whatsapp_number: yup.string().required('WhatsApp number is required'),
     city: yup.string().required('City is required'),
     experience_years: yup.string().required('Experience years is required'),
+    // image_url: yup.string().required('Image is required'),
   });
 
   const formik = useFormik({
@@ -71,46 +75,54 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
       handleProfileUpdate(values);
     },
   });
+
   const handleProfileUpdate = (values: any) => {
-    handleProfile(values)
-      .then(res => {
-        console.log('res in handleProfileUpdate', res);
-        Toast.show({
-          type: 'success',
-          text1: res?.user?.message,
-        });
-      })
-      .catch(error => {
-        console.log('error in handleProfileUpdate:', error?.response?.data);
-        Toast.show({
-          type: 'error',
-          text1: error?.response?.data?.message,
-        });
+    const API =
+      userData?.role == 'users'
+        ? handleUserUpdateProfile(values)
+        : handleAgentUpdateProfile(values);
+
+    API.then(res => {
+      console.log('res in handleProfileUpdate', res);
+      Toast.show({
+        type: 'success',
+        text1: res?.user?.message,
       });
+    }).catch(error => {
+      console.log('error in handleProfileUpdate:', error?.response?.data);
+      Toast.show({
+        type: 'error',
+        text1: error?.response?.data?.message,
+      });
+    });
   };
+
   const handleLogout = async () => {
     dispatch(clearAuthState());
     await AsyncStorage.setItem('token', '');
   };
 
-  const getAgentDetails = (decodedToken: any) => {
+  const getAgentDetails = () => {
     setIsLoading(true);
-    handleAgentDetails(decodedToken?.userId)
-      .then(res => {
-        setIsLoading(false);
+    const API =
+      userData?.role == 'users'
+        ? handleUserDetails(userData?.Id)
+        : handleAgentDetails(userData?.Id);
+
+    API.then(res => {
+      setIsLoading(false);
+      console.log('res ingetAgentDetails ', res);
+      if (res?.success === true) {
         formik.setValues(res?.data);
-      })
-      .catch(error => {
-        setIsLoading(false);
-        console.log('error in handleAgentDetails', error?.response?.data);
-      });
+      }
+    }).catch(error => {
+      setIsLoading(false);
+      console.log('error in handleAgentDetails', error?.response?.data);
+    });
   };
 
   useEffect(() => {
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      getAgentDetails(decodedToken);
-    }
+    getAgentDetails();
   }, []);
 
   const openGallery = () => {
@@ -132,18 +144,31 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   };
 
   const handleDeleteUser = () => {
-    const payload = {};
+    const payload = {
+      otp: '212551',
+    };
     deleteUser(payload)
       .then(res => {
-        console.log('res in delete user');
+        console.log('res in delete user', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.message,
+        });
+        handleLogout();
       })
       .catch(error => {
         console.log('error', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
       });
   };
+
   if (isLoading) {
     return <LoadingAndErrorComponent />;
   }
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
@@ -308,17 +333,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
               </TouchableOpacity>
             </View>
           </View>
-          <Button
-            label="Delete"
-            type="OUTLINE"
-            onPress={() => handleDeleteUser()}
-            labelStyle={{fontSize: 14, fontWeight: '800'}}
-            style={{
-              marginTop: 14,
-              marginBottom: 14,
-              borderColor: COLORS.RED,
-            }}
-          />
+
           <HR />
           <View style={{marginBottom: 20}}>
             <MagicText
@@ -347,6 +362,18 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
               <MagicText style={styles.contactValueText}>8899776655</MagicText>
             </View>
           </View>
+          <HR />
+          <Button
+            label="Delete"
+            type="OUTLINE"
+            onPress={() => handleDeleteUser()}
+            labelStyle={{fontSize: 14, fontWeight: '800'}}
+            style={{
+              marginTop: 14,
+              marginBottom: 14,
+              borderColor: COLORS.RED,
+            }}
+          />
         </ScrollView>
       </View>
     </SafeAreaView>

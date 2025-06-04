@@ -27,6 +27,10 @@ type HomeScreenStackParamList = {
   CitySelectionScreen: any;
   AreaSelectionScreen: any;
   LocalitiesScreen: any;
+  LoginScreen: any;
+  OtpScreen: any;
+  SignupScreen: any;
+  AgentLoginScreen: any;
 };
 
 export type HomeScreenProps = NativeStackScreenProps<

@@ -21,6 +21,7 @@ import LoadingAndErrorComponent from '../../../components/LoadingAndErrorCompone
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
   const {id, name} = useAppSelector(state => state.location.location);
+  const token = useAppSelector(state => state.auth.token);
 
   // const data = [
   //   {
@@ -94,7 +95,11 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
         <View style={styles.row}>
           <SearchContainer value={name} style={{flex: 1}} />
           <TouchableOpacity
-            onPress={() => navigation.navigate('ProfileScreen')}>
+            onPress={() => {
+              token
+                ? navigation.navigate('ProfileScreen')
+                : navigation.navigate('AuthRoutes', {screen: 'LoginScreen'});
+            }}>
             <View style={styles.profileViewStyle}>
               <Image
                 source={IMAGE.PROFILE_IMAGE}
@@ -112,9 +117,13 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
                 <TouchableOpacity
                   key={index}
                   activeOpacity={0.8}
-                  onPress={() =>
-                    navigation.navigate('ProprtyDetailScreen', {data: item})
-                  }>
+                  onPress={() => {
+                    token
+                      ? navigation.navigate('ProprtyDetailScreen', {data: item})
+                      : navigation.navigate('AuthRoutes', {
+                          screen: 'LoginScreen',
+                        });
+                  }}>
                   <PropertyCard item={item} />
                 </TouchableOpacity>
               );

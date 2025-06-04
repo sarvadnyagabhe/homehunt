@@ -20,7 +20,7 @@ import {
 } from '../../../services/authServices';
 import Toast from 'react-native-toast-message';
 import {useAppDispatch} from '../../../store';
-import {setToken} from '../../../store/slice/authSlice';
+import {setToken, setUserData} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setAxiosInterceptor} from '../../../axios';
 
@@ -61,6 +61,10 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
         });
         dispatch(setToken(res?.tokens?.access?.token));
         await AsyncStorage.setItem('token', res?.tokens?.access?.token);
+
+        dispatch(setUserData({role: res?.role, Id: res?.UserId}));
+        await AsyncStorage.setItem('role', res?.role);
+
         setAxiosInterceptor(res?.tokens?.access?.token, dispatch);
       })
       .catch(error => {
@@ -109,6 +113,10 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
         });
         dispatch(setToken(res?.tokens?.access?.token));
         await AsyncStorage.setItem('token', res?.tokens?.access?.token);
+
+        dispatch(setUserData({role: res?.role, Id: res?.agentId}));
+        await AsyncStorage.setItem('role', res?.role);
+
         setAxiosInterceptor(res?.tokens?.access?.token, dispatch);
       })
       .catch(error => {
@@ -154,7 +162,7 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
-        <CustomBack />
+        <CustomBack onPress={() => navigation.goBack()} />
         <View style={{flex: 1, marginTop: 22}}>
           <MagicText style={styles.codeText}>Enter the code</MagicText>
           <View style={styles.titleView}>
@@ -204,6 +212,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.WHITE,
     paddingHorizontal: 14,
+    paddingTop: 12,
   },
   codeText: {fontSize: 22},
   titleView: {width: '60%'},
