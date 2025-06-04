@@ -101,6 +101,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   const handleLogout = async () => {
     dispatch(clearAuthState());
     await AsyncStorage.setItem('token', '');
+    navigation.navigate('HomeScreen');
   };
 
   //to get  user and agent data
