@@ -38,9 +38,11 @@ import LoadingAndErrorComponent from '../../../components/LoadingAndErrorCompone
 import FastImage from 'react-native-fast-image';
 import Share from 'react-native-share';
 import SearchContainer from '../../../components/SearchContainer';
+import {useAppSelector} from '../../../store';
 const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const agent = route?.params?.data;
   const width = Dimensions.get('window').width - 36;
+  const {userData} = useAppSelector(state => state.auth);
   const reviewsData = {
     data: [
       {
@@ -112,8 +114,10 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const [reviewCount, setReviewCount] = useState<any>(3);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const styles = getStyle(width);
+
   const getAgentDetails = () => {
     setIsLoading(true);
+
     getAgentDetailsById(agent.agent_id)
       .then(res => {
         console.log('res in getagent details', res);
@@ -129,13 +133,14 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const onStarRatingPress = (rating: any) => {
     setStarCount(rating);
   };
+
   const handleReviewsdata = () => {
     getReviewsList()
       .then(res => {
-        console.log('res', res);
+        console.log('res in handleReviewsdata', res);
       })
       .catch(error => {
-        console.log('error', error);
+        console.log('error in handleReviewsdata', error);
       });
   };
   useEffect(() => {

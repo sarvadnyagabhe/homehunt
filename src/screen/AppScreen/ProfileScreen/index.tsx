@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import CustomBack from '../../../components/CustomBack';
 import MagicText from '../../../components/MagicText';
 import {COLORS} from '../../../assets/colors';
@@ -30,7 +30,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   handleAgentDetails,
   handleAgentUpdateProfile,
-  handleProfile,
   handleUserDetails,
   handleUserUpdateProfile,
 } from '../../../services/authServices';
@@ -43,6 +42,7 @@ import {deleteUser} from '../../../services/HomeService';
 import HR from '../../../components/HR';
 
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
+  // ({navigation}: ProfileScreennProps) => {
   //TODO: take agentID from redux after which is needs to store after login
 
   const isVerified = true;
@@ -76,6 +76,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     },
   });
 
+  //to update user and agent data
   const handleProfileUpdate = (values: any) => {
     const API =
       userData?.role == 'users'
@@ -102,6 +103,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     await AsyncStorage.setItem('token', '');
   };
 
+  //to get  user and agent data
   const getAgentDetails = () => {
     setIsLoading(true);
     const API =
@@ -143,6 +145,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     });
   };
 
+  //to delete user and agent
   const handleDeleteUser = () => {
     const payload = {
       otp: '212551',
@@ -379,7 +382,6 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     </SafeAreaView>
   );
 };
-
 export default ProfileScreen;
 
 const styles = StyleSheet.create({

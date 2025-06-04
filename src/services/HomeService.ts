@@ -12,7 +12,7 @@ const getAllAgentList = async (id: number) => {
   }
 };
 
-const getAgentDetailsById = async (id: number) => {
+const getAgentDetailsById = async (id: any) => {
   try {
     const response = await axios.get(
       `${BASE_URL}${ENDPOINT.get_agent_details}/${id}`,
