@@ -17,6 +17,7 @@ import {
   EmailIcon,
   FormProfileIcon,
   ProfileIcon,
+  RightArrowIcon,
   VerifiedIcon,
 } from '../../../assets/icons';
 import TextField from '../../../components/TextField';
@@ -40,6 +41,7 @@ import LoadingAndErrorComponent from '../../../components/LoadingAndErrorCompone
 import {launchImageLibrary} from 'react-native-image-picker';
 import {deleteUser} from '../../../services/HomeService';
 import HR from '../../../components/HR';
+import WhiteCardView from '../../../components/WhiteCardView';
 
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   // ({navigation}: ProfileScreennProps) => {
@@ -49,54 +51,55 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   const dispatch = useAppDispatch();
   const {token, userData} = useAppSelector(state => state.auth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [userDetails, setUserDetails] = useState<any>([]);
 
-  const handleValidation = yup.object().shape({
-    name: yup.string().required('Name is required'),
-    phone: yup.string().required('Phone is required'),
-    email: yup.string().required('Email is required'),
-    whatsapp_number: yup.string().required('WhatsApp number is required'),
-    city: yup.string().required('City is required'),
-    experience_years: yup.string().required('Experience years is required'),
-    // image_url: yup.string().required('Image is required'),
-  });
+  // const handleValidation = yup.object().shape({
+  //   name: yup.string().required('Name is required'),
+  //   phone: yup.string().required('Phone is required'),
+  //   email: yup.string().required('Email is required'),
+  //   whatsapp_number: yup.string().required('WhatsApp number is required'),
+  //   city: yup.string().required('City is required'),
+  //   experience_years: yup.string().required('Experience years is required'),
+  //   // image_url: yup.string().required('Image is required'),
+  // });
 
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      phone: '',
-      email: '',
-      whatsapp_number: '',
-      city: '',
-      experience_years: '',
-      image_url: '',
-    },
-    validationSchema: handleValidation,
-    onSubmit: (values: any) => {
-      handleProfileUpdate(values);
-    },
-  });
+  // const formik = useFormik({
+  //   initialValues: {
+  //     name: '',
+  //     phone: '',
+  //     email: '',
+  //     whatsapp_number: '',
+  //     city: '',
+  //     experience_years: '',
+  //     image_url: '',
+  //   },
+  //   validationSchema: handleValidation,
+  //   onSubmit: (values: any) => {
+  //     handleProfileUpdate(values);
+  //   },
+  // });
 
-  //to update user and agent data
-  const handleProfileUpdate = (values: any) => {
-    const API =
-      userData?.role == 'users'
-        ? handleUserUpdateProfile(values)
-        : handleAgentUpdateProfile(values);
+  // //to update user and agent data
+  // const handleProfileUpdate = (values: any) => {
+  //   const API =
+  //     userData?.role == 'users'
+  //       ? handleUserUpdateProfile(values)
+  //       : handleAgentUpdateProfile(values);
 
-    API.then(res => {
-      console.log('res in handleProfileUpdate', res);
-      Toast.show({
-        type: 'success',
-        text1: res?.user?.message,
-      });
-    }).catch(error => {
-      console.log('error in handleProfileUpdate:', error?.response?.data);
-      Toast.show({
-        type: 'error',
-        text1: error?.response?.data?.message,
-      });
-    });
-  };
+  //   API.then(res => {
+  //     console.log('res in handleProfileUpdate', res);
+  //     Toast.show({
+  //       type: 'success',
+  //       text1: res?.user?.message,
+  //     });
+  //   }).catch(error => {
+  //     console.log('error in handleProfileUpdate:', error?.response?.data);
+  //     Toast.show({
+  //       type: 'error',
+  //       text1: error?.response?.data?.message,
+  //     });
+  //   });
+  // };
 
   const handleLogout = async () => {
     dispatch(clearAuthState());
@@ -116,7 +119,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
       setIsLoading(false);
       console.log('res ingetAgentDetails ', res);
       if (res?.success === true) {
-        formik.setValues(res?.data);
+        setUserDetails(res?.data);
       }
     }).catch(error => {
       setIsLoading(false);
@@ -128,47 +131,6 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     getAgentDetails();
   }, []);
 
-  const openGallery = () => {
-    const options: any = {
-      mediaType: 'photo',
-      selectionLimit: 1,
-    };
-
-    launchImageLibrary(options, (response: any) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-      } else {
-        console.log('Image URI: ', response.assets[0].uri);
-        formik.setFieldValue('image_url', response.assets[0].uri);
-      }
-    });
-  };
-
-  //to delete user and agent
-  const handleDeleteUser = () => {
-    const payload = {
-      otp: '212551',
-    };
-    deleteUser(payload)
-      .then(res => {
-        console.log('res in delete user', res);
-        Toast.show({
-          type: 'success',
-          text1: res?.message,
-        });
-        handleLogout();
-      })
-      .catch(error => {
-        console.log('error', error);
-        Toast.show({
-          type: 'error',
-          text1: error?.response?.data?.message,
-        });
-      });
-  };
-
   if (isLoading) {
     return <LoadingAndErrorComponent />;
   }
@@ -176,208 +138,102 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
-        <ScrollView>
+        <ScrollView contentContainerStyle={{flex: 1}}>
           <View style={styles.row}>
             <CustomBack onPress={() => navigation.goBack()} />
             <View style={styles.header}>
               <MagicText style={styles.headerText}>Your Profile</MagicText>
             </View>
           </View>
-          <View style={styles.formView}>
-            <View style={styles.roundView}>
-              {formik.values?.image_url ? (
-                <FastImage
-                  source={{uri: formik.values?.image_url}}
-                  style={{width: '100%', height: '100%', borderRadius: 100}}
-                />
-              ) : (
-                <ProfileIcon />
-              )}
-              <View style={styles.absoluteView}>
-                <TouchableOpacity onPress={() => openGallery()}>
-                  <CameraIcon />
-                </TouchableOpacity>
+          <WhiteCardView cardStyle={styles.cardStyle}>
+            <View style={styles.formView}>
+              <View style={styles.roundView}>
+                {userDetails?.image_url ? (
+                  <FastImage
+                    source={{uri: userDetails?.image_url}}
+                    style={{width: '100%', height: '100%', borderRadius: 100}}
+                  />
+                ) : (
+                  <ProfileIcon />
+                )}
               </View>
+              <MagicText style={{fontSize: 18}}>{userDetails?.name}</MagicText>
             </View>
-          </View>
-
-          <View style={{flex: 1, marginTop: 14}}>
-            <TextField
-              placeholder="Name"
-              leftIcon={<FormProfileIcon />}
-              style={styles.textFieldStyle}
-              value={formik.values?.name}
-              onChangeText={name => formik.setFieldValue('name', name)}
-            />
-            {formik.errors.name && (
-              <MagicText style={styles.errorLabel}>
-                {formik.errors.name}
-              </MagicText>
-            )}
-
-            <TextField
-              placeholder="Phone"
-              leftIcon={<CallIcon />}
-              rightIcon={formik.values?.verified && <VerifiedIcon />}
-              style={styles.textFieldStyle}
-              value={formik.values?.phone}
-              maxLength={14}
-              onChangeText={phone => formik.setFieldValue('phone', phone)}
-            />
-            {formik.errors.phone && (
-              <MagicText style={styles.errorLabel}>
-                {formik.errors.phone}
-              </MagicText>
-            )}
-
-            <TextField
-              placeholder="Email"
-              leftIcon={<EmailIcon />}
-              style={styles.textFieldStyle}
-              value={formik.values?.email}
-              onChangeText={email => formik.setFieldValue('email', email)}
-            />
-            {formik.errors.email && (
-              <MagicText style={styles.errorLabel}>
-                {formik.errors.email}
-              </MagicText>
-            )}
-
-            <TextField
-              placeholder="WhatsApp Number"
-              leftIcon={<CallIcon />}
-              style={styles.textFieldStyle}
-              maxLength={14}
-              value={formik.values?.whatsapp_number}
-              onChangeText={number =>
-                formik.setFieldValue('whatsapp_number', number)
-              }
-            />
-            {formik.errors.whatsapp_number && (
-              <MagicText style={styles.errorLabel}>
-                {formik.errors.whatsapp_number}
-              </MagicText>
-            )}
-
-            <TextField
-              placeholder="City"
-              leftIcon={<EmailIcon />}
-              style={styles.textFieldStyle}
-              value={formik.values?.city}
-              onChangeText={city => formik.setFieldValue('city', city)}
-            />
-            {formik.errors.city && (
-              <MagicText style={styles.errorLabel}>
-                {formik.errors.city}
-              </MagicText>
-            )}
-
-            <TextField
-              placeholder="Experience Years"
-              leftIcon={<EmailIcon />}
-              style={styles.textFieldStyle}
-              value={formik.values?.experience_years}
-              onChangeText={experience_years =>
-                formik.setFieldValue('experience_years', experience_years)
-              }
-            />
-            {formik.errors.experience_years && (
-              <MagicText style={styles.errorLabel}>
-                {formik.errors.experience_years}
-              </MagicText>
-            )}
-
-            <MagicText>Terms of service</MagicText>
+            <HR />
             <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => navigation.navigate('SavedScreen')}>
-              <View style={[styles.row, {marginTop: 22}]}>
-                <View style={styles.bookmarkRound}>
-                  <BookmarkIcon color={COLORS.BLACK} />
-                </View>
-                <MagicText style={styles.savedText}>Saved Agents</MagicText>
+              onPress={() =>
+                navigation.navigate('ProfileDetailScreen', {data: userDetails})
+              }>
+              <View style={[styles.row, {marginLeft: 12}]}>
+                <MagicText style={{fontSize: 14}}>Edit Profile</MagicText>
+                <RightArrowIcon />
               </View>
             </TouchableOpacity>
-            <Button
-              label="Update"
-              onPress={() => formik.handleSubmit()}
-              style={{marginTop: 14, marginBottom: 14}}
-            />
+          </WhiteCardView>
 
-            <View style={{flex: 1, justifyContent: 'center'}}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('ExpertsScreen')}
-                activeOpacity={0.7}>
-                <View style={styles.getHelpView}>
-                  <MagicText style={styles.getHelpText}>
-                    Get Expert Help
+          <WhiteCardView cardStyle={styles.cardStyle}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SavedScreen')}>
+              <View style={[styles.row, {justifyContent: 'space-between'}]}>
+                <View style={styles.row}>
+                  <MagicText style={{marginRight: 12, fontSize: 16}}>
+                    Bookmarks
                   </MagicText>
-                  <MagicText style={styles.sellbuyText}>
-                    Sell, Buy or Rent
-                  </MagicText>
+                  <BookmarkIcon color={COLORS.BLACK} />
                 </View>
-              </TouchableOpacity>
-            </View>
+                <RightArrowIcon />
+              </View>
+            </TouchableOpacity>
+          </WhiteCardView>
 
-            <View
-              style={[
-                styles.row,
-                {
-                  flex: 1,
-                  justifyContent: 'space-between',
-                  marginTop: 12,
-                },
-              ]}>
-              <MagicText style={styles.agentText}>Become Agent</MagicText>
-              <TouchableOpacity
-                onPress={() => {
-                  handleLogout();
-                }}>
-                <MagicText style={styles.logout}>Log out</MagicText>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <WhiteCardView cardStyle={styles.cardStyle}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ExpertsScreen')}
+              activeOpacity={0.7}>
+              <View style={styles.getHelpView}>
+                <MagicText style={styles.getHelpText}>
+                  Get Expert Help
+                </MagicText>
+                <MagicText style={styles.sellbuyText}>
+                  Sell, Buy or Rent
+                </MagicText>
+              </View>
+            </TouchableOpacity>
+          </WhiteCardView>
 
-          <HR />
-          <View style={{marginBottom: 20}}>
-            <MagicText
-              style={{
-                fontSize: 18,
-                fontWeight: '800',
-                textAlign: 'center',
-                marginBottom: 20,
-              }}>
-              Contact us
-            </MagicText>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <MagicText style={styles.contactText}>Email</MagicText>
-              <MagicText style={styles.contactValueText}>
-                contactus@gmail.com
-              </MagicText>
+          <WhiteCardView cardStyle={styles.cardStyle}>
+            <View style={[styles.row, {justifyContent: 'space-between'}]}>
+              <MagicText style={{fontSize: 16}}>Join us</MagicText>
+              <RightArrowIcon />
             </View>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <MagicText style={styles.contactText}>Phone Number</MagicText>
-              <MagicText style={styles.contactValueText}>8899776655</MagicText>
+          </WhiteCardView>
+          <WhiteCardView cardStyle={styles.cardStyle}>
+            <View style={[styles.row, {justifyContent: 'space-between'}]}>
+              <MagicText style={{fontSize: 16}}>Contact us</MagicText>
+              <RightArrowIcon />
             </View>
-          </View>
-          <HR />
-          <Button
-            label="Delete"
-            type="OUTLINE"
-            onPress={() => handleDeleteUser()}
-            labelStyle={{fontSize: 14, fontWeight: '800'}}
+          </WhiteCardView>
+          <WhiteCardView cardStyle={styles.cardStyle}>
+            <View style={[styles.row, {justifyContent: 'space-between'}]}>
+              <MagicText style={{fontSize: 16}}>Terms And Conditions</MagicText>
+              <RightArrowIcon />
+            </View>
+          </WhiteCardView>
+
+          <View
             style={{
-              marginTop: 14,
-              marginBottom: 14,
-              borderColor: COLORS.RED,
-            }}
-          />
+              flex: 1,
+              justifyContent: 'flex-end',
+              marginBottom: 24,
+              // alignItems: 'flex-end',
+            }}>
+            <TouchableOpacity onPress={() => handleLogout()}>
+              <MagicText
+                style={{fontSize: 18, color: COLORS.RED, fontWeight: '800'}}>
+                Log Out
+              </MagicText>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -397,6 +253,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  cardStyle: {
+    marginTop: 20,
+    paddingVertical: 22,
+  },
   header: {
     flex: 1,
     alignItems: 'center',
@@ -407,18 +267,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   formView: {
+    // alignItems: 'center',
+    // marginTop: 12,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 28,
+    // paddingVertical: 20,
+    marginLeft: 12,
   },
   roundView: {
-    width: 120,
-    height: 120,
+    width: 50,
+    height: 50,
     borderRadius: 100,
     alignContent: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.WHITE_SMOKE,
-    marginBottom: 18,
     alignItems: 'center',
+    marginRight: 18,
   },
   bookmarkRound: {
     width: 40,
@@ -446,7 +310,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderColor: COLORS.GREEN,
     paddingVertical: 10,
-    marginHorizontal: 24,
+    // marginHorizontal: 24,
   },
   getHelpText: {fontSize: 16, color: COLORS.GREEN, marginBottom: 2},
   sellbuyText: {fontSize: 12, color: COLORS.RED},

@@ -31,6 +31,7 @@ type HomeScreenStackParamList = {
   OtpScreen: any;
   SignupScreen: any;
   AgentLoginScreen: any;
+  ProfileDetailScreen: any;
 };
 
 export type HomeScreenProps = NativeStackScreenProps<
@@ -78,6 +79,11 @@ export type AreaSelectionScreenProps = NativeStackScreenProps<
 export type LocalitiesScreenProps = NativeStackScreenProps<
   HomeScreenStackParamList,
   'LocalitiesScreen'
+>;
+
+export type ProfileDetailScreenProps = NativeStackScreenProps<
+  HomeScreenStackParamList,
+  'ProfileDetailScreen'
 >;
 
 export type {MainStackParamList, BottomTabParamList, HomeScreenStackParamList};

@@ -18,6 +18,7 @@ import OtpScreen from '../screen/AuthScreen/OtpScreen';
 import SignupScreen from '../screen/AuthScreen/SignupScreen';
 import AgentLoginScreen from '../screen/AuthScreen/AgentLoginScreen';
 import {useAppSelector} from '../store';
+import ProfileDetailScreen from '../screen/AppScreen/ProfileDetailScreen';
 
 const HomeStack = createNativeStackNavigator<HomeScreenStackParamList>();
 
@@ -55,10 +56,10 @@ const HomeScreenStack = () => {
         component={AreaSelectionScreen}
       />
       <HomeStack.Screen name="LocalitiesScreen" component={LocalitiesScreen} />
-      {/* <HomeStack.Screen name="LoginScreen" component={LoginScreen} />
-    <HomeStack.Screen name="OtpScreen" component={OtpScreen} />
-    <HomeStack.Screen name="SignupScreen" component={SignupScreen} />
-    <HomeStack.Screen name="AgentLoginScreen" component={AgentLoginScreen} /> */}
+      <HomeStack.Screen
+        name="ProfileDetailScreen"
+        component={ProfileDetailScreen}
+      />
     </HomeStack.Navigator>
   );
 };

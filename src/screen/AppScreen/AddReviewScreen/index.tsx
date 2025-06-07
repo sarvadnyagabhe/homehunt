@@ -27,10 +27,8 @@ const AddReviewScreen = ({navigation, route}: AddReviewScreenProps) => {
     {label: 'Negotiation Skills'},
     {label: 'Professionlism'},
   ];
-  //TODO: temporary added,remove later
-  const agent_id = 21;
-
   const review = route?.params?.item;
+  const agentId = route?.params?.agentId;
   const [reviewCount, setReviewCount] = useState<any>(0);
   const [selectedReview, setSelectedReview] = useState<any>([]);
   const [comment, setComment] = useState<string>('');
@@ -53,7 +51,7 @@ const AddReviewScreen = ({navigation, route}: AddReviewScreenProps) => {
 
   const handleReviewSubmit = () => {
     const payload = {
-      agent_id: agent_id,
+      agent_id: agentId,
       comment: comment,
       rating: reviewCount,
     };

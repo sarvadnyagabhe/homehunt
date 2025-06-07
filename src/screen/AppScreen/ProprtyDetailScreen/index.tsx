@@ -135,12 +135,16 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   };
 
   const handleReviewsdata = () => {
-    getReviewsList()
+    const paylod = {
+      agent_id: agent?.agent_id,
+    };
+
+    getReviewsList(paylod)
       .then(res => {
         console.log('res in handleReviewsdata', res);
       })
       .catch(error => {
-        console.log('error in handleReviewsdata', error);
+        console.log('error in handleReviewsdata', error?.response?.data);
       });
   };
   useEffect(() => {
@@ -238,9 +242,9 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
               <RatingCard rating={agentDetails?.rating} />
             </View>
             <View style={[styles.row, {justifyContent: 'space-between'}]}>
-              <MagicText style={styles.ratingText}>
+              {/* <MagicText style={styles.ratingText}>
                 {agentDetails?.rating} Ratings
-              </MagicText>
+              </MagicText> */}
             </View>
             <View style={[styles.row, {marginTop: 12}]}>
               <GoogleLocationIcon />
@@ -297,7 +301,10 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
               <StarRating
                 onChange={rating => {
                   onStarRatingPress(rating);
-                  navigation.navigate('AddReviewScreen', {item: rating});
+                  navigation.navigate('AddReviewScreen', {
+                    item: rating,
+                    agentId: agent?.agent_id,
+                  });
                 }}
                 enableHalfStar={true}
                 rating={starCount}
@@ -313,10 +320,12 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
             <HR />
             <View>
               <View style={styles.totalReviewView}>
-                <MagicText style={{fontSize: 14}}>Review & Ratings</MagicText>
+                <MagicText style={{fontSize: 16, fontWeight: '700'}}>
+                  Review & Ratings
+                </MagicText>
                 <View style={[styles.row, styles.reviewView]}>
                   <MagicText style={{fontSize: 32, fontWeight: '700'}}>
-                    {reviewData?.avergeReview}
+                    {Math.round(reviewData?.avergeReview)}
                   </MagicText>
                   <View style={{marginLeft: 12}}>
                     <StarRating
