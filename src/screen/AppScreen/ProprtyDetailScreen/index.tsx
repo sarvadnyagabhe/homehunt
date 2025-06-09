@@ -135,11 +135,11 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   };
 
   const handleReviewsdata = () => {
-    const paylod = {
+    const params = {
       agent_id: agent?.agent_id,
     };
 
-    getReviewsList(paylod)
+    getReviewsList(params)
       .then(res => {
         console.log('res in handleReviewsdata', res);
       })
