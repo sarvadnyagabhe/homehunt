@@ -18,9 +18,14 @@ import {useAppSelector} from '../../../store';
 import {getAllAgentList} from '../../../services/HomeService';
 import SearchContainer from '../../../components/SearchContainer';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
+import CustomBack from '../../../components/CustomBack';
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
-  const {id, name} = useAppSelector(state => state.location.location);
+  const {id, name, area_name, city_name} = useAppSelector(
+    state => state.location.location,
+  );
+  console.log('area_name,city_name', city_name, '>', area_name, '>', name);
+
   const token = useAppSelector(state => state.auth.token);
 
   // const data = [
@@ -92,8 +97,19 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
-        <View style={styles.row}>
-          <SearchContainer value={name} style={{flex: 1}} />
+        <View
+          style={[
+            styles.row,
+            {marginBottom: 12, justifyContent: 'space-between'},
+          ]}>
+          <View style={styles.row}>
+            <CustomBack onPress={() => navigation.goBack()} />
+            <MagicText style={styles.locationCrumb}>
+              {city_name && area_name
+                ? `${city_name} > ${area_name} > ${name}`
+                : ` ${name}`}
+            </MagicText>
+          </View>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('ProfileScreen');
@@ -106,6 +122,20 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
             </View>
           </TouchableOpacity>
         </View>
+        {/* <View style={styles.row}>
+          <SearchContainer value={name} style={{flex: 1}} />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ProfileScreen');
+            }}>
+            <View style={styles.profileViewStyle}>
+              <Image
+                source={IMAGE.PROFILE_IMAGE}
+                style={styles.profileImgStyle}
+              />
+            </View>
+          </TouchableOpacity>
+        </View> */}
         <View style={styles.flatlistView}>
           <FlatList
             data={agentList}
@@ -156,4 +186,5 @@ const styles = StyleSheet.create({
   },
   searchText: {fontSize: 12, marginLeft: 10},
   flatlistView: {paddingVertical: 18, marginBottom: 22},
+  locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
 });

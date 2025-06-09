@@ -5,8 +5,8 @@ const WhatAppIcon = (props: SvgProps) => (
     aria-label="WhatsApp"
     viewBox="0 0 512 512"
     {...props}
-    width={54}
-    height={54}>
+    width={48}
+    height={48}>
     <Path
       fill="#25d366"
       stroke="#fff"

@@ -13,7 +13,7 @@ const WhiteCardView = ({cardStyle, ...props}: WhiteCardViewType) => {
 
 const styles = StyleSheet.create({
   cardParent: {
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
     paddingHorizontal: 8,
     paddingVertical: 8,
     borderRadius: 12,

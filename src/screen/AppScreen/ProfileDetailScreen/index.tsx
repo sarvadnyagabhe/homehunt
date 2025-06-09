@@ -17,7 +17,9 @@ import {
   CameraIcon,
   CityIcon,
   EmailIcon,
+  ExperienceIcon,
   FormProfileIcon,
+  OverviewIcon,
   ProfileIcon,
   VerifiedIcon,
 } from '../../../assets/icons';
@@ -63,6 +65,7 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
       city: '',
       experience_years: '',
       image_url: '',
+      description: '',
     },
     validationSchema: handleValidation,
     onSubmit: (values: any) => {
@@ -247,7 +250,7 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
 
             <TextField
               placeholder="Experience Years"
-              leftIcon={<EmailIcon />}
+              leftIcon={<ExperienceIcon />}
               style={styles.textFieldStyle}
               value={formik.values?.experience_years}
               onChangeText={experience_years =>
@@ -257,6 +260,23 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
             {formik.errors.experience_years && (
               <MagicText style={styles.errorLabel}>
                 {formik.errors.experience_years}
+              </MagicText>
+            )}
+
+            {formik.values?.description && (
+              <TextField
+                placeholder="Overview"
+                leftIcon={<OverviewIcon />}
+                style={[styles.textFieldStyle]}
+                value={formik.values?.description}
+                onChangeText={description =>
+                  formik.setFieldValue('description', description)
+                }
+              />
+            )}
+            {formik.errors.description && (
+              <MagicText style={styles.errorLabel}>
+                {formik.errors.description}
               </MagicText>
             )}
 
@@ -334,8 +354,8 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
               <MagicText style={styles.contactValueText}>8899776655</MagicText>
             </View>
           </View> */}
-          <HR />
-          <Button
+          {/* <HR /> */}
+          {/* <Button
             label="Delete"
             type="OUTLINE"
             onPress={() => handleDeleteUser()}
@@ -345,7 +365,7 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
               marginBottom: 14,
               borderColor: COLORS.RED,
             }}
-          />
+          /> */}
         </ScrollView>
       </View>
     </SafeAreaView>

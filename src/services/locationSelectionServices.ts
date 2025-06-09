@@ -9,6 +9,7 @@ const getAllCityList = async () => {
     throw error;
   }
 };
+
 const getAllAreasList = async (cityId: number) => {
   try {
     const response = await axios.get(
@@ -19,6 +20,7 @@ const getAllAreasList = async (cityId: number) => {
     throw error;
   }
 };
+
 const getAllLocalitiesList = async (payload: {
   cityId: number;
   areaId: number | undefined;
@@ -35,4 +37,19 @@ const getAllLocalitiesList = async (payload: {
   }
 };
 
-export {getAllCityList, getAllAreasList, getAllLocalitiesList};
+const searchLocalities = async (payload: {name: string}) => {
+  try {
+    let url = `${BASE_URL}${ENDPOINT.search_localities}?name=${payload?.name}`;
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  getAllCityList,
+  getAllAreasList,
+  getAllLocalitiesList,
+  searchLocalities,
+};
