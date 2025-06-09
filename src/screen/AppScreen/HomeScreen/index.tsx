@@ -96,9 +96,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
           <SearchContainer value={name} style={{flex: 1}} />
           <TouchableOpacity
             onPress={() => {
-              token
-                ? navigation.navigate('ProfileScreen')
-                : navigation.navigate('AuthRoutes', {screen: 'LoginScreen'});
+              navigation.navigate('ProfileScreen');
             }}>
             <View style={styles.profileViewStyle}>
               <Image
@@ -118,11 +116,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
                   key={index}
                   activeOpacity={0.8}
                   onPress={() => {
-                    token
-                      ? navigation.navigate('ProprtyDetailScreen', {data: item})
-                      : navigation.navigate('AuthRoutes', {
-                          screen: 'LoginScreen',
-                        });
+                    navigation.navigate('ProprtyDetailScreen', {data: item});
                   }}>
                   <PropertyCard item={item} />
                 </TouchableOpacity>

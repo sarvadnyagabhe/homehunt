@@ -36,11 +36,9 @@ const HomeScreenStack = () => {
       />
 
       <HomeStack.Screen name="AddReviewScreen" component={AddReviewScreen} />
-      {token ? (
-        <HomeStack.Screen name="ProfileScreen" component={ProfileScreen} />
-      ) : (
-        <HomeStack.Screen name="AuthRoutes" component={AuthRoutes} />
-      )}
+
+      <HomeStack.Screen name="ProfileScreen" component={ProfileScreen} />
+
       <HomeStack.Screen name="ExpertsScreen" component={ExpertsScreen} />
       <HomeStack.Screen name="SavedScreen" component={SavedScreen} />
       <HomeStack.Screen

@@ -44,9 +44,9 @@ const RootNavigator = () => {
       return <SplashScreen />;
     }
     // && !isOnBoardingComplete
-    // if (!token) {
-    //   return <AuthRoutes />;
-    // }
+    if (!token) {
+      return <AuthRoutes />;
+    }
     return <AppRoutes />;
   };
   return <NavigationContainer>{getRoute()}</NavigationContainer>;

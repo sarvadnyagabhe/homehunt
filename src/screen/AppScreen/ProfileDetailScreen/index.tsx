@@ -114,7 +114,6 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
   const handleLogout = async () => {
     dispatch(clearAuthState());
     await AsyncStorage.setItem('token', '');
-    navigation.navigate('HomeScreen');
   };
 
   //to delete user and agent
