@@ -3,7 +3,9 @@ import {BASE_URL, ENDPOINT} from '../constant/urls';
 
 const getReviewsList = async (paylod: any) => {
   try {
-    const response = await axios.get(`${BASE_URL}${ENDPOINT.get_reviews}`);
+    const response = await axios.get(`${BASE_URL}${ENDPOINT.get_reviews}`, {
+      params: paylod,
+    });
     return response.data;
   } catch (error) {
     throw error;

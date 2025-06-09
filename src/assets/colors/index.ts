@@ -8,4 +8,5 @@ export enum COLORS {
   'RATING_BGCOLOR' = '#507089',
   'GREEN' = '#1f631a',
   'LIGHT_GREEN' = '#00BF63',
+  'ORANGE' = 'rgb(255, 121, 52)',
 }

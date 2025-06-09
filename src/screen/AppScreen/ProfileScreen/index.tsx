@@ -1,4 +1,5 @@
 import {
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -14,6 +15,7 @@ import {
   BookmarkIcon,
   CallIcon,
   CameraIcon,
+  ContactUsIcon,
   EmailIcon,
   FormProfileIcon,
   ProfileIcon,
@@ -42,6 +44,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {deleteUser} from '../../../services/HomeService';
 import HR from '../../../components/HR';
 import WhiteCardView from '../../../components/WhiteCardView';
+import {IMAGE} from '../../../assets/images';
 
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   // ({navigation}: ProfileScreennProps) => {
@@ -134,6 +137,29 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     return <LoadingAndErrorComponent />;
   }
 
+  //to delete user and agent
+  const handleDeleteUser = () => {
+    const payload = {
+      otp: '212551',
+    };
+    deleteUser(payload)
+      .then(res => {
+        console.log('res in delete user', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.message,
+        });
+        handleLogout();
+      })
+      .catch(error => {
+        console.log('error', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
@@ -170,22 +196,7 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
             </TouchableOpacity>
           </WhiteCardView>
 
-          <WhiteCardView cardStyle={styles.cardStyle}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('SavedScreen')}>
-              <View style={[styles.row, {justifyContent: 'space-between'}]}>
-                <View style={styles.row}>
-                  <MagicText style={{marginRight: 12, fontSize: 16}}>
-                    Bookmarks
-                  </MagicText>
-                  <BookmarkIcon color={COLORS.BLACK} />
-                </View>
-                <RightArrowIcon />
-              </View>
-            </TouchableOpacity>
-          </WhiteCardView>
-
-          <WhiteCardView cardStyle={styles.cardStyle}>
+          <WhiteCardView cardStyle={[styles.cardStyle]}>
             <TouchableOpacity
               onPress={() => navigation.navigate('ExpertsScreen')}
               activeOpacity={0.7}>
@@ -194,31 +205,74 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
                   Get Expert Help
                 </MagicText>
                 <MagicText style={styles.sellbuyText}>
-                  Sell, Buy or Rent
+                  BUY | SELL | RENT
                 </MagicText>
               </View>
+              {/* <Image
+                source={IMAGE.GET_EXPERT_HELP}
+                style={{width: '100%', height: '100%'}}
+              /> */}
             </TouchableOpacity>
           </WhiteCardView>
 
           <WhiteCardView cardStyle={styles.cardStyle}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SavedScreen')}>
+              <View style={[styles.row, {justifyContent: 'space-between'}]}>
+                <View style={styles.row}>
+                  <BookmarkIcon color={COLORS.BLACK} />
+                  <MagicText style={{marginLeft: 12, fontSize: 16}}>
+                    Bookmarks
+                  </MagicText>
+                </View>
+                <RightArrowIcon />
+              </View>
+            </TouchableOpacity>
+          </WhiteCardView>
+
+          {/* <WhiteCardView cardStyle={styles.cardStyle}>
             <View style={[styles.row, {justifyContent: 'space-between'}]}>
               <MagicText style={{fontSize: 16}}>Join us</MagicText>
               <RightArrowIcon />
             </View>
-          </WhiteCardView>
+          </WhiteCardView> */}
+
           <WhiteCardView cardStyle={styles.cardStyle}>
             <View style={[styles.row, {justifyContent: 'space-between'}]}>
-              <MagicText style={{fontSize: 16}}>Contact us</MagicText>
-              <RightArrowIcon />
-            </View>
-          </WhiteCardView>
-          <WhiteCardView cardStyle={styles.cardStyle}>
-            <View style={[styles.row, {justifyContent: 'space-between'}]}>
-              <MagicText style={{fontSize: 16}}>Terms And Conditions</MagicText>
+              <View style={styles.row}>
+                <ContactUsIcon />
+                <MagicText style={{fontSize: 16, marginLeft: 12}}>
+                  Contact us
+                </MagicText>
+              </View>
               <RightArrowIcon />
             </View>
           </WhiteCardView>
 
+          {/* <WhiteCardView cardStyle={styles.cardStyle}>
+            <View style={[styles.row, {justifyContent: 'space-between'}]}>
+              <MagicText style={{fontSize: 16}}>Terms And Conditions</MagicText>
+              <RightArrowIcon />
+            </View>
+          </WhiteCardView> */}
+
+          <View
+            style={{
+              marginTop: 30,
+            }}>
+            <Button
+              label="Delete Account"
+              type="OUTLINE"
+              onPress={() => handleDeleteUser()}
+              labelStyle={{fontSize: 14, fontWeight: '800'}}
+              style={{
+                // marginTop: 16,
+                marginBottom: 14,
+                borderColor: COLORS.RED,
+                marginHorizontal: 30,
+              }}
+            />
+          </View>
           <View
             style={{
               flex: 1,
@@ -243,7 +297,7 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: COLORS.WHITE_SMOKE,
     paddingTop: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -254,7 +308,8 @@ const styles = StyleSheet.create({
   },
   cardStyle: {
     marginTop: 20,
-    paddingVertical: 22,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
   },
   header: {
     flex: 1,
@@ -263,7 +318,7 @@ const styles = StyleSheet.create({
     marginRight: 22,
   },
   headerText: {
-    fontSize: 14,
+    fontSize: 16,
   },
   formView: {
     // alignItems: 'center',
@@ -307,12 +362,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: 12,
-    borderColor: COLORS.GREEN,
+    borderColor: COLORS.ORANGE,
     paddingVertical: 10,
     // marginHorizontal: 24,
   },
-  getHelpText: {fontSize: 16, color: COLORS.GREEN, marginBottom: 2},
-  sellbuyText: {fontSize: 12, color: COLORS.RED},
+  getHelpText: {
+    fontSize: 20,
+    color: COLORS.ORANGE,
+    marginBottom: 4,
+    fontWeight: '800',
+  },
+  sellbuyText: {fontSize: 14, color: COLORS.ORANGE},
   savedText: {fontSize: 14},
   agentText: {fontSize: 16, fontWeight: '700', color: COLORS.GREEN},
   logout: {fontSize: 16, fontWeight: '700', color: COLORS.RED},

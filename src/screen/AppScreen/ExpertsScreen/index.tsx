@@ -6,8 +6,9 @@ import MagicText from '../../../components/MagicText';
 import TextField from '../../../components/TextField';
 import {LocationIcon} from '../../../assets/icons';
 import Button from '../../../components/Button';
+import {ExpertsScreenProps} from '../../../types/appTypes';
 
-const ExpertsScreen = () => {
+const ExpertsScreen = ({navigation}: ExpertsScreenProps) => {
   const data = {
     youWantTo: [{label: 'Sell'}, {label: 'Buy'}, {label: 'Rent'}],
     propertyType: [{label: 'Residential'}, {label: 'Commercial'}],
@@ -18,7 +19,7 @@ const ExpertsScreen = () => {
   return (
     <View style={styles.parent}>
       <View style={styles.parent}>
-        <CustomBack />
+        <CustomBack onPress={() => navigation.goBack()} />
         <View style={styles.mainView}>
           <MagicText style={styles.heading}>Get Experts Help</MagicText>
           <MagicText style={styles.description}>

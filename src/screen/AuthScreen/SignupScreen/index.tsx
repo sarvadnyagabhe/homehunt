@@ -9,6 +9,7 @@ import {
   CameraIcon,
   EmailIcon,
   FormProfileIcon,
+  OverviewIcon,
   ProfileIcon,
 } from '../../../assets/icons';
 import TextField from '../../../components/TextField';
@@ -28,6 +29,7 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
       name: '',
       phone: '',
       email: '',
+      overview: '',
     },
     validationSchema: handleValidation,
     onSubmit: (values: any) => {
@@ -56,7 +58,7 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
         <View style={styles.row}>
-          <CustomBack />
+          <CustomBack onPress={() => navigation.goBack()} />
           <View style={styles.signinView}>
             <MagicText style={styles.signinText}>Sign Up</MagicText>
           </View>
@@ -108,6 +110,16 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
               style={styles.textFieldStyle}
               value={formik.values.email}
               onChangeText={email => formik.setFieldValue('email', email)}
+            />
+
+            <TextField
+              placeholder="Overview"
+              leftIcon={<OverviewIcon />}
+              style={styles.textFieldStyle}
+              value={formik.values.overview}
+              onChangeText={overview =>
+                formik.setFieldValue('overview', overview)
+              }
             />
 
             <MagicText>Terms of service</MagicText>

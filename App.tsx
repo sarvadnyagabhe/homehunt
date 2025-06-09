@@ -17,7 +17,7 @@ const App = () => {
     <View
       style={{
         flex: 1,
-        // marginTop: StatusBar.currentHeight,
+        marginTop: StatusBar.currentHeight,
       }}>
       <StatusBar barStyle={'dark-content'} />
       <Provider store={store}>

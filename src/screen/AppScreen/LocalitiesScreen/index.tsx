@@ -18,12 +18,16 @@ import {COLORS} from '../../../assets/colors';
 import {useDispatch} from 'react-redux';
 import {setToken} from '../../../store/slice/authSlice';
 import {LocalitiesScreenProps} from '../../../types/appTypes';
-import {getAllLocalitiesList} from '../../../services/locationSelectionServices';
+import {
+  getAllLocalitiesList,
+  searchLocalities,
+} from '../../../services/locationSelectionServices';
 import {setLocation} from '../../../store/slice/locationSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
   const [localitiesList, setLocalitiesList] = useState<any>([]);
+  const [searchText, setSearchText] = useState<string>('');
 
   const dispatch = useDispatch();
   const area = route?.params?.item;
@@ -59,9 +63,56 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
       });
   };
 
+  const getSearchLocalitiesList = (searchText: string) => {
+    const payload = {
+      name: searchText,
+    };
+    searchLocalities(payload)
+      .then(res => {
+        console.log('res in getSearchLocalitiesList:', res);
+        if (res) {
+          const data = res?.data?.map((item: any) => {
+            return {
+              ...item,
+              name: item?.locality_name,
+            };
+          });
+          setLocalitiesList(data);
+        }
+      })
+      .catch(error => console.log('error in getSearchLocalitiesList', error));
+  };
+
+  useEffect(() => {
+    if (searchText?.length > 0) {
+      getSearchLocalitiesList(searchText);
+    } else {
+      getLocalitiesList();
+    }
+  }, [searchText]);
+
   useEffect(() => {
     getLocalitiesList();
   }, []);
+
+  const handleOnPress = async (item: any) => {
+    if (item?.city_name && item?.area_name) {
+      dispatch(setLocation(item));
+      await AsyncStorage.setItem('location', JSON.stringify(item));
+      navigation.navigate('HomeScreen');
+    } else {
+      dispatch(
+        setLocation({
+          ...item,
+          city_name: city?.name,
+          area_name: area?.name,
+        }),
+      );
+
+      await AsyncStorage.setItem('location', JSON.stringify(item));
+      navigation.navigate('HomeScreen');
+    }
+  };
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
@@ -78,6 +129,7 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
         <SearchContainer
           placeholder="Search for area, street name, locality..."
           style={styles.searchStyle}
+          onChangeText={name => setSearchText(name)}
         />
         <View style={styles.row}>
           <View style={styles.currentLocationView}>
@@ -99,12 +151,7 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
                 <TouchableOpacity
                   key={index}
                   onPress={async () => {
-                    dispatch(setLocation(item));
-                    await AsyncStorage.setItem(
-                      'location',
-                      JSON.stringify(item),
-                    );
-                    navigation.navigate('HomeScreen');
+                    handleOnPress(item);
                   }}>
                   <View style={styles.row}>
                     <View style={styles.locationIconView}>

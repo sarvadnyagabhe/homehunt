@@ -33,6 +33,7 @@ const ENDPOINT = {
   get_city: 'v1/auth/cities',
   get_areas: 'v1/auth/areas',
   get_localities: 'v1/auth/localities',
+  search_localities: 'v1/auth/search/localities',
 
   //reviews
   get_reviews: 'v1/auth/users/reviews',

@@ -12,14 +12,14 @@ const ButtonStyle = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderColor: COLORS.GREEN,
+    borderColor: COLORS.ORANGE,
     paddingVertical: 14,
   },
   disabledStyle: {
     backgroundColor: COLORS.GRAY,
   },
   outlineContainerStyle: {
-    borderColor: COLORS.GREEN,
+    borderColor: COLORS.ORANGE,
     borderRadius: 4,
     padding: 9,
     borderWidth: 1,
@@ -41,7 +41,7 @@ const ButtonStyle = StyleSheet.create({
   IconButtonStyle: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: COLORS.GREEN,
+    backgroundColor: COLORS.ORANGE,
     flex: 1,
     alignSelf: 'center',
     borderRadius: 4,
@@ -54,7 +54,7 @@ const ButtonStyle = StyleSheet.create({
     alignSelf: 'center',
   },
   primaryContainerStyle: {
-    backgroundColor: COLORS.GREEN,
+    backgroundColor: COLORS.ORANGE,
   },
 
   primaryLabelStyle: {

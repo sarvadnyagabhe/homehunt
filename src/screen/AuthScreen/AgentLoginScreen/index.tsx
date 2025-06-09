@@ -24,12 +24,9 @@ const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
     const payload = {
       phone: mobile,
     };
-    console.log('---1---');
 
     handleAgentLogin(payload)
       .then(res => {
-        console.log('---3---');
-        console.log('res', res);
         Toast.show({
           type: 'success',
           text1: res?.user?.message,
@@ -37,7 +34,6 @@ const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
         navigation.navigate('OtpScreen', {mobile, screen: 'agent'});
       })
       .catch(error => {
-        console.log('---4---');
         console.log('error', error);
         Toast.show({
           type: 'error',
@@ -116,5 +112,5 @@ const styles = StyleSheet.create({
   moibleText: {fontSize: 14, marginBottom: 12},
   btnStyle: {paddingVertical: 16},
   termsText: {marginTop: 22, marginBottom: 18},
-  agentText: {fontSize: 12},
+  agentText: {fontSize: 14},
 });

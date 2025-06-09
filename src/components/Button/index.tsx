@@ -59,7 +59,7 @@ const Button = ({
         disabled
           ? type === 'OUTLINE'
             ? {opacity: 0.6}
-            : {backgroundColor: COLORS.GREEN, opacity: 0.6}
+            : {backgroundColor: COLORS.ORANGE, opacity: 0.6}
           : {},
         style,
       ]}
