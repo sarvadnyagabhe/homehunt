@@ -42,6 +42,7 @@ import {useAppSelector} from '../../../store';
 const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const agent = route?.params?.data;
   const width = Dimensions.get('window').width - 36;
+
   const {userData} = useAppSelector(state => state.auth);
   const reviewsData = {
     data: [
@@ -109,7 +110,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
     avergeReview: 4.5,
   };
   const [agentDetails, setAgentDetails] = useState<any>([]);
-  const [reviewData, setReviewData] = useState<any>(reviewsData);
+  const [reviewData, setReviewData] = useState<any>([]);
   const [starCount, setStarCount] = useState<any>(0);
   const [reviewCount, setReviewCount] = useState<any>(3);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -142,6 +143,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
     getReviewsList(params)
       .then(res => {
         console.log('res in handleReviewsdata', res);
+        setReviewData(res?.data);
       })
       .catch(error => {
         console.log('error in handleReviewsdata', error?.response?.data);
@@ -180,9 +182,10 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
       })
       .catch(error => console.log('error in handleUserInteraction', error));
   };
+  console.log('review', reviewData);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1, backgroundColor: COLORS.WHITE}}>
       <ScrollView>
         <View style={styles.parent}>
           <View
@@ -331,20 +334,24 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
               />
             </View>
             <HR />
-            <View>
+            <View style={{flex: 1}}>
               <View style={styles.totalReviewView}>
                 <MagicText style={{fontSize: 16, fontWeight: '700'}}>
                   Review & Ratings
                 </MagicText>
                 <View style={[styles.row, styles.reviewView]}>
                   <MagicText style={{fontSize: 32, fontWeight: '700'}}>
-                    {Math.round(reviewData?.avergeReview)}
+                    {reviewData?.avergeReview
+                      ? Math.round(reviewData?.avergeReview)
+                      : 0}
                   </MagicText>
                   <View style={{marginLeft: 12}}>
                     <StarRating
                       onChange={() => {}}
                       enableHalfStar={true}
-                      rating={reviewData?.avergeReview}
+                      rating={
+                        reviewData?.avergeReview ? reviewData?.avergeReview : 0
+                      }
                       maxStars={5}
                       starSize={18}
                       emptyColor={COLORS.GRAY}
@@ -354,22 +361,24 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                       }}
                     />
                     <MagicText style={{fontSize: 13}}>
-                      ({reviewData?.data?.length})
+                      ({reviewData?.length})
                     </MagicText>
                   </View>
                 </View>
               </View>
               <FlatList
-                data={reviewData?.data?.slice(0, reviewCount)}
+                data={reviewData?.slice(0, reviewCount)}
                 nestedScrollEnabled={false}
                 renderItem={({item, index}) => {
+                  console.log(reviewData);
+
                   return <ReviewCard key={index} item={item} />;
                 }}
               />
-              {reviewData?.data?.length > reviewCount && (
+              {reviewData?.length > reviewCount && (
                 <View style={styles.viewAllView}>
                   <TouchableOpacity
-                    onPress={() => setReviewCount(reviewData?.data?.length)}>
+                    onPress={() => setReviewCount(reviewData?.length)}>
                     <MagicText style={styles.viewAllText}>
                       View all reviews
                     </MagicText>

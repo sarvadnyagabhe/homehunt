@@ -2,7 +2,7 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import MagicText from '../MagicText';
 import {COLORS} from '../../assets/colors';
-import {MoreOptionIcon} from '../../assets/icons';
+import {MoreOptionIcon, ProfileIcon} from '../../assets/icons';
 import StarRating from 'react-native-star-rating-widget';
 type ReviewCardType = {
   item: any;
@@ -12,13 +12,15 @@ const ReviewCard = ({item}: ReviewCardType) => {
     <View style={styles.parent}>
       <View style={styles.row}>
         <View style={[styles.row, {marginBottom: 4}]}>
-          <Image source={item?.profile} style={styles.profileStyle} />
+          {item?.profile ? (
+            <Image source={item?.profile} style={styles.profileStyle} />
+          ) : (
+            <ProfileIcon />
+          )}
           <View style={styles.reviewerView}>
-            <MagicText style={styles.reviewerName}>
-              {item?.reviewerName}
-            </MagicText>
+            <MagicText style={styles.reviewerName}>{item?.user_name}</MagicText>
             <MagicText style={styles.totalReviewsText}>
-              {item?.totalReviews} reviews
+              {item?.total_comments} reviews
             </MagicText>
           </View>
         </View>
@@ -27,7 +29,7 @@ const ReviewCard = ({item}: ReviewCardType) => {
       <StarRating
         onChange={() => {}}
         enableHalfStar={true}
-        rating={item?.reviewCount}
+        rating={item?.rating}
         maxStars={5}
         starSize={20}
         emptyColor={COLORS.GRAY}
@@ -36,7 +38,7 @@ const ReviewCard = ({item}: ReviewCardType) => {
           marginBottom: 6,
         }}
       />
-      <MagicText style={styles.reviewText}>{item?.review}</MagicText>
+      <MagicText style={styles.reviewText}>{item?.comment}</MagicText>
       {item?.reviewImage && (
         <Image source={item?.reviewImage} style={styles.mediaStyle} />
       )}

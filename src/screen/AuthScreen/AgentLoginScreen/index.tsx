@@ -112,5 +112,5 @@ const styles = StyleSheet.create({
   moibleText: {fontSize: 14, marginBottom: 12},
   btnStyle: {paddingVertical: 16},
   termsText: {marginTop: 22, marginBottom: 18},
-  agentText: {fontSize: 14},
+  agentText: {fontSize: 14, color: COLORS.ORANGE},
 });
