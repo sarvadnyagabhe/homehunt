@@ -38,6 +38,9 @@ const ENDPOINT = {
   //reviews
   get_reviews: 'v1/auth/users/reviews',
   add_reviews: 'v1/auth/users/reviews',
+
+  //bookmark
+  bookmark: 'v1/auth/users/bookmark',
 };
 
 export {BASE_URL, ENDPOINT};

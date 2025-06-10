@@ -1,13 +1,21 @@
-import {SafeAreaView, StyleSheet, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import CustomBack from '../../../components/CustomBack';
 import {COLORS} from '../../../assets/colors';
 import PropertyCard from '../../../components/PropertyCard';
 import {IMAGE} from '../../../assets/images';
 import {SavedScreenProps} from '../../../types/appTypes';
+import {handleGetAgentBookmark} from '../../../services/PropertyServices';
 
 const SavedScreen = ({navigation}: SavedScreenProps) => {
+  const [bookmarkList, setBookmarkList] = useState<any>([]);
   const data = [
     {
       id: 1,
@@ -24,6 +32,25 @@ const SavedScreen = ({navigation}: SavedScreenProps) => {
       isSaved: true,
     },
   ];
+
+  const getBookmarkList = () => {
+    handleGetAgentBookmark()
+      .then(res => {
+        console.log('res in getBookmark', res);
+        const updatedData = res?.data?.map((item: any) => {
+          return {
+            ...item,
+            name: item?.agent_name,
+          };
+        });
+        setBookmarkList(updatedData);
+      })
+      .catch(error => console.log('error in getbookmaark', error));
+  };
+
+  useEffect(() => {
+    getBookmarkList();
+  }, []);
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
@@ -35,12 +62,19 @@ const SavedScreen = ({navigation}: SavedScreenProps) => {
         </View>
 
         <View>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('ProprtyDetailScreen', {data: data[0]})
-            }>
-            <PropertyCard item={data[0]} />
-          </TouchableOpacity>
+          <FlatList
+            data={bookmarkList}
+            renderItem={({item}) => {
+              return (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ProprtyDetailScreen', {data: data[0]})
+                  }>
+                  <PropertyCard item={item} />
+                </TouchableOpacity>
+              );
+            }}
+          />
         </View>
       </View>
     </SafeAreaView>

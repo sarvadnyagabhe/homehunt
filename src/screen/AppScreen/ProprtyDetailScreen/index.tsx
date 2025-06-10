@@ -29,7 +29,11 @@ import {IMAGE} from '../../../assets/images';
 import StarRating from 'react-native-star-rating-widget';
 import HR from '../../../components/HR';
 import ReviewCard from '../../../components/ReviewCard';
-import {getReviewsList} from '../../../services/PropertyServices';
+import {
+  getReviewsList,
+  handleAddBookmark,
+  handleGetAgentBookmark,
+} from '../../../services/PropertyServices';
 import {
   getAgentDetailsById,
   handleInteraction,
@@ -39,6 +43,7 @@ import FastImage from 'react-native-fast-image';
 import Share from 'react-native-share';
 import SearchContainer from '../../../components/SearchContainer';
 import {useAppSelector} from '../../../store';
+import Toast from 'react-native-toast-message';
 const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
   const agent = route?.params?.data;
   const width = Dimensions.get('window').width - 36;
@@ -182,7 +187,29 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
       })
       .catch(error => console.log('error in handleUserInteraction', error));
   };
-  console.log('review', reviewData);
+
+  const addNewBookmark = () => {
+    const payload = {
+      agent_id: agent?.agent_id,
+    };
+    console.log(payload);
+
+    handleAddBookmark(payload)
+      .then(res => {
+        console.log('res in addNewBookmark ', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.message,
+        });
+      })
+      .catch(error => {
+        console.log('error in addNewBookmark', error?.response);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.message,
+        });
+      });
+  };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.WHITE}}>
@@ -199,7 +226,11 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
             ]}>
             <CustomBack onPress={() => navigation.goBack()} />
             <View style={styles.row}>
-              <BookmarkIcon color={COLORS.GREEN} />
+              <TouchableOpacity onPress={() => addNewBookmark()}>
+                <View style={styles.bookmarkIconView}>
+                  <BookmarkIcon color={COLORS.WHITE_SMOKE} />
+                </View>
+              </TouchableOpacity>
               <View style={{marginLeft: 14, marginRight: 14}}>
                 <TouchableOpacity onPress={() => handleShare()}>
                   <ShareIcon />
@@ -459,5 +490,13 @@ const getStyle = (width: number) => {
     },
     profileViewStyle: {width: 40, height: 40},
     profileImgStyle: {width: '100%', height: '100%', borderRadius: 30},
+    bookmarkIconView: {
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      borderRadius: 20,
+      width: 30,
+      height: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
   });
 };
