@@ -10,8 +10,9 @@ import Share from 'react-native-share';
 
 type PropertyCardType = {
   item: any;
+  onBookmarkPress?: () => void;
 };
-const PropertyCard = ({item}: PropertyCardType) => {
+const PropertyCard = ({item, onBookmarkPress = () => {}}: PropertyCardType) => {
   const width = Dimensions.get('window').width - 36;
   const styles = getStyles(width);
   const handleShare = () => {
@@ -46,12 +47,13 @@ const PropertyCard = ({item}: PropertyCardType) => {
             right: 10,
           }}>
           <View style={styles.row}>
-            <View style={styles.bookmarkIconView}>
-              <BookmarkIcon
-                color={item?.isSaved ? COLORS.LIGHT_GREEN : COLORS.WHITE}
-              />
-            </View>
-
+            <TouchableOpacity onPress={() => onBookmarkPress()}>
+              <View style={styles.bookmarkIconView}>
+                <BookmarkIcon
+                  color={item?.isBookmark ? COLORS.LIGHT_GREEN : COLORS.WHITE}
+                />
+              </View>
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => handleShare()}>
               <ShareIcon />
             </TouchableOpacity>
@@ -67,7 +69,7 @@ const PropertyCard = ({item}: PropertyCardType) => {
           <View style={{flex: 1, justifyContent: 'center'}}>
             <MagicText style={styles.heading}>{item?.name}</MagicText>
           </View>
-          <RatingCard rating={item?.rating} />
+          <RatingCard rating={item?.rating ?? 0} />
         </View>
         {/* <View style={[styles.row, {justifyContent: 'space-between'}]}>
           <MagicText style={styles.ratingText}>

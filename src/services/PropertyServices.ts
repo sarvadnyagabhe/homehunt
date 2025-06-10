@@ -47,10 +47,9 @@ const handleGetAgentBookmark = async () => {
 
 const handleDeleteAgentBookmark = async (payload: any) => {
   try {
-    const response = await axios.delete(
-      `${BASE_URL}${ENDPOINT.bookmark}`,
-      payload,
-    );
+    const response = await axios.delete(`${BASE_URL}${ENDPOINT.bookmark}`, {
+      data: payload,
+    });
     return response?.data;
   } catch (error) {
     throw error;

@@ -19,6 +19,8 @@ import {getAllAgentList} from '../../../services/HomeService';
 import SearchContainer from '../../../components/SearchContainer';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 import CustomBack from '../../../components/CustomBack';
+import {handleAddBookmark} from '../../../services/PropertyServices';
+import Toast from 'react-native-toast-message';
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
   const {id, name, area_name, city_name} = useAppSelector(
@@ -94,6 +96,29 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     return <LoadingAndErrorComponent />;
   }
 
+  const addNewBookmark = (agent_id: number) => {
+    const payload = {
+      agent_id: agent_id,
+    };
+    console.log(payload);
+
+    handleAddBookmark(payload)
+      .then(res => {
+        console.log('res in addNewBookmark ', res);
+        Toast.show({
+          type: 'success',
+          text1: res?.message,
+        });
+      })
+      .catch(error => {
+        console.log('error in addNewBookmark', error?.response);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.message,
+        });
+      });
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
@@ -148,7 +173,10 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
                   onPress={() => {
                     navigation.navigate('ProprtyDetailScreen', {data: item});
                   }}>
-                  <PropertyCard item={item} />
+                  <PropertyCard
+                    item={item}
+                    onBookmarkPress={() => addNewBookmark(item?.agent_id)}
+                  />
                 </TouchableOpacity>
               );
             }}
@@ -185,6 +213,6 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   searchText: {fontSize: 12, marginLeft: 10},
-  flatlistView: {paddingVertical: 18, marginBottom: 22},
+  flatlistView: {paddingBottom: 30, marginBottom: 30},
   locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
 });

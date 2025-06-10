@@ -12,7 +12,11 @@ import {COLORS} from '../../../assets/colors';
 import PropertyCard from '../../../components/PropertyCard';
 import {IMAGE} from '../../../assets/images';
 import {SavedScreenProps} from '../../../types/appTypes';
-import {handleGetAgentBookmark} from '../../../services/PropertyServices';
+import {
+  handleDeleteAgentBookmark,
+  handleGetAgentBookmark,
+} from '../../../services/PropertyServices';
+import Toast from 'react-native-toast-message';
 
 const SavedScreen = ({navigation}: SavedScreenProps) => {
   const [bookmarkList, setBookmarkList] = useState<any>([]);
@@ -48,6 +52,23 @@ const SavedScreen = ({navigation}: SavedScreenProps) => {
       .catch(error => console.log('error in getbookmaark', error));
   };
 
+  const deleteBookmarkList = (agent_id: number) => {
+    const payload = {
+      agent_id: agent_id,
+    };
+    handleDeleteAgentBookmark(payload)
+      .then(res => {
+        console.log('res in deleteBookmarkList', res);
+
+        const filteredData = bookmarkList?.filter(
+          (ele: any) => ele?.agent_id !== agent_id,
+        );
+        Toast.show({type: 'success', text1: res?.message});
+        setBookmarkList(filteredData);
+      })
+      .catch(error => console.log('error in deleteBookmarkList', error));
+  };
+
   useEffect(() => {
     getBookmarkList();
   }, []);
@@ -70,7 +91,10 @@ const SavedScreen = ({navigation}: SavedScreenProps) => {
                   onPress={() =>
                     navigation.navigate('ProprtyDetailScreen', {data: data[0]})
                   }>
-                  <PropertyCard item={item} />
+                  <PropertyCard
+                    item={item}
+                    onBookmarkPress={() => deleteBookmarkList(item?.agent_id)}
+                  />
                 </TouchableOpacity>
               );
             }}
