@@ -131,7 +131,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
         setIsLoading(false);
       })
       .catch(error => {
-        console.log('error', error);
+        console.log('error in getAgentDetails', error);
         setIsLoading(false);
       });
   };

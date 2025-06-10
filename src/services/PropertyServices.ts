@@ -56,10 +56,20 @@ const handleDeleteAgentBookmark = async (payload: any) => {
   }
 };
 
+const handleSliderData = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}${ENDPOINT.slider_info}`);
+    return response?.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export {
   getReviewsList,
   AddNewReview,
   handleAddBookmark,
   handleGetAgentBookmark,
   handleDeleteAgentBookmark,
+  handleSliderData,
 };

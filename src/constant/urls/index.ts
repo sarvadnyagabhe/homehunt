@@ -41,6 +41,9 @@ const ENDPOINT = {
 
   //bookmark
   bookmark: 'v1/auth/users/bookmark',
+
+  //home slider
+  slider_info: 'v1/auth/users/banners/active',
 };
 
 export {BASE_URL, ENDPOINT};

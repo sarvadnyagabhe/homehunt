@@ -14,18 +14,28 @@ import {COLORS} from '../../../assets/colors';
 import MagicText from '../../../components/MagicText';
 import PropertyCard from '../../../components/PropertyCard';
 import {HomeScreenProps} from '../../../types/appTypes';
-import {useAppSelector} from '../../../store';
+import {useAppDispatch, useAppSelector} from '../../../store';
 import {getAllAgentList} from '../../../services/HomeService';
 import SearchContainer from '../../../components/SearchContainer';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 import CustomBack from '../../../components/CustomBack';
-import {handleAddBookmark} from '../../../services/PropertyServices';
+import {
+  handleAddBookmark,
+  handleSliderData,
+} from '../../../services/PropertyServices';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {clearAuthState} from '../../../store/slice/authSlice';
+import {useDispatch} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native';
+import CustomSlider from '../../../components/CustomSlider';
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
   const {id, name, area_name, city_name} = useAppSelector(
     state => state.location.location,
   );
+  const isFocused = useIsFocused();
+  const dispatch = useAppDispatch();
   console.log('area_name,city_name', city_name, '>', area_name, '>', name);
 
   const token = useAppSelector(state => state.auth.token);
@@ -72,6 +82,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   //   },
   // ];
   const [agentList, setAgentList] = useState<any>([]);
+  const [sliderData, setSliderData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getAgentList = () => {
@@ -82,19 +93,28 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
         setAgentList(res);
         setIsLoading(false);
       })
-      .catch(error => {
-        console.log('error', error);
+      .catch(async error => {
+        await AsyncStorage.clear();
+        dispatch(clearAuthState());
+        console.log('error in getAgentList', error);
         setIsLoading(false);
       });
   };
 
+  const getSliderData = () => {
+    handleSliderData()
+      .then(res => {
+        console.log('res in getSliderData ', res);
+        setSliderData(res?.data);
+      })
+      .catch(error => {
+        console.log('error in getSliderData', error?.response);
+      });
+  };
   useEffect(() => {
     getAgentList();
-  }, []);
-
-  if (isLoading) {
-    return <LoadingAndErrorComponent />;
-  }
+    getSliderData();
+  }, [isFocused]);
 
   const addNewBookmark = (agent_id: number) => {
     const payload = {
@@ -109,6 +129,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
           type: 'success',
           text1: res?.message,
         });
+        getAgentList();
       })
       .catch(error => {
         console.log('error in addNewBookmark', error?.response);
@@ -119,35 +140,46 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       });
   };
 
+  if (isLoading) {
+    return <LoadingAndErrorComponent />;
+  }
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={styles.parent}>
-        <View
-          style={[
-            styles.row,
-            {marginBottom: 12, justifyContent: 'space-between'},
-          ]}>
-          <View style={styles.row}>
-            <CustomBack onPress={() => navigation.goBack()} />
-            <MagicText style={styles.locationCrumb}>
-              {city_name && area_name
-                ? `${city_name} > ${area_name} > ${name}`
-                : ` ${name}`}
-            </MagicText>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ProfileScreen');
-            }}>
-            <View style={styles.profileViewStyle}>
-              <Image
-                source={IMAGE.PROFILE_IMAGE}
-                style={styles.profileImgStyle}
-              />
+      <ScrollView>
+        <View style={styles.parent}>
+          <View
+            style={[
+              styles.row,
+              {marginBottom: 12, justifyContent: 'space-between'},
+            ]}>
+            <View style={styles.row}>
+              <CustomBack onPress={() => navigation.goBack()} />
+              <MagicText style={styles.locationCrumb}>
+                {city_name && area_name
+                  ? `${city_name} > ${area_name} > ${name}`
+                  : ` ${name}`}
+              </MagicText>
             </View>
-          </TouchableOpacity>
-        </View>
-        {/* <View style={styles.row}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('ProfileScreen');
+              }}>
+              <View style={styles.profileViewStyle}>
+                <Image
+                  source={IMAGE.PROFILE_IMAGE}
+                  style={styles.profileImgStyle}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+          <CustomSlider
+            sliderData={[
+              {type: 'image', image: IMAGE.CARD_IMAGE},
+              {type: 'image', image: IMAGE.CARD_IMAGE},
+            ]}
+          />
+          {/* <View style={styles.row}>
           <SearchContainer value={name} style={{flex: 1}} />
           <TouchableOpacity
             onPress={() => {
@@ -161,28 +193,36 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
             </View>
           </TouchableOpacity>
         </View> */}
-        <View style={styles.flatlistView}>
-          <FlatList
-            data={agentList}
-            showsVerticalScrollIndicator={false}
-            renderItem={({item, index}) => {
-              return (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.8}
-                  onPress={() => {
-                    navigation.navigate('ProprtyDetailScreen', {data: item});
-                  }}>
-                  <PropertyCard
-                    item={item}
-                    onBookmarkPress={() => addNewBookmark(item?.agent_id)}
-                  />
-                </TouchableOpacity>
-              );
-            }}
-          />
+          {agentList?.length > 0 ? (
+            <View style={styles.flatlistView}>
+              <FlatList
+                data={agentList}
+                nestedScrollEnabled={false}
+                showsVerticalScrollIndicator={false}
+                renderItem={({item, index}) => {
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      activeOpacity={0.8}
+                      onPress={() => {
+                        navigation.navigate('ProprtyDetailScreen', {
+                          data: item,
+                        });
+                      }}>
+                      <PropertyCard
+                        item={item}
+                        onBookmarkPress={() => addNewBookmark(item?.agent_id)}
+                      />
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          ) : (
+            <LoadingAndErrorComponent errorMessage="No list found" />
+          )}
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -213,6 +253,6 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   searchText: {fontSize: 12, marginLeft: 10},
-  flatlistView: {paddingBottom: 30, marginBottom: 30},
+  flatlistView: {marginBottom: 30, marginTop: 12},
   locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
 });

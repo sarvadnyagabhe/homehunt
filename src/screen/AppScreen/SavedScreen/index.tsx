@@ -45,6 +45,7 @@ const SavedScreen = ({navigation}: SavedScreenProps) => {
           return {
             ...item,
             name: item?.agent_name,
+            isBookmarked: true,
           };
         });
         setBookmarkList(updatedData);

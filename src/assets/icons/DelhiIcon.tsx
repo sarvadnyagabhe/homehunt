@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Svg, {SvgProps, G, Mask, Path, Defs, ClipPath} from 'react-native-svg';
+import {COLORS} from '../colors';
 const DelhiIcon = (props: SvgProps) => (
   <Svg width={69} height={69} fill="none" {...props}>
     <G clipPath="url(#a)">
@@ -16,7 +17,7 @@ const DelhiIcon = (props: SvgProps) => (
         <Path fill="#fff" d="M0 0h68.267v68.267H0V0Z" />
       </Mask>
       <G
-        stroke="#00BF63"
+        stroke={COLORS.ORANGE}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeMiterlimit={10}

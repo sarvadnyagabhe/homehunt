@@ -85,7 +85,14 @@ const CustomSlider = ({
           return (
             <Pressable>
               <View style={styles.mainViewStyle}>
-                {item.type === 'image' ? (
+                {
+                  <FastImage
+                    style={[styles.outputBoxStyle, containerStyle]}
+                    source={item?.image}
+                    resizeMode="cover"
+                  />
+                }
+                {/* {item.type === 'image' ? (
                   <FastImage
                     style={[styles.outputBoxStyle, containerStyle]}
                     source={item?.image}
@@ -99,7 +106,7 @@ const CustomSlider = ({
                     controls={true}
                     repeat
                   />
-                )}
+                )} */}
               </View>
             </Pressable>
           );
@@ -139,6 +146,7 @@ export const getStyles = (screenWidth: number) => {
     outputBoxStyle: {
       height: '100%',
       width: '100%',
+      borderRadius: 10,
     },
     containerStyle: {
       alignItems: 'center',

@@ -1,9 +1,10 @@
 import * as React from 'react';
 import Svg, {SvgProps, G, Mask, Path, Defs, ClipPath} from 'react-native-svg';
+import {COLORS} from '../colors';
 const GurugramIcon = (props: SvgProps) => (
   <Svg width={46} height={109} fill="none" {...props}>
     <Path
-      stroke="#00BF63"
+      fill={COLORS.ORANGE}
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeMiterlimit={10}
