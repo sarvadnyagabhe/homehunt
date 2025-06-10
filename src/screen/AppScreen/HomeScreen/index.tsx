@@ -135,7 +135,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
         console.log('error in addNewBookmark', error?.response);
         Toast.show({
           type: 'error',
-          text1: error?.response?.message,
+          text1: error?.response?.data?.message,
         });
       });
   };
