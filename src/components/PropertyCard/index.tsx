@@ -50,7 +50,7 @@ const PropertyCard = ({item, onBookmarkPress = () => {}}: PropertyCardType) => {
             <TouchableOpacity onPress={() => onBookmarkPress()}>
               <View style={styles.bookmarkIconView}>
                 <BookmarkIcon
-                  color={item?.isBookmarked ? COLORS.ORANGE : COLORS.WHITE}
+                  color={item?.isBookmarked ? COLORS.APP_RED : COLORS.WHITE}
                 />
               </View>
             </TouchableOpacity>

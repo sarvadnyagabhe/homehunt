@@ -167,7 +167,7 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
           <MagicText style={styles.codeText}>Enter the code</MagicText>
           <View style={styles.titleView}>
             <MagicText style={styles.title}>
-              Enter the 4 digit code that we just sent to +91 701 185 1822
+              We have sent a verification code to {mobile}
             </MagicText>
           </View>
           <View style={styles.otpView}>
@@ -197,7 +197,10 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
               }
             }}
             disabled={timer > 0 && timer < 30}>
-            <MagicText>Didn't recieve otp? Resend OTP</MagicText>
+            <View style={{flexDirection: 'row'}}>
+              <MagicText>Didn't recieve </MagicText>
+              <MagicText style={{fontWeight: 700}}>otp? Resend OTP</MagicText>
+            </View>
           </TouchableOpacity>
         </View>
       </View>

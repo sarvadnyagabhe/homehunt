@@ -303,7 +303,8 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                 }}
                 style={styles.locAndCallView}>
                 <FillCallIcon />
-                <MagicText style={{marginTop: 8, fontWeight: '700'}}>
+                <MagicText
+                  style={{marginTop: 8, fontWeight: '700', fontSize: 14}}>
                   Call
                 </MagicText>
               </TouchableOpacity>
@@ -329,7 +330,8 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                   source={IMAGE.WHATAPP_IMAGE}
                   style={{width: '25%', height: '50%'}}
                 />
-                <MagicText style={{marginTop: 4, fontWeight: '700'}}>
+                <MagicText
+                  style={{marginTop: 4, fontWeight: '700', fontSize: 14}}>
                   WhatsApp
                 </MagicText>
               </TouchableOpacity>
@@ -338,7 +340,8 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                 style={styles.locAndCallView}
                 onPress={() => handleUserInteraction('location')}>
                 <GoogleLocationIcon />
-                <MagicText style={{marginTop: 8, fontWeight: '700'}}>
+                <MagicText
+                  style={{marginTop: 8, fontWeight: '700', fontSize: 14}}>
                   Location
                 </MagicText>
               </TouchableOpacity>
