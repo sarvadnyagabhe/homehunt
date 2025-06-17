@@ -36,7 +36,7 @@ const RatingCard = ({
           marginHorizontal: 4,
         }}>
         <MagicText style={[styles.text, labelStyle]} family={family}>
-          {rating}
+          {Number(rating)?.toFixed(1)}
         </MagicText>
         <StarIcon />
         {label && (

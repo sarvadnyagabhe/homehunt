@@ -22,6 +22,10 @@ const TextFieldStyle = StyleSheet.create({
     marginTop: 8,
     fontSize: 12,
   },
+  countryCodeView: {
+    paddingHorizontal: 8,
+  },
+  countryCode: {fontWeight: '800', fontSize: 16},
 });
 
 export default TextFieldStyle;

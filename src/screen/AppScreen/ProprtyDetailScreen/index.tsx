@@ -210,6 +210,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
         });
       });
   };
+  console.log('agentDetails', agentDetails);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.WHITE}}>
@@ -228,7 +229,11 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
             <View style={styles.row}>
               <TouchableOpacity onPress={() => addNewBookmark()}>
                 <View style={styles.bookmarkIconView}>
-                  <BookmarkIcon color={COLORS.WHITE_SMOKE} />
+                  <BookmarkIcon
+                    color={
+                      agentDetails?.isBookmarked ? COLORS.APP_RED : COLORS.WHITE
+                    }
+                  />
                 </View>
               </TouchableOpacity>
               <View style={{marginLeft: 14, marginRight: 14}}>

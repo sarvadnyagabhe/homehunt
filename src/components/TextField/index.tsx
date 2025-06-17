@@ -32,6 +32,7 @@ export type TextFieldPropType = {
   isLoading?: boolean;
   rightIconDisabled?: boolean;
   LeftIconDisabled?: boolean;
+  showCountryCode?: boolean;
 } & TextInputProps;
 
 const TextField = ({
@@ -49,6 +50,7 @@ const TextField = ({
   isLoading,
   rightIconDisabled,
   LeftIconDisabled,
+  showCountryCode = false,
   ...TextInputProps
 }: TextFieldPropType) => {
   return (
@@ -68,6 +70,11 @@ const TextField = ({
               {leftIcon}
             </TouchableOpacity>
           ) : null}
+          {showCountryCode && (
+            <View style={TextFieldStyle.countryCodeView}>
+              <MagicText style={TextFieldStyle.countryCode}>+91</MagicText>
+            </View>
+          )}
           <TextInput
             ref={setRef}
             placeholder={placeholder}
@@ -78,6 +85,7 @@ const TextField = ({
               inputStyle,
               leftIcon ? {marginLeft: 12} : {marginLeft: 0},
             ]}
+            placeholderTextColor={COLORS.GRAY}
             {...TextInputProps}
           />
           {isLoading ? <ActivityIndicator /> : null}

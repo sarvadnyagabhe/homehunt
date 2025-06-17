@@ -122,11 +122,11 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
               }
             />
 
-            <MagicText>Terms of service</MagicText>
             <View style={{}}>
               <Button
                 label="Register"
                 style={styles.btnStyle}
+                labelStyle={{fontSize: 18, fontWeight: '700'}}
                 onPress={() => formik.handleSubmit()}
               />
             </View>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   absoluteView: {position: 'absolute', bottom: 26, right: -2},
   textFieldStyle: {marginBottom: 18},
-  btnStyle: {marginTop: 18, paddingVertical: 16},
+  btnStyle: {marginTop: 18, paddingVertical: 12},
   errorLabel: {
     fontSize: 12,
     marginBottom: 12,

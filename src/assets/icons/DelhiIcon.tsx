@@ -17,7 +17,7 @@ const DelhiIcon = (props: SvgProps) => (
         <Path fill="#fff" d="M0 0h68.267v68.267H0V0Z" />
       </Mask>
       <G
-        stroke={COLORS.APP_RED}
+        stroke={COLORS.BLACK}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeMiterlimit={10}

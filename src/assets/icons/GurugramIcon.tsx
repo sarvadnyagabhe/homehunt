@@ -4,7 +4,7 @@ import {COLORS} from '../colors';
 const GurugramIcon = (props: SvgProps) => (
   <Svg width={46} height={109} fill="none" {...props}>
     <Path
-      fill={COLORS.APP_RED}
+      fill={COLORS.BLACK}
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeMiterlimit={10}

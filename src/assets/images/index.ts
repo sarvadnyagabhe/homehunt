@@ -1,5 +1,5 @@
 export const IMAGE = {
-  COMPANY_LOGO: require('./SplashScreen.png'),
+  COMPANY_LOGO: require('./COMPANY_LOGO.png'),
   NO_INTERNET: require('./noInternet.png'),
   PROFILE_IMAGE: require('./ProfileImage.jpg'),
   CARD_IMAGE: require('./cardImage.jpg'),

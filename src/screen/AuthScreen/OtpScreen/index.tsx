@@ -162,13 +162,19 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
-        <CustomBack onPress={() => navigation.goBack()} />
+        <View style={styles.row}>
+          <CustomBack onPress={() => navigation.goBack()} />
+          <MagicText style={{marginLeft: 12, fontSize: 16}}>
+            OTP Verification
+          </MagicText>
+        </View>
         <View style={{flex: 1, marginTop: 22}}>
-          <MagicText style={styles.codeText}>Enter the code</MagicText>
+          {/* <MagicText style={styles.codeText}>Enter the code</MagicText> */}
           <View style={styles.titleView}>
             <MagicText style={styles.title}>
-              We have sent a verification code to {mobile}
+              We have sent a verification code to
             </MagicText>
+            <MagicText style={styles.title}>+91-{mobile}</MagicText>
           </View>
           <View style={styles.otpView}>
             <OTPTextField
@@ -180,8 +186,11 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
         </View>
         <View
           style={{flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <MagicText style={{marginBottom: 18, fontSize: 14}}>
+            Didn't get the OTP?
+          </MagicText>
           <View style={styles.roundView}>
-            <View style={styles.row}>
+            <View style={[styles.row, {justifyContent: 'space-evenly'}]}>
               <TimerIcon />
               <MagicText>{timer}</MagicText>
             </View>
@@ -198,8 +207,9 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
             }}
             disabled={timer > 0 && timer < 30}>
             <View style={{flexDirection: 'row'}}>
-              <MagicText>Didn't recieve </MagicText>
-              <MagicText style={{fontWeight: 700}}>otp? Resend OTP</MagicText>
+              <MagicText style={{fontWeight: 700, fontSize: 14}}>
+                Resend OTP
+              </MagicText>
             </View>
           </TouchableOpacity>
         </View>
@@ -218,8 +228,8 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   codeText: {fontSize: 22},
-  titleView: {width: '60%'},
-  title: {marginTop: 12, lineHeight: 22},
+  titleView: {alignItems: 'center'},
+  title: {marginTop: 8, lineHeight: 22, fontSize: 16},
   otpView: {
     flexGrow: 1,
     alignItems: 'center',
@@ -237,6 +247,5 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-evenly',
   },
 });

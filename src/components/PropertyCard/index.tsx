@@ -35,11 +35,20 @@ const PropertyCard = ({item, onBookmarkPress = () => {}}: PropertyCardType) => {
           containerStyle={styles.imageStyle}
         /> */}
         <FastImage source={{uri: item?.image_url}} style={styles.imageStyle} />
+
         <View style={styles.distanceAbosluteView}>
           <View>
             <MagicText style={styles.distanceText}>10 KM Away</MagicText>
           </View>
         </View>
+        {true && (
+          <View style={styles.absoluteView}>
+            <MagicText
+              style={{color: COLORS.APP_RED, fontWeight: '700', marginTop: 8}}>
+              Sponsored
+            </MagicText>
+          </View>
+        )}
         <View
           style={{
             position: 'absolute',
@@ -147,6 +156,11 @@ const getStyles = (width: number) => {
       alignItems: 'center',
       justifyContent: 'center',
       marginRight: 8,
+    },
+    absoluteView: {
+      position: 'absolute',
+      bottom: 12,
+      right: 0,
     },
   });
 };

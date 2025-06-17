@@ -145,7 +145,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   }
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: COLORS.WHITE}}>
       <ScrollView>
         <View style={styles.parent}>
           <View
@@ -153,14 +153,13 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
               styles.row,
               {marginBottom: 12, justifyContent: 'space-between'},
             ]}>
-            <View style={styles.row}>
-              <CustomBack onPress={() => navigation.goBack()} />
-              <MagicText style={styles.locationCrumb}>
-                {city_name && area_name
+            <CustomBack onPress={() => navigation.goBack()} />
+            <MagicText style={styles.locationCrumb}>
+              {/* {city_name && area_name
                   ? `${city_name} > ${area_name} > ${name}`
-                  : ` ${name}`}
-              </MagicText>
-            </View>
+                  : ` ${name}`} */}
+              House App
+            </MagicText>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('ProfileScreen');
@@ -173,6 +172,19 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
               </View>
             </TouchableOpacity>
           </View>
+          <SearchContainer
+            value={
+              city_name && area_name
+                ? `${city_name} > ${area_name} > ${name}`
+                : ` ${name}`
+            }
+            style={{
+              flex: 1,
+              marginBottom: 18,
+              marginTop: 12,
+            }}
+          />
+
           <CustomSlider
             sliderData={[
               {type: 'image', image: IMAGE.CARD_IMAGE},
@@ -180,7 +192,6 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
             ]}
           />
           {/* <View style={styles.row}>
-          <SearchContainer value={name} style={{flex: 1}} />
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('ProfileScreen');
