@@ -54,7 +54,7 @@ export default RatingCard;
 const styles = StyleSheet.create({
   component: {
     padding: 4,
-    backgroundColor: COLORS.GREEN,
+    backgroundColor: COLORS.LIGHT_GREEN,
     borderRadius: 6,
     height: 28,
   },

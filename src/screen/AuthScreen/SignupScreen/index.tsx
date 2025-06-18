@@ -113,7 +113,7 @@ const SignupScreen = ({navigation}: SignupScreenProps) => {
             />
 
             <TextField
-              placeholder="Overview"
+              placeholder="Bio"
               leftIcon={<OverviewIcon />}
               style={styles.textFieldStyle}
               value={formik.values.overview}

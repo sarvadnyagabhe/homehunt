@@ -45,6 +45,7 @@ import {deleteUser} from '../../../services/HomeService';
 import HR from '../../../components/HR';
 import WhiteCardView from '../../../components/WhiteCardView';
 import {IMAGE} from '../../../assets/images';
+import {getFirstInitial} from '../../../utils';
 
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   // ({navigation}: ProfileScreennProps) => {
@@ -179,21 +180,42 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
                     style={{width: '100%', height: '100%', borderRadius: 100}}
                   />
                 ) : (
-                  <ProfileIcon />
+                  // <ProfileIcon />
+                  <MagicText style={{fontSize: 18, fontWeight: '700'}}>
+                    {getFirstInitial(userDetails?.name)}
+                  </MagicText>
                 )}
               </View>
-              <MagicText style={{fontSize: 18}}>{userDetails?.name}</MagicText>
-            </View>
-            <HR />
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('ProfileDetailScreen', {data: userDetails})
-              }>
-              <View style={[styles.row, {marginLeft: 12}]}>
-                <MagicText style={{fontSize: 14}}>Edit Profile</MagicText>
-                <RightArrowIcon />
+              <View>
+                <MagicText style={{fontSize: 20, marginBottom: 6}}>
+                  {userDetails?.name}
+                </MagicText>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ProfileDetailScreen', {
+                      data: userDetails,
+                    })
+                  }>
+                  <View
+                    style={[
+                      styles.row,
+                      {
+                        backgroundColor: COLORS.BLACK,
+                        borderRadius: 16,
+                        paddingHorizontal: 12,
+
+                        paddingVertical: 2,
+                      },
+                    ]}>
+                    <MagicText style={{fontSize: 14, color: COLORS.WHITE}}>
+                      Edit Profile
+                    </MagicText>
+                    <RightArrowIcon color={COLORS.WHITE} />
+                  </View>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
+            {/* <HR /> */}
           </WhiteCardView>
 
           <WhiteCardView cardStyle={[styles.cardStyle]}>
@@ -329,8 +351,8 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   roundView: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     borderRadius: 100,
     alignContent: 'center',
     justifyContent: 'center',

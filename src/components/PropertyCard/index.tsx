@@ -30,18 +30,18 @@ const PropertyCard = ({item, onBookmarkPress = () => {}}: PropertyCardType) => {
   return (
     <View style={styles.parent}>
       <View style={{}}>
-        {/* <CustomSlider
-          sliderData={item?.media}
+        <CustomSlider
+          sliderData={item?.image_urls}
           containerStyle={styles.imageStyle}
-        /> */}
-        <FastImage source={{uri: item?.image_url}} style={styles.imageStyle} />
+        />
+        {/* <FastImage source={{uri: item?.image_url}} style={styles.imageStyle} /> */}
 
         <View style={styles.distanceAbosluteView}>
           <View>
             <MagicText style={styles.distanceText}>10 KM Away</MagicText>
           </View>
         </View>
-        {true && (
+        {item?.isSponsored && (
           <View style={styles.absoluteView}>
             <MagicText
               style={{color: COLORS.APP_RED, fontWeight: '700', marginTop: 8}}>

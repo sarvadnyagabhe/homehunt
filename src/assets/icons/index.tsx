@@ -16,6 +16,7 @@ import GhaziabadIcon from './GhaziabadIcon';
 import GoogleLocationIcon from './GoogleLocationIcon';
 import GreaterNoidaIcon from './GreaterNoidaIcon';
 import GurugramIcon from './GurugramIcon';
+import HouseAppIcon from './HouseAppIcon';
 import LocationIcon from './LocationIcon1';
 import MoreOptionIcon from './MoreOptionIcon';
 import NoidaIcon from './NoidaIcon';
@@ -62,4 +63,5 @@ export {
   ContactUsIcon,
   OverviewIcon,
   ExperienceIcon,
+  HouseAppIcon,
 };

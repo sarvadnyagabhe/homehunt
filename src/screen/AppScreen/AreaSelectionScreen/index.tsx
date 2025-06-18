@@ -57,7 +57,7 @@ const AreaSelectionScreen = ({navigation, route}: AreaSelectionScreenProps) => {
           Select your area in {city?.name}
         </MagicText>
         <SearchContainer placeholder={city?.name} style={styles.searchStyle} />
-        <View style={styles.row}>
+        {/* <View style={styles.row}>
           <View style={styles.currentLocationView}>
             <CurrentLocationIcon />
           </View>
@@ -66,7 +66,7 @@ const AreaSelectionScreen = ({navigation, route}: AreaSelectionScreenProps) => {
               Choose Current Location
             </MagicText>
           </TouchableOpacity>
-        </View>
+        </View> */}
         <HR style={styles.hrView} />
 
         <View>

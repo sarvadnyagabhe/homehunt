@@ -8,7 +8,12 @@ import {
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {LocationIcon} from '../../../assets/icons';
+import {
+  CurrentLocationIcon,
+  HouseAppIcon,
+  LocationIcon,
+  SearchIcon,
+} from '../../../assets/icons';
 import {IMAGE} from '../../../assets/images';
 import {COLORS} from '../../../assets/colors';
 import MagicText from '../../../components/MagicText';
@@ -29,14 +34,16 @@ import {clearAuthState} from '../../../store/slice/authSlice';
 import {useDispatch} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import CustomSlider from '../../../components/CustomSlider';
-
+import {searchLocalities} from '../../../services/locationSelectionServices';
+import SelectDropdown from 'react-native-select-dropdown';
+import {setLocation} from '../../../store/slice/locationSlice';
+import HR from '../../../components/HR';
 const HomeScreen = ({navigation}: HomeScreenProps) => {
   const {id, name, area_name, city_name} = useAppSelector(
     state => state.location.location,
   );
   const isFocused = useIsFocused();
   const dispatch = useAppDispatch();
-  console.log('area_name,city_name', city_name, '>', area_name, '>', name);
 
   const token = useAppSelector(state => state.auth.token);
 
@@ -84,13 +91,15 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   const [agentList, setAgentList] = useState<any>([]);
   const [sliderData, setSliderData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchList, setSearchList] = useState<any>([]);
 
-  const getAgentList = () => {
+  const getAgentList = (id: any) => {
     setIsLoading(true);
     getAllAgentList(Number(id))
       .then(res => {
         console.log('res in getAgentList==>', res);
-        setAgentList(res);
+        setAgentList(res?.data);
         setIsLoading(false);
       })
       .catch(async error => {
@@ -112,7 +121,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       });
   };
   useEffect(() => {
-    getAgentList();
+    getAgentList(id);
     getSliderData();
   }, [isFocused]);
 
@@ -129,7 +138,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
           type: 'success',
           text1: res?.message,
         });
-        getAgentList();
+        getAgentList(id);
       })
       .catch(error => {
         console.log('error in addNewBookmark', error?.response);
@@ -140,6 +149,38 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       });
   };
 
+  const getSearchLocalitiesList = (searchText: string) => {
+    const payload = {
+      name: searchText,
+    };
+    searchLocalities(payload)
+      .then(res => {
+        console.log('res in getSearchLocalitiesList:', res);
+        if (res) {
+          const data = res?.data?.map((item: any) => {
+            return {
+              ...item,
+              name: item?.locality_name,
+            };
+          });
+          setSearchList(data);
+        }
+      })
+      .catch(error => console.log('error in getSearchLocalitiesList', error));
+  };
+
+  useEffect(() => {
+    if (searchText?.length == 0) {
+      setSearchList([]);
+    }
+
+    if (searchText?.length >= 0) {
+      getSearchLocalitiesList(searchText);
+    } else {
+      getAgentList(id);
+    }
+  }, [searchText]);
+
   if (isLoading) {
     return <LoadingAndErrorComponent />;
   }
@@ -148,18 +189,12 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.WHITE}}>
       <ScrollView>
         <View style={styles.parent}>
-          <View
-            style={[
-              styles.row,
-              {marginBottom: 12, justifyContent: 'space-between'},
-            ]}>
+          <View style={[styles.row, {justifyContent: 'space-between'}]}>
             <CustomBack onPress={() => navigation.goBack()} />
-            <MagicText style={styles.locationCrumb}>
-              {/* {city_name && area_name
-                  ? `${city_name} > ${area_name} > ${name}`
-                  : ` ${name}`} */}
+            {/* <MagicText style={styles.locationCrumb}>
               House App
-            </MagicText>
+            </MagicText> */}
+            <HouseAppIcon />
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('ProfileScreen');
@@ -173,19 +208,70 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
             </TouchableOpacity>
           </View>
           <SearchContainer
-            editable={false}
-            value={
-              city_name && area_name
-                ? `${city_name} > ${area_name} > ${name}`
-                : ` ${name}`
-            }
+            rightIcon={<SearchIcon />}
+            onChangeText={name => setSearchText(name)}
+            placeholder="Search"
             style={{
               flex: 1,
-              marginBottom: 18,
               marginTop: 12,
+              marginBottom: 6,
             }}
           />
 
+          {searchList?.length <= 0 ? (
+            <MagicText
+              style={{
+                marginBottom: 18,
+                marginTop: 8,
+                marginLeft: 12,
+                color: COLORS.TEXT_GRAY,
+              }}>
+              {city_name && area_name
+                ? `${city_name} > ${area_name} > ${name}`
+                : ` ${name}`}
+            </MagicText>
+          ) : (
+            <View
+              style={{
+                marginBottom: 12,
+                borderRadius: 12,
+                backgroundColor: COLORS.WHITE_SMOKE,
+                maxHeight: 200,
+              }}>
+              <ScrollView nestedScrollEnabled={true}>
+                {searchList?.map((item: any) => {
+                  return (
+                    <View
+                      style={{
+                        paddingVertical: 12,
+                        paddingHorizontal: 12,
+                        borderWidth: 0.8,
+                        borderColor: COLORS.WHITE,
+                        borderRadius: 4,
+                      }}>
+                      <TouchableOpacity
+                        onPress={async () => {
+                          getAgentList(item?.id);
+                          setSearchList([]);
+                          setSearchText('');
+                          dispatch(setLocation(item));
+                          await AsyncStorage.setItem(
+                            'location',
+                            JSON.stringify(item),
+                          );
+                        }}
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <CurrentLocationIcon />
+                        <MagicText style={{fontSize: 16, marginLeft: 12}}>
+                          {item?.locality_name}
+                        </MagicText>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          )}
           <CustomSlider
             sliderData={[
               {type: 'image', image: IMAGE.CARD_IMAGE},
@@ -267,4 +353,49 @@ const styles = StyleSheet.create({
   searchText: {fontSize: 12, marginLeft: 10},
   flatlistView: {marginBottom: 30, marginTop: 12},
   locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
+  dropdownButtonStyle: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#E9ECEF',
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#151E26',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#151E26',
+  },
+  dropdownItemIconStyle: {
+    fontSize: 28,
+    marginRight: 8,
+  },
 });

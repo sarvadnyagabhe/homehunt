@@ -1,9 +1,10 @@
 import * as React from 'react';
 import Svg, {SvgProps, Path} from 'react-native-svg';
+import {COLORS} from '../colors';
 const SearchIcon = (props: SvgProps) => (
   <Svg width={24} height={24} fill="none" {...props}>
     <Path
-      stroke="#60626E"
+      stroke={COLORS.BLACK}
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}

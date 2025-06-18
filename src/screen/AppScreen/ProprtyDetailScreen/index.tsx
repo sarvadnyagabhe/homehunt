@@ -297,7 +297,15 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
             <MagicText style={styles.detailText}>
               {agentDetails?.details}
             </MagicText>
-
+            <View>
+              <MagicText
+                style={{fontSize: 18, fontWeight: '700', marginBottom: 4}}>
+                Bio
+              </MagicText>
+              <MagicText style={{fontSize: 16}}>
+                {agentDetails?.description ?? 'Overview'}
+              </MagicText>
+            </View>
             <View style={[styles.row, {marginTop: 20}]}>
               <TouchableOpacity
                 onPress={() => {
@@ -309,7 +317,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                 style={styles.locAndCallView}>
                 <FillCallIcon />
                 <MagicText
-                  style={{marginTop: 8, fontWeight: '700', fontSize: 14}}>
+                  style={{marginTop: 8, fontWeight: '700', fontSize: 12}}>
                   Call
                 </MagicText>
               </TouchableOpacity>
@@ -336,7 +344,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                   style={{width: '25%', height: '50%'}}
                 />
                 <MagicText
-                  style={{marginTop: 4, fontWeight: '700', fontSize: 14}}>
+                  style={{marginTop: 4, fontWeight: '700', fontSize: 12}}>
                   WhatsApp
                 </MagicText>
               </TouchableOpacity>
@@ -346,7 +354,7 @@ const ProprtyDetailScreen = ({navigation, route}: ProprtyDetailScreenProps) => {
                 onPress={() => handleUserInteraction('location')}>
                 <GoogleLocationIcon />
                 <MagicText
-                  style={{marginTop: 8, fontWeight: '700', fontSize: 14}}>
+                  style={{marginTop: 8, fontWeight: '700', fontSize: 12}}>
                   Location
                 </MagicText>
               </TouchableOpacity>
@@ -466,7 +474,6 @@ const getStyle = (width: number) => {
     distanceText: {fontSize: 14, marginLeft: 8},
     detailText: {fontSize: 14, marginTop: 16, lineHeight: 20},
     locAndCallView: {
-      // width: '40%',
       flex: 1,
       height: 60,
       borderRadius: 12,

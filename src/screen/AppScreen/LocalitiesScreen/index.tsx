@@ -83,13 +83,13 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
       .catch(error => console.log('error in getSearchLocalitiesList', error));
   };
 
-  useEffect(() => {
-    if (searchText?.length > 0) {
-      getSearchLocalitiesList(searchText);
-    } else {
-      getLocalitiesList();
-    }
-  }, [searchText]);
+  // useEffect(() => {
+  //   if (searchText?.length > 0) {
+  //     getSearchLocalitiesList(searchText);
+  //   } else {
+  //     getLocalitiesList();
+  //   }
+  // }, [searchText]);
 
   useEffect(() => {
     getLocalitiesList();
@@ -131,7 +131,7 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
           style={styles.searchStyle}
           onChangeText={name => setSearchText(name)}
         />
-        <View style={styles.row}>
+        {/* <View style={styles.row}>
           <View style={styles.currentLocationView}>
             <CurrentLocationIcon />
           </View>
@@ -140,7 +140,7 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
               Choose Current Location
             </MagicText>
           </TouchableOpacity>
-        </View>
+        </View> */}
         <HR style={styles.hrView} />
 
         <View>

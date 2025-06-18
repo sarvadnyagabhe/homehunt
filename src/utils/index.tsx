@@ -48,4 +48,10 @@ const getCurrentLocation = () => {
   );
 };
 
-export {getCurrentLocation, getLocationPermission};
+const getFirstInitial = (name: string) => {
+  if (!name) return 'NA';
+  const firstName = name.trim().split(' ')[0];
+  return firstName.charAt(0);
+};
+
+export {getCurrentLocation, getLocationPermission, getFirstInitial};

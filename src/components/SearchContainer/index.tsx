@@ -47,6 +47,7 @@ const SearchContainer = ({
       ]}
       placeholderTextColor={COLORS.BLACK}
       leftIcon={<LocationIcon />}
+      rightIcon={rightIcon}
       onRightIconPress={onRightIconPress}
       onLeftIconPress={onLeftIconPress}
       rightIconDisabled={rightIconDisabled}
@@ -65,6 +66,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 2,
     borderRadius: 10,
-    marginRight: 12,
+    // marginRight: 12,
   },
 });

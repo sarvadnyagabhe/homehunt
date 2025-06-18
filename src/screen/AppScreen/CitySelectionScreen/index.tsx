@@ -12,7 +12,10 @@ import {
   NoidaIcon,
 } from '../../../assets/icons';
 
-import {getAllCityList} from '../../../services/locationSelectionServices';
+import {
+  getAllCityList,
+  searchLocalities,
+} from '../../../services/locationSelectionServices';
 import {CitySelectionScreenProps} from '../../../types/appTypes';
 import {useAppDispatch} from '../../../store';
 import {setLocation} from '../../../store/slice/locationSlice';
@@ -23,7 +26,7 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
   const [selectedCity, setSelectedCity] = useState<any>();
   const [locationsList, setLocationsList] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [searchText, setSearchText] = useState<string>('');
   const dispatch = useAppDispatch();
   const getCityList = () => {
     setIsLoading(true);
@@ -53,6 +56,7 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
         <SearchContainer
           placeholder={'Search for city'}
           style={styles.searchStyle}
+          onChangeText={name => setSearchText(name)}
         />
         <FlatList
           data={locationsList}
