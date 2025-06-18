@@ -173,6 +173,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
             </TouchableOpacity>
           </View>
           <SearchContainer
+            editable={false}
             value={
               city_name && area_name
                 ? `${city_name} > ${area_name} > ${name}`

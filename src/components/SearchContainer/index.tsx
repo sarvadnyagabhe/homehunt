@@ -5,7 +5,6 @@ import {
   ViewStyle,
   StyleProp,
   TextStyle,
-  TextInput,
   TextInputProps,
   Platform,
 } from 'react-native';
