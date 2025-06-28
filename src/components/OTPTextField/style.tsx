@@ -10,7 +10,9 @@ const OTPTextFieldStyles = StyleSheet.create({
     lineHeight: 24,
     borderRadius: 10,
     textAlign: 'center',
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
+    borderWidth: 1,
+    borderColor: COLORS.GRAY,
   },
 
   errorCell: {

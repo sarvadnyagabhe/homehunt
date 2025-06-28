@@ -1,91 +1,149 @@
-import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
+import {
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
 import CitySelectionCard from '../../../components/CitySelectionCard';
 import {COLORS} from '../../../assets/colors';
-import {
-  DelhiIcon,
-  GhaziabadIcon,
-  GreaterNoidaIcon,
-  GurugramIcon,
-  NoidaIcon,
-} from '../../../assets/icons';
 
-import {
-  getAllCityList,
-  searchLocalities,
-} from '../../../services/locationSelectionServices';
+import {getAllCityList} from '../../../services/locationSelectionServices';
 import {CitySelectionScreenProps} from '../../../types/appTypes';
-import {useAppDispatch} from '../../../store';
+import {useAppDispatch, useAppSelector} from '../../../store';
 import {setLocation} from '../../../store/slice/locationSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
+import {useFocusEffect} from '@react-navigation/native';
+import {CityType, locationType} from '../../../types';
+import ScreenHeader from '../../../components/ScreenHeader';
+import {IMAGE} from '../../../assets/images';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
-  const [selectedCity, setSelectedCity] = useState<any>();
-  const [locationsList, setLocationsList] = useState<any>([]);
+  const [locationsList, setLocationsList] = useState<CityType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>('');
+  const [filteredList, setFilteredList] = useState<CityType[]>([]);
+
   const dispatch = useAppDispatch();
-  const getCityList = () => {
-    setIsLoading(true);
-    getAllCityList()
-      .then(res => {
-        setLocationsList(res?.data);
-        console.log('res===>', res);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        setIsLoading(false);
-        console.log('error in getting all cities', error);
-      });
+  const searchInputRef = useRef<any>(null);
+  const {location} = useAppSelector(state => state.location);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsLoading(true);
+      getAllCityList()
+        .then(res => {
+          setLocationsList(res?.data ?? []);
+          setIsLoading(false);
+        })
+        .catch(error => {
+          setIsLoading(false);
+          console.log('error in getting all cities', error);
+        });
+    }, []),
+  );
+
+  const handleSearch = (value: string) => {
+    const updatedList = locationsList.filter(item =>
+      item.name.toLowerCase().includes(value.toLocaleLowerCase()),
+    );
+    setFilteredList(updatedList);
   };
 
-  useEffect(() => {
-    getCityList();
-  }, []);
+  const handleTextChange = (name: string) => {
+    setSearchText(name);
+    if (searchInputRef?.current) {
+      clearTimeout(searchInputRef.current);
+    }
+    searchInputRef.current = setTimeout(() => {
+      handleSearch(name);
+    }, 300);
+  };
+
+  const renderRightIcon = () => {
+    if (searchText) {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            setSearchText('');
+            setFilteredList([]);
+          }}>
+          <Image source={IMAGE.CloseIcon} style={styles.closeIcon} />
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  };
+
+  const _onSelect = async (item: CityType) => {
+    const locationData: locationType = {
+      ...location,
+      city_id: item.id,
+      city_name: item.name,
+    };
+    if (item.name === 'Delhi') {
+      dispatch(setLocation(locationData));
+      await AsyncStorage.setItem('location', JSON.stringify({...locationData}));
+      navigation.navigate('AreaSelectionScreen');
+    } else {
+      locationData.area_id = null;
+      locationData.area_name = '';
+      dispatch(setLocation(locationData));
+      await AsyncStorage.setItem('location', JSON.stringify({...locationData}));
+      navigation.navigate('LocalitiesScreen');
+    }
+  };
+
+  const renderListItem = ({item, index}: {item: CityType; index: number}) => {
+    return (
+      <CitySelectionCard
+        key={index}
+        item={item}
+        onSelect={() => _onSelect(item)}
+      />
+    );
+  };
+
   if (isLoading) {
     return <LoadingAndErrorComponent />;
   }
+
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={styles.parent}>
-        {/* <CustomBack /> */}
-        <MagicText style={{fontSize: 24}}>Select your city</MagicText>
+    <SafeAreaView style={styles.parent}>
+      <ScreenHeader
+        onBackPress={() => {
+          navigation.goBack();
+        }}
+        onPressProfile={() => {
+          navigation.navigate('ProfileScreen');
+        }}
+        onLoginPress={() => {
+          navigation.navigate('AuthStack', {
+            screen: 'LoginScreen',
+          });
+        }}
+      />
+      <View style={styles.container}>
         <SearchContainer
           placeholder={'Search for city'}
           style={styles.searchStyle}
-          onChangeText={name => setSearchText(name)}
+          onChangeText={handleTextChange}
+          searchValue={searchText}
+          rightIcon={renderRightIcon()}
         />
+
+        <MagicText style={styles.titleText}>Select your city</MagicText>
+
         <FlatList
-          data={locationsList}
+          data={searchText ? filteredList : locationsList}
           numColumns={2}
-          renderItem={({item, index}) => {
-            return (
-              <CitySelectionCard
-                key={index}
-                item={item}
-                onSelect={async (item: any) => {
-                  setSelectedCity(item);
-                  if (item?.name == 'Delhi') {
-                    navigation.navigate('AreaSelectionScreen', {
-                      item,
-                    });
-                  } else {
-                    dispatch(setLocation(item));
-                    await AsyncStorage.setItem(
-                      'location',
-                      JSON.stringify(item),
-                    );
-                    navigation.navigate('HomeScreen', {
-                      item,
-                    });
-                  }
-                }}
-              />
-            );
-          }}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderListItem}
         />
       </View>
     </SafeAreaView>
@@ -95,20 +153,32 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
 export default CitySelectionScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 15,
+    backgroundColor: COLORS.WHITE_SMOKE,
+  },
   parent: {
     flex: 1,
-    paddingHorizontal: 20,
-    backgroundColor: COLORS.WHITE,
-    paddingTop: 18,
+  },
+  titleText: {
+    fontSize: 24,
+    lineHeight: 36,
+    fontWeight: '700',
+    marginBottom: 15,
   },
   searchStyle: {
-    marginTop: 22,
-    marginBottom: 16,
+    marginBottom: 15,
   },
   cityCardView: {
     marginTop: 22,
-    flexDirection: 'row',
     flexWrap: 'wrap',
+    flexDirection: 'row',
     backgroundColor: 'red',
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
 });

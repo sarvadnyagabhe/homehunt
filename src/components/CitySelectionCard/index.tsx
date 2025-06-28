@@ -9,9 +9,10 @@ import {
   GurugramIcon,
   NoidaIcon,
 } from '../../assets/icons';
+import {CityType} from '../../types';
 type CitySelectionCardType = {
-  item: any;
-  onSelect: (selectedCity: string) => void;
+  item: CityType;
+  onSelect: () => void;
 };
 const CitySelectionCard = ({
   item,
@@ -44,7 +45,7 @@ const CitySelectionCard = ({
     return Icon;
   };
   return (
-    <Pressable style={styles.parent} onPress={() => onSelect(item)}>
+    <Pressable style={styles.parent} onPress={() => onSelect()}>
       <View style={styles.cardStyle}>
         <View style={styles.iconView}>{getIcon(item?.name)}</View>
         <MagicText style={styles.cityName}>{item?.name}</MagicText>
@@ -62,13 +63,22 @@ const getStyles = (width: number) => {
       height: 160,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: COLORS.WHITE_SMOKE,
+      backgroundColor: COLORS.WHITE,
       marginRight: 5,
       marginLeft: 5,
       marginBottom: 10,
     },
-    iconView: {flex: 1, justifyContent: 'center'},
-    cardStyle: {alignItems: 'center'},
-    cityName: {fontSize: 14, marginBottom: 14, fontWeight: '800'},
+    iconView: {
+      flex: 1,
+      justifyContent: 'center',
+    },
+    cardStyle: {
+      alignItems: 'center',
+    },
+    cityName: {
+      fontSize: 14,
+      marginBottom: 14,
+      fontWeight: '800',
+    },
   });
 };

@@ -1,4 +1,3 @@
-import {StyleSheet} from 'react-native';
 import React from 'react';
 import HomeScreen from '../screen/AppScreen/HomeScreen';
 import {HomeScreenStackParamList} from '../types/appTypes';
@@ -12,18 +11,12 @@ import ReviewDetailsScreen from '../screen/AppScreen/ReviewDetailsScreen';
 import CitySelectionScreen from '../screen/AppScreen/CitySelectionScreen';
 import AreaSelectionScreen from '../screen/AppScreen/AreaSelectionScreen';
 import LocalitiesScreen from '../screen/AppScreen/LocalitiesScreen';
-import AuthRoutes from './AuthRoutes';
-import LoginScreen from '../screen/AuthScreen/LoginScreen';
-import OtpScreen from '../screen/AuthScreen/OtpScreen';
-import SignupScreen from '../screen/AuthScreen/SignupScreen';
-import AgentLoginScreen from '../screen/AuthScreen/AgentLoginScreen';
-import {useAppSelector} from '../store';
 import ProfileDetailScreen from '../screen/AppScreen/ProfileDetailScreen';
+import PendingApprovalScreen from '../screen/AppScreen/PendingApprovalScreen';
 
 const HomeStack = createNativeStackNavigator<HomeScreenStackParamList>();
 
 const HomeScreenStack = () => {
-  const token = useAppSelector(state => state.auth.token);
   return (
     <HomeStack.Navigator
       screenOptions={{headerShown: false}}
@@ -58,9 +51,11 @@ const HomeScreenStack = () => {
         name="ProfileDetailScreen"
         component={ProfileDetailScreen}
       />
+      <HomeStack.Screen
+        name="PendingApprovalScreen"
+        component={PendingApprovalScreen}
+      />
     </HomeStack.Navigator>
   );
 };
 export {HomeScreenStack};
-
-const styles = StyleSheet.create({});

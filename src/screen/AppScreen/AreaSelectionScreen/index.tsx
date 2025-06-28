@@ -1,99 +1,163 @@
+import React, {useEffect, useRef, useState} from 'react';
 import {
   FlatList,
-  PermissionsAndroid,
+  Image,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
-import CustomBack from '../../../components/CustomBack';
 import {COLORS} from '../../../assets/colors';
-import {CurrentLocationIcon, LocationIcon} from '../../../assets/icons';
-import HR from '../../../components/HR';
-import {getCurrentLocation, getLocationPermission} from '../../../utils';
+import {LocationIcon} from '../../../assets/icons';
 import {AreaSelectionScreenProps} from '../../../types/appTypes';
-import {getAllAreasList} from '../../../services/locationSelectionServices';
+import {
+  getAllAreasList,
+  searchLocalities,
+} from '../../../services/locationSelectionServices';
+import ScreenHeader from '../../../components/ScreenHeader';
+import {AreaType, locationType} from '../../../types';
+import {useAppDispatch, useAppSelector} from '../../../store';
+import {setLocation} from '../../../store/slice/locationSlice';
+import {IMAGE} from '../../../assets/images';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getBreadcrumText} from '../../../utils';
 
-const AreaSelectionScreen = ({navigation, route}: AreaSelectionScreenProps) => {
-  const city = route?.params?.item;
+const AreaSelectionScreen = ({navigation}: AreaSelectionScreenProps) => {
+  const [areaList, setAreaList] = useState<AreaType[]>([]);
+  const [searchText, setSearchText] = useState<string>('');
+  const [filteredList, setFilteredList] = useState<AreaType[]>([]);
 
-  const [locationCoords, setLocationCoords] = useState<any>();
-  const [areaList, setAreaList] = useState<any>([]);
-
-  const handleLocation = async () => {
-    const hasPermission = await getLocationPermission();
-
-    if (hasPermission) {
-      const location = getCurrentLocation();
-      setLocationCoords(location);
-    }
-  };
-
-  const getAreaList = () => {
-    getAllAreasList(city.id)
-      .then(res => {
-        setAreaList(res?.data);
-      })
-      .catch(error => {
-        console.log('error in getting all areas', error);
-      });
-  };
+  const {location} = useAppSelector(state => state.location);
+  const dispatch = useAppDispatch();
+  const searchInputRef = useRef<any>(null);
 
   useEffect(() => {
-    getAreaList();
-  }, []);
+    if (location?.city_id) {
+      getAllAreasList(location.city_id)
+        .then(res => {
+          setAreaList(res?.data ?? []);
+        })
+        .catch(error => {
+          console.log('error in getting all areas', error);
+        });
+    }
+  }, [location?.city_id]);
+
+  const getSearchLocalitiesList = (value: string) => {
+    const payload = {
+      name: value,
+      cityId: location?.city_id ?? 0,
+    };
+    searchLocalities(payload)
+      .then(res => {
+        const data = res?.data ?? [];
+        if (data.length > 0) {
+          const list = data.filter(
+            (item: any) => item.city_name === location.city_name,
+          );
+
+          const updatedList: AreaType[] = list.map((item: any) => {
+            return {
+              id: item.id,
+              name: `${item.area_name} > ${item.locality_name}`,
+            };
+          });
+          setFilteredList(updatedList);
+        } else {
+          setFilteredList([]);
+        }
+      })
+      .catch(error => console.log('error in getSearchLocalitiesList', error));
+  };
+
+  const handleTextChange = (name: string) => {
+    setSearchText(name);
+    if (searchInputRef?.current) {
+      clearTimeout(searchInputRef.current);
+    }
+    searchInputRef.current = setTimeout(() => {
+      getSearchLocalitiesList(name);
+    }, 300);
+  };
+
+  const areaSelectionHandler = async (item: AreaType) => {
+    const locationData: locationType = {
+      ...location,
+      area_id: item.id,
+      area_name: item.name,
+    };
+    dispatch(setLocation(locationData));
+    await AsyncStorage.setItem('location', JSON.stringify({...locationData}));
+    navigation.navigate('LocalitiesScreen');
+  };
+
+  const renderArea = ({item, index}: {item: AreaType; index: number}) => {
+    return (
+      <TouchableOpacity
+        style={styles.row}
+        key={index}
+        onPress={() => areaSelectionHandler(item)}>
+        <View style={styles.locationIconView}>
+          <LocationIcon />
+        </View>
+        <MagicText style={styles.locationText}>{item.name}</MagicText>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderRightIcon = () => {
+    if (searchText) {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            setSearchText('');
+            setFilteredList([]);
+          }}>
+          <Image source={IMAGE.CloseIcon} style={styles.closeIcon} />
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        onBackPress={() => {
+          navigation.goBack();
+        }}
+        onPressProfile={() => {
+          navigation.navigate('ProfileScreen');
+        }}
+        showBackBtn
+        onLoginPress={() => {
+          navigation.navigate('AuthStack', {
+            screen: 'LoginScreen',
+          });
+        }}
+      />
       <View style={styles.parent}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <CustomBack onPress={() => navigation.goBack()} />
-          <MagicText style={styles.locationCrumb}>{`${city?.name}`}</MagicText>
-        </View>
-        <MagicText style={styles.mainText}>
-          Select your area in {city?.name}
+        <SearchContainer
+          placeholder={`Search area in ${location.city_name}`}
+          style={styles.searchStyle}
+          onChangeText={handleTextChange}
+          searchValue={searchText}
+          rightIcon={renderRightIcon()}
+        />
+        <MagicText style={styles.breadcrumText}>
+          {getBreadcrumText(location)}
         </MagicText>
-        <SearchContainer placeholder={city?.name} style={styles.searchStyle} />
-        {/* <View style={styles.row}>
-          <View style={styles.currentLocationView}>
-            <CurrentLocationIcon />
-          </View>
-          <TouchableOpacity onPress={() => handleLocation()}>
-            <MagicText style={styles.currentLocationText}>
-              Choose Current Location
-            </MagicText>
-          </TouchableOpacity>
-        </View> */}
-        <HR style={styles.hrView} />
+        <MagicText style={styles.mainText}>
+          Select your area in {location.city_name}
+        </MagicText>
 
-        <View>
-          <FlatList
-            data={areaList}
-            renderItem={({item, index}) => {
-              return (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('LocalitiesScreen', {
-                      item,
-                      city,
-                    })
-                  }>
-                  <View style={styles.row} key={index}>
-                    <View style={styles.locationIconView}>
-                      <LocationIcon />
-                    </View>
-                    <MagicText style={styles.locationText}>
-                      {item?.name}
-                    </MagicText>
-                  </View>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
+        <FlatList
+          data={searchText ? filteredList : areaList}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderArea}
+        />
       </View>
     </SafeAreaView>
   );
@@ -102,32 +166,56 @@ const AreaSelectionScreen = ({navigation, route}: AreaSelectionScreenProps) => {
 export default AreaSelectionScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   parent: {
     flex: 1,
-    paddingHorizontal: 14,
-    paddingTop: 24,
-    backgroundColor: COLORS.WHITE,
+    padding: 15,
+    backgroundColor: COLORS.WHITE_SMOKE,
   },
   mainText: {
     fontSize: 24,
-    marginTop: 22,
-    marginBottom: 12,
+    lineHeight: 36,
+    fontWeight: '700',
+    marginBottom: 15,
   },
-  searchStyle: {marginHorizontal: 8, marginBottom: 16},
+  searchStyle: {
+    marginBottom: 15,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 12,
+    padding: 10,
   },
   currentLocationView: {
     marginRight: 14,
   },
   locationIconView: {
-    marginRight: 14,
+    marginRight: 10,
   },
-  currentLocationText: {fontSize: 14, color: COLORS.TEXT_GRAY},
-  locationText: {fontSize: 14},
-  hrView: {marginTop: 24},
-  locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
+  currentLocationText: {
+    fontSize: 14,
+    color: COLORS.TEXT_GRAY,
+  },
+  locationText: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  locationCrumb: {
+    fontSize: 16,
+    marginLeft: 12,
+    fontWeight: '600',
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+  breadcrumText: {
+    fontSize: 14,
+    lineHeight: 21,
+    marginBottom: 15,
+    marginTop: 8,
+  },
 });

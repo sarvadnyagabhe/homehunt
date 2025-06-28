@@ -33,6 +33,7 @@ export type TextFieldPropType = {
   rightIconDisabled?: boolean;
   LeftIconDisabled?: boolean;
   showCountryCode?: boolean;
+  errorStyle?: StyleProp<TextStyle>;
 } & TextInputProps;
 
 const TextField = ({
@@ -51,6 +52,7 @@ const TextField = ({
   rightIconDisabled,
   LeftIconDisabled,
   showCountryCode = false,
+  errorStyle = {},
   ...TextInputProps
 }: TextFieldPropType) => {
   return (
@@ -107,7 +109,9 @@ const TextField = ({
         </View>
       </View>
       {!isValid && errorMessage ? (
-        <MagicText style={TextFieldStyle.errStyle}>{errorMessage}</MagicText>
+        <MagicText style={[TextFieldStyle.errStyle, errorStyle]}>
+          {errorMessage}
+        </MagicText>
       ) : null}
     </>
   );

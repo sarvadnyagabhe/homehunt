@@ -1,7 +1,5 @@
 import {
   StyleSheet,
-  Text,
-  View,
   ViewStyle,
   StyleProp,
   TextStyle,
@@ -26,23 +24,21 @@ type SearchContainerType = {
 } & TextInputProps;
 const SearchContainer = ({
   rightIcon,
-  leftIcon,
   style,
   inputStyle,
   onRightIconPress = () => {},
   onLeftIconPress = () => {},
   rightIconDisabled,
   editable = true,
-  searchValue,
-  ...TextInputProps
+  searchValue = '',
+  ...props
 }: SearchContainerType) => {
   return (
     <TextField
       editable={editable}
       style={[styles.searchContainer, style]}
       inputStyle={[
-        {flex: 1},
-        Platform.OS === 'ios' ? {paddingVertical: 2} : {paddingVertical: 0},
+        Platform.OS === 'ios' ? styles.iOSInputStyle : styles.androidInputStyle,
         inputStyle,
       ]}
       placeholderTextColor={COLORS.BLACK}
@@ -51,7 +47,8 @@ const SearchContainer = ({
       onRightIconPress={onRightIconPress}
       onLeftIconPress={onLeftIconPress}
       rightIconDisabled={rightIconDisabled}
-      {...TextInputProps}
+      value={searchValue}
+      {...props}
     />
   );
 };
@@ -60,12 +57,19 @@ export default SearchContainer;
 
 const styles = StyleSheet.create({
   searchContainer: {
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
     height: 54,
     alignContent: 'center',
     justifyContent: 'center',
     paddingHorizontal: 2,
     borderRadius: 10,
-    // marginRight: 12,
+  },
+  androidInputStyle: {
+    flex: 1,
+    paddingVertical: 0,
+  },
+  iOSInputStyle: {
+    flex: 1,
+    paddingVertical: 2,
   },
 });

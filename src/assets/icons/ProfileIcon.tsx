@@ -1,7 +1,12 @@
 import * as React from 'react';
 import Svg, {SvgProps, Path} from 'react-native-svg';
 const ProfileIcon = (props: SvgProps) => (
-  <Svg width={26} height={26} fill="none" viewBox="0 0 24 24" {...props}>
+  <Svg
+    width={props.width ?? 26}
+    height={props.height ?? 26}
+    fill="none"
+    viewBox="0 0 24 24"
+    {...props}>
     <Path
       stroke="#292D32"
       strokeLinecap="round"

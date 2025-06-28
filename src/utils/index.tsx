@@ -1,5 +1,6 @@
 import {Alert, Linking, PermissionsAndroid, Platform} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+import {locationType} from '../types';
 
 const getLocationPermission = async () => {
   if (Platform.OS === 'android') {
@@ -54,4 +55,27 @@ const getFirstInitial = (name: string) => {
   return firstName.charAt(0);
 };
 
-export {getCurrentLocation, getLocationPermission, getFirstInitial};
+const getBreadcrumText = (location: locationType) => {
+  const arr: string[] = [];
+
+  if (location.city_name) {
+    arr.push(location.city_name);
+  }
+
+  if (location.area_name) {
+    arr.push(location.area_name);
+  }
+
+  if (location.locality_name) {
+    arr.push(location.locality_name);
+  }
+
+  return arr.join(' > ');
+};
+
+export {
+  getCurrentLocation,
+  getLocationPermission,
+  getFirstInitial,
+  getBreadcrumText,
+};

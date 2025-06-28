@@ -6,27 +6,35 @@
  */
 
 import React from 'react';
-import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
+import {Platform, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
 import RootNavigator from './src/navigation';
 import {Provider} from 'react-redux';
 import {store} from './src/store';
 import Toast from 'react-native-toast-message';
+import {COLORS} from './src/assets/colors';
 
 const App = () => {
   return (
-    <View
-      style={{
-        flex: 1,
-      }}>
-      {/* <StatusBar barStyle={'dark-content'} /> */}
+    <SafeAreaView style={styles.parent}>
+      <StatusBar
+        backgroundColor={COLORS.WHITE_SMOKE}
+        barStyle={'dark-content'}
+      />
       <Provider store={store}>
         <RootNavigator />
         <Toast />
       </Provider>
-    </View>
+    </SafeAreaView>
   );
 };
 
-export default App;
+const styles = StyleSheet.create({
+  parent: {
+    flex: 1,
+    paddingTop:
+      Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 + 10 : 0,
+    backgroundColor: COLORS.WHITE_SMOKE,
+  },
+});
 
-const styles = StyleSheet.create({});
+export default App;

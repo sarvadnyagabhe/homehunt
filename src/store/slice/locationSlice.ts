@@ -1,14 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
-interface locationType {
-  area_id: number | null;
-  city_id: number | null;
-  id: number | null;
-  name: string;
-  ranking: number | null;
-  city_name: string;
-  area_name: string;
-  locality_name: string;
-}
+import {locationType} from '../../types';
+
 interface LocationSliceState {
   location: locationType;
 }

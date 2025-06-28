@@ -1,18 +1,12 @@
-import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {
   CompositeScreenProps,
   NavigatorScreenParams,
 } from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthStackParamList} from './authTypes';
 
-export type AppStackParamList = {
-  bottomTab: NavigatorScreenParams<BottomTabParamList>;
-};
-type BottomTabParamList = {
-  HomeScreen: NavigatorScreenParams<HomeScreenStackParamList>;
-};
 type MainStackParamList = {
-  BottomTab: BottomTabScreenProps<BottomTabParamList>;
+  AuthStack: NavigatorScreenParams<AuthStackParamList>;
   HomeScreenStack: NavigatorScreenParams<HomeScreenStackParamList>;
 };
 
@@ -24,66 +18,68 @@ type HomeScreenStackParamList = {
   ExpertsScreen: any;
   SavedScreen: any;
   ReviewDetailsScreen: any;
-  CitySelectionScreen: any;
-  AreaSelectionScreen: any;
-  LocalitiesScreen: any;
-  LoginScreen: any;
-  OtpScreen: any;
-  SignupScreen: any;
-  AgentLoginScreen: any;
+  CitySelectionScreen: undefined;
+  AreaSelectionScreen: undefined;
+  LocalitiesScreen: undefined;
   ProfileDetailScreen: any;
+  PendingApprovalScreen: undefined;
 };
 
-export type HomeScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'HomeScreen'
+export type HomeScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'HomeScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
 
-export type ProprtyDetailScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'ProprtyDetailScreen'
+export type ProprtyDetailScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'ProprtyDetailScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
 
-export type AddReviewScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'AddReviewScreen'
+export type AddReviewScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'AddReviewScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
 
-export type ProfileScreennProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'ProfileScreen'
+export type ProfileScreennProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'ProfileScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
-export type ExpertsScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'ExpertsScreen'
+export type ExpertsScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'ExpertsScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
-export type SavedScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'SavedScreen'
+export type SavedScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'SavedScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
-export type ReviewDetailsScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'ReviewDetailsScreen'
->;
-
-export type CitySelectionScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'CitySelectionScreen'
+export type ReviewDetailsScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'ReviewDetailsScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
 
-export type AreaSelectionScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'AreaSelectionScreen'
+export type CitySelectionScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'CitySelectionScreen'>,
+  NativeStackScreenProps<MainStackParamList>
 >;
 
-export type LocalitiesScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'LocalitiesScreen'
+export type AreaSelectionScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'AreaSelectionScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
 
-export type ProfileDetailScreenProps = NativeStackScreenProps<
-  HomeScreenStackParamList,
-  'ProfileDetailScreen'
+export type LocalitiesScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'LocalitiesScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
 
-export type {MainStackParamList, BottomTabParamList, HomeScreenStackParamList};
+export type ProfileDetailScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'ProfileDetailScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
+>;
+
+export type PendingApprovalScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'PendingApprovalScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
+>;
+
+export type {MainStackParamList, HomeScreenStackParamList};

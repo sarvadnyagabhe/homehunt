@@ -37,9 +37,14 @@ const getAllLocalitiesList = async (payload: {
   }
 };
 
-const searchLocalities = async (payload: {name: string}) => {
+const searchLocalities = async (payload: {name: string; cityId?: number}) => {
   try {
     let url = `${BASE_URL}${ENDPOINT.search_localities}?name=${payload?.name}`;
+    if (payload?.cityId) {
+      url += `&cityId=${payload?.cityId}`;
+    }
+    console.log({url});
+
     const response = await axios.get(url);
     return response.data;
   } catch (error) {

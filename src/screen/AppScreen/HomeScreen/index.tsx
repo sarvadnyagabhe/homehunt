@@ -1,20 +1,13 @@
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
-  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {
-  CurrentLocationIcon,
-  HouseAppIcon,
-  LocationIcon,
-  SearchIcon,
-} from '../../../assets/icons';
-import {IMAGE} from '../../../assets/images';
+import {CurrentLocationIcon, SearchIcon} from '../../../assets/icons';
 import {COLORS} from '../../../assets/colors';
 import MagicText from '../../../components/MagicText';
 import PropertyCard from '../../../components/PropertyCard';
@@ -23,122 +16,80 @@ import {useAppDispatch, useAppSelector} from '../../../store';
 import {getAllAgentList} from '../../../services/HomeService';
 import SearchContainer from '../../../components/SearchContainer';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
-import CustomBack from '../../../components/CustomBack';
 import {
   handleAddBookmark,
   handleSliderData,
 } from '../../../services/PropertyServices';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {clearAuthState} from '../../../store/slice/authSlice';
-import {useDispatch} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import CustomSlider from '../../../components/CustomSlider';
 import {searchLocalities} from '../../../services/locationSelectionServices';
-import SelectDropdown from 'react-native-select-dropdown';
 import {setLocation} from '../../../store/slice/locationSlice';
-import HR from '../../../components/HR';
+import ScreenHeader from '../../../components/ScreenHeader';
+import {BASE_URL} from '../../../constant/urls';
+import {getBreadcrumText} from '../../../utils';
+
 const HomeScreen = ({navigation}: HomeScreenProps) => {
-  const {id, name, area_name, city_name} = useAppSelector(
-    state => state.location.location,
-  );
+  const {location} = useAppSelector(state => state.location);
+  const {id, city_id} = location;
   const isFocused = useIsFocused();
   const dispatch = useAppDispatch();
+  const inputRef = useRef<any>(null);
 
-  const token = useAppSelector(state => state.auth.token);
-
-  // const data = [
-  //   {
-  //     id: 1,
-  //     agentName: 'Shri Sai Shyam Properties',
-  //     rating: '16',
-  //     address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
-  //     review: '2.4',
-  //     media: [
-  //       {id: 1, type: 'image', image: IMAGE.CARD_IMAGE},
-  //       {id: 2, type: 'image', image: IMAGE.CARD_IMAGE2},
-  //     ],
-  //     details:
-  //       'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
-  //   },
-  //   {
-  //     id: 2,
-  //     agentName: 'Laxman Properties',
-  //     rating: '10',
-  //     address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
-  //     review: '5.4',
-  //     media: [
-  //       {id: 1, type: 'image', image: IMAGE.CARD_IMAGE2},
-  //       {id: 2, type: 'image', image: IMAGE.CARD_IMAGE},
-  //     ],
-  //     details:
-  //       'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
-  //   },
-  //   {
-  //     id: 3,
-  //     agentName: 'Lokesh Properties',
-  //     rating: '11',
-  //     address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
-  //     review: '4.4',
-  //     media: [
-  //       {id: 1, type: 'image', image: IMAGE.CARD_IMAGE2},
-  //       {id: 2, type: 'image', image: IMAGE.CARD_IMAGE},
-  //     ],
-  //     details:
-  //       'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
-  //   },
-  // ];
   const [agentList, setAgentList] = useState<any>([]);
   const [sliderData, setSliderData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>('');
   const [searchList, setSearchList] = useState<any>([]);
 
-  const getAgentList = (id: any) => {
+  const getAgentList = useCallback((locationId: number) => {
     setIsLoading(true);
-    getAllAgentList(Number(id))
+    getAllAgentList(locationId)
       .then(res => {
-        console.log('res in getAgentList==>', res);
         setAgentList(res?.data);
         setIsLoading(false);
       })
       .catch(async error => {
-        await AsyncStorage.clear();
-        dispatch(clearAuthState());
         console.log('error in getAgentList', error);
         setIsLoading(false);
       });
-  };
+  }, []);
 
-  const getSliderData = () => {
-    handleSliderData()
+  const getSliderData = useCallback((cityId: number) => {
+    handleSliderData(cityId)
       .then(res => {
-        console.log('res in getSliderData ', res);
-        setSliderData(res?.data);
+        const data = res ?? [];
+        const list = data.map((item: any) => ({
+          id: item.id,
+          image: `${BASE_URL}public${item.image_url}`,
+        }));
+        setSliderData(list);
       })
       .catch(error => {
         console.log('error in getSliderData', error?.response);
       });
-  };
+  }, []);
+
   useEffect(() => {
-    getAgentList(id);
-    getSliderData();
-  }, [isFocused]);
+    if (isFocused) {
+      getAgentList(id ?? 0);
+      getSliderData(city_id ?? 0);
+    }
+  }, [getAgentList, getSliderData, id, isFocused, city_id]);
 
   const addNewBookmark = (agent_id: number) => {
     const payload = {
       agent_id: agent_id,
     };
-    console.log(payload);
 
     handleAddBookmark(payload)
       .then(res => {
-        console.log('res in addNewBookmark ', res);
         Toast.show({
           type: 'success',
           text1: res?.message,
         });
-        getAgentList(id);
+        getAgentList(id ?? 0);
       })
       .catch(error => {
         console.log('error in addNewBookmark', error?.response);
@@ -149,13 +100,12 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       });
   };
 
-  const getSearchLocalitiesList = (searchText: string) => {
+  const getSearchLocalitiesList = (searchString: string) => {
     const payload = {
-      name: searchText,
+      name: searchString,
     };
     searchLocalities(payload)
       .then(res => {
-        console.log('res in getSearchLocalitiesList:', res);
         if (res) {
           const data = res?.data?.map((item: any) => {
             return {
@@ -169,86 +119,62 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       .catch(error => console.log('error in getSearchLocalitiesList', error));
   };
 
-  useEffect(() => {
-    if (searchText?.length == 0) {
-      setSearchList([]);
+  const handleTextChange = (text: string) => {
+    setSearchText(text);
+    if (inputRef.current) {
+      clearTimeout(inputRef.current);
     }
 
-    if (searchText?.length >= 0) {
-      getSearchLocalitiesList(searchText);
-    } else {
-      getAgentList(id);
-    }
-  }, [searchText]);
+    inputRef.current = setTimeout(() => {
+      if (text.length >= 0) {
+        getSearchLocalitiesList(text);
+      } else {
+        getAgentList(id ?? 0);
+      }
+    }, 300);
+  };
 
   if (isLoading) {
     return <LoadingAndErrorComponent />;
   }
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: COLORS.WHITE}}>
-      <ScrollView>
+    <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        showBackBtn
+        onBackPress={() => navigation.goBack()}
+        onPressProfile={() => {
+          navigation.navigate('ProfileScreen');
+        }}
+        onLoginPress={() => {
+          navigation.navigate('AuthStack', {
+            screen: 'LoginScreen',
+          });
+        }}
+      />
+      <ScrollView style={styles.scrollContainer}>
         <View style={styles.parent}>
-          <View style={[styles.row, {justifyContent: 'space-between'}]}>
-            <CustomBack onPress={() => navigation.goBack()} />
-            {/* <MagicText style={styles.locationCrumb}>
-              House App
-            </MagicText> */}
-            <HouseAppIcon />
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('ProfileScreen');
-              }}>
-              <View style={styles.profileViewStyle}>
-                <Image
-                  source={IMAGE.PROFILE_IMAGE}
-                  style={styles.profileImgStyle}
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
+          <CustomSlider
+            sliderData={[...sliderData]}
+            containerStyle={styles.slider}
+          />
           <SearchContainer
+            placeholder="Search for area, streetname, locality"
+            onChangeText={handleTextChange}
+            value={searchText}
             rightIcon={<SearchIcon />}
-            onChangeText={name => setSearchText(name)}
-            placeholder="Search"
-            style={{
-              flex: 1,
-              marginTop: 12,
-              marginBottom: 6,
-            }}
           />
 
-          {searchList?.length <= 0 ? (
-            <MagicText
-              style={{
-                marginBottom: 18,
-                marginTop: 8,
-                marginLeft: 12,
-                color: COLORS.TEXT_GRAY,
-              }}>
-              {city_name && area_name
-                ? `${city_name} > ${area_name} > ${name}`
-                : ` ${name}`}
-            </MagicText>
-          ) : (
-            <View
-              style={{
-                marginBottom: 12,
-                borderRadius: 12,
-                backgroundColor: COLORS.WHITE_SMOKE,
-                maxHeight: 200,
-              }}>
+          <MagicText style={styles.locationCrumb}>
+            {getBreadcrumText(location)}
+          </MagicText>
+
+          {searchList?.length > 0 && (
+            <View style={styles.searchView}>
               <ScrollView nestedScrollEnabled={true}>
                 {searchList?.map((item: any) => {
                   return (
-                    <View
-                      style={{
-                        paddingVertical: 12,
-                        paddingHorizontal: 12,
-                        borderWidth: 0.8,
-                        borderColor: COLORS.WHITE,
-                        borderRadius: 4,
-                      }}>
+                    <View style={styles.searchItem}>
                       <TouchableOpacity
                         onPress={async () => {
                           getAgentList(item?.id);
@@ -260,9 +186,9 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
                             JSON.stringify(item),
                           );
                         }}
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        style={styles.searchRow}>
                         <CurrentLocationIcon />
-                        <MagicText style={{fontSize: 16, marginLeft: 12}}>
+                        <MagicText style={styles.searchText}>
                           {item?.locality_name}
                         </MagicText>
                       </TouchableOpacity>
@@ -272,25 +198,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
               </ScrollView>
             </View>
           )}
-          <CustomSlider
-            sliderData={[
-              {type: 'image', image: IMAGE.CARD_IMAGE},
-              {type: 'image', image: IMAGE.CARD_IMAGE},
-            ]}
-          />
-          {/* <View style={styles.row}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ProfileScreen');
-            }}>
-            <View style={styles.profileViewStyle}>
-              <Image
-                source={IMAGE.PROFILE_IMAGE}
-                style={styles.profileImgStyle}
-              />
-            </View>
-          </TouchableOpacity>
-        </View> */}
+
           {agentList?.length > 0 ? (
             <View style={styles.flatlistView}>
               <FlatList
@@ -328,74 +236,49 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  parent: {
-    flex: 1,
-    paddingHorizontal: 14,
-    backgroundColor: COLORS.WHITE,
-    paddingTop: 12,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profileViewStyle: {width: 40, height: 40},
-  profileImgStyle: {width: '100%', height: '100%', borderRadius: 30},
-  searchBarStyle: {
+  container: {
     flex: 1,
     backgroundColor: COLORS.WHITE_SMOKE,
-    height: 44,
-    alignContent: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 14,
-    borderRadius: 10,
-    marginRight: 12,
   },
-  searchText: {fontSize: 12, marginLeft: 10},
-  flatlistView: {marginBottom: 30, marginTop: 12},
-  locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
-  dropdownButtonStyle: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#E9ECEF',
+  parent: {
+    flex: 1,
+    paddingHorizontal: 15,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  flatlistView: {
+    marginBottom: 30,
+    marginTop: 12,
+  },
+  locationCrumb: {
+    marginBottom: 18,
+    marginTop: 8,
+    marginLeft: 12,
+    color: COLORS.TEXT_GRAY,
+  },
+  slider: {
+    marginBottom: 15,
+  },
+  searchView: {
+    marginBottom: 12,
     borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: COLORS.WHITE_SMOKE,
+    maxHeight: 200,
+  },
+  searchItem: {
+    paddingVertical: 12,
     paddingHorizontal: 12,
+    borderWidth: 0.8,
+    borderColor: COLORS.WHITE,
+    borderRadius: 4,
   },
-  dropdownButtonTxtStyle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#151E26',
-  },
-  dropdownButtonArrowStyle: {
-    fontSize: 28,
-  },
-  dropdownButtonIconStyle: {
-    fontSize: 28,
-    marginRight: 8,
-  },
-  dropdownMenuStyle: {
-    backgroundColor: '#E9ECEF',
-    borderRadius: 8,
-  },
-  dropdownItemStyle: {
-    width: '100%',
+  searchRow: {
     flexDirection: 'row',
-    paddingHorizontal: 12,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 8,
   },
-  dropdownItemTxtStyle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#151E26',
-  },
-  dropdownItemIconStyle: {
-    fontSize: 28,
-    marginRight: 8,
+  searchText: {
+    fontSize: 16,
+    marginLeft: 12,
   },
 });

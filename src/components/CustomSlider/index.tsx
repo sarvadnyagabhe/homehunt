@@ -11,34 +11,20 @@ import {
 } from 'react-native';
 import {COLORS} from '../../assets/colors';
 import DotComponent from '../DotComponent';
-import Video from 'react-native-video';
 import FastImage from 'react-native-fast-image';
 type CustomSliderType = {
-  sliderData: any;
+  sliderData: {id: string; image: string}[];
   containerStyle?: StyleProp<ViewStyle>;
   isHome?: boolean;
 };
 const CustomSlider = ({
   sliderData = [],
-  containerStyle,
+  containerStyle = {},
   isHome = false,
 }: CustomSliderType) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const scrollRef = useRef<FlatList>(null);
-  const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
-  const videoRefs = useRef<any>({});
   const screenWidth = Dimensions.get('screen').width - (isHome ? 0 : 28);
-  // const screenWidth = isHome ? width - 28 : width;
-  // Pause video when scrolling away
-  useEffect(() => {
-    Object.keys(videoRefs.current).forEach(key => {
-      const videoRef = videoRefs.current[parseInt(key)];
-      if (parseInt(key) !== currentIndex && videoRef) {
-        videoRef.seek(0);
-        setIsVideoPlaying(false);
-      }
-    });
-  }, [currentIndex]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,7 +43,7 @@ const CustomSlider = ({
     }, 3000);
 
     return () => clearInterval(interval); // Cleanup interval on unmount
-  }, [currentIndex, sliderData.length]);
+  }, [currentIndex, screenWidth, sliderData.length]);
 
   const onChange = (nativeEvent: any) => {
     const index = Math.round(nativeEvent.contentOffset.x / screenWidth);
@@ -67,7 +53,7 @@ const CustomSlider = ({
   const styles = getStyles(screenWidth);
 
   return (
-    <View>
+    <View style={containerStyle}>
       <FlatList
         data={sliderData}
         horizontal
@@ -81,32 +67,17 @@ const CustomSlider = ({
         showsHorizontalScrollIndicator={false}
         onScroll={({nativeEvent}) => onChange(nativeEvent)}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({item, index}) => {
+        renderItem={({item}) => {
           return (
             <Pressable>
               <View style={styles.mainViewStyle}>
                 {
                   <FastImage
-                    style={[styles.outputBoxStyle, containerStyle]}
-                    source={item?.image}
+                    style={styles.outputBoxStyle}
+                    source={{uri: item.image}}
                     resizeMode="cover"
                   />
                 }
-                {/* {item.type === 'image' ? (
-                  <FastImage
-                    style={[styles.outputBoxStyle, containerStyle]}
-                    source={item?.image}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <Video
-                    source={item?.video}
-                    style={[styles.outputBoxStyle, containerStyle]}
-                    resizeMode="cover"
-                    controls={true}
-                    repeat
-                  />
-                )} */}
               </View>
             </Pressable>
           );

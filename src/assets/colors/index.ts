@@ -11,4 +11,5 @@ export enum COLORS {
   'ORANGE' = 'rgb(255, 121, 52)',
   'APP_RED' = '#FA003F',
   'SHADOW_COLOR' = '#00000029',
+  'BLUE' = '#0000FF',
 }

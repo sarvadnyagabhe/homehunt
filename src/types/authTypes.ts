@@ -1,28 +1,44 @@
+import {CompositeScreenProps} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {MainStackParamList} from './appTypes';
 
 export type AuthStackParamList = {
   LoginScreen: undefined;
-  OtpScreen: any;
-  SignupScreen: any;
-  AgentLoginScreen: any;
+  AgentLoginScreen: undefined;
+  OtpScreen: {mobile: string; screen: string};
+  SignupScreen: {
+    mobile_number: string;
+    token: string;
+    role: string;
+    agent_id: string;
+  };
+  WorkLocationScreen: {
+    signupPayload: any;
+    token: string;
+  };
 };
 
-export type LoginScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'LoginScreen'
+export type LoginScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<AuthStackParamList, 'LoginScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'HomeScreenStack'>
 >;
 
-export type AgentLoginScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'AgentLoginScreen'
+export type AgentLoginScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<AuthStackParamList, 'AgentLoginScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'HomeScreenStack'>
 >;
 
-export type OtpScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'OtpScreen'
+export type OtpScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<AuthStackParamList, 'OtpScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'HomeScreenStack'>
 >;
 
-export type SignupScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'SignupScreen'
+export type SignupScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<AuthStackParamList, 'SignupScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'HomeScreenStack'>
+>;
+
+export type WorkLocationScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<AuthStackParamList, 'WorkLocationScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'HomeScreenStack'>
 >;

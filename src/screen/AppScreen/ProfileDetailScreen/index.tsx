@@ -76,7 +76,7 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
   //to update user and agent data
   const handleProfileUpdate = (values: any) => {
     const API =
-      userData?.role == 'users'
+      userData?.role === 'users'
         ? handleUserUpdateProfile(values)
         : handleAgentUpdateProfile(values);
 

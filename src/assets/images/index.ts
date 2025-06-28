@@ -10,4 +10,6 @@ export const IMAGE = {
   GET_EXPERT_HELP: require('./getExpertHelp.jpeg'),
   WHATAPP_IMAGE: require('./whatsapp.png'),
   HouseAppLogo: require('./HouseAppLogo.jpeg'),
+  AccountCircle: require('./account_circle.png'),
+  CloseIcon: require('./close_icon.png'),
 };

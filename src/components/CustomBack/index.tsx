@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {BackArrowIcon} from '../../assets/icons';
 import {COLORS} from '../../assets/colors';
@@ -7,13 +7,9 @@ type CustomBackType = {
 };
 const CustomBack = ({onPress = () => {}}: CustomBackType) => {
   return (
-    <View>
-      <TouchableOpacity onPress={() => onPress()}>
-        <View style={styles.roundView}>
-          <BackArrowIcon />
-        </View>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity style={styles.roundView} onPress={() => onPress()}>
+      <BackArrowIcon />
+    </TouchableOpacity>
   );
 };
 
@@ -21,12 +17,12 @@ export default CustomBack;
 
 const styles = StyleSheet.create({
   roundView: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 30,
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
   },
 });

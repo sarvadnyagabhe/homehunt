@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {BASE_URL, ENDPOINT} from '../constant/urls';
 
-export const handleAgentLogin = async (payload: {phone: number}) => {
+export const handleAgentLogin = async (payload: {phone: string}) => {
   try {
     const response = await axios.post(
       `${BASE_URL}${ENDPOINT.agent_login}`,
@@ -12,7 +12,7 @@ export const handleAgentLogin = async (payload: {phone: number}) => {
     throw error;
   }
 };
-export const handleUserLogin = async (payload: {phone: number}) => {
+export const handleUserLogin = async (payload: {phone: string}) => {
   try {
     const response = await axios.post(
       `${BASE_URL}${ENDPOINT.user_login}`,
@@ -24,7 +24,7 @@ export const handleUserLogin = async (payload: {phone: number}) => {
   }
 };
 
-export const VerifyUserOtp = async (payload: {phone: number; otp: number}) => {
+export const VerifyUserOtp = async (payload: {phone: string; otp: number}) => {
   try {
     const response = await axios.post(
       `${BASE_URL}${ENDPOINT.verify_user}`,
@@ -36,7 +36,7 @@ export const VerifyUserOtp = async (payload: {phone: number; otp: number}) => {
   }
 };
 
-export const VerifyAgentOtp = async (payload: {phone: number; otp: number}) => {
+export const VerifyAgentOtp = async (payload: {phone: string; otp: number}) => {
   try {
     const response = await axios.post(
       `${BASE_URL}${ENDPOINT.verify_agent}`,
@@ -50,7 +50,7 @@ export const VerifyAgentOtp = async (payload: {phone: number; otp: number}) => {
   }
 };
 
-export const handleUserResendOtp = async (payload: {phone: number}) => {
+export const handleUserResendOtp = async (payload: {phone: string}) => {
   try {
     const response = await axios.post(
       `${BASE_URL}${ENDPOINT.resend_user_otp}`,
@@ -62,7 +62,7 @@ export const handleUserResendOtp = async (payload: {phone: number}) => {
   }
 };
 
-export const handleAgentResendOtp = async (payload: {phone: number}) => {
+export const handleAgentResendOtp = async (payload: {phone: string}) => {
   try {
     const response = await axios.post(
       `${BASE_URL}${ENDPOINT.resend_agent_otp}`,
@@ -131,6 +131,20 @@ export const handleUserUpdateProfile = async (payload: any) => {
     const response = await axios.patch(
       `${BASE_URL}${ENDPOINT.update_agent_profile}`,
       payload,
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAgentDetails = async (agentId: string, token: string) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}${ENDPOINT.get_agent_details}/${agentId}`,
+      {
+        headers: {Authorization: `Bearer ${token}`},
+      },
     );
     return response.data;
   } catch (error) {

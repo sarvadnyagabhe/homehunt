@@ -1,22 +1,17 @@
+import React, {useEffect, useRef, useState} from 'react';
 import {
   FlatList,
-  PermissionsAndroid,
+  Image,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-
-import {getCurrentLocation, getLocationPermission} from '../../../utils';
-import CustomBack from '../../../components/CustomBack';
 import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
-import {CurrentLocationIcon, LocationIcon} from '../../../assets/icons';
-import HR from '../../../components/HR';
+import {LocationIcon} from '../../../assets/icons';
 import {COLORS} from '../../../assets/colors';
 import {useDispatch} from 'react-redux';
-import {setToken} from '../../../store/slice/authSlice';
 import {LocalitiesScreenProps} from '../../../types/appTypes';
 import {
   getAllLocalitiesList,
@@ -24,148 +19,161 @@ import {
 } from '../../../services/locationSelectionServices';
 import {setLocation} from '../../../store/slice/locationSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useAppSelector} from '../../../store';
+import ScreenHeader from '../../../components/ScreenHeader';
+import {IMAGE} from '../../../assets/images';
+import {LocalityType, locationType} from '../../../types';
+import {getBreadcrumText} from '../../../utils';
 
-const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
-  const [localitiesList, setLocalitiesList] = useState<any>([]);
+const LocalitiesScreen = ({navigation}: LocalitiesScreenProps) => {
+  const [localitiesList, setLocalitiesList] = useState<LocalityType[]>([]);
   const [searchText, setSearchText] = useState<string>('');
+  const [filteredList, setFilteredList] = useState<any[]>([]);
 
   const dispatch = useDispatch();
-  const area = route?.params?.item;
-  const city = route?.params?.city;
+  const {location} = useAppSelector(state => state.location);
+  const searchInputRef = useRef<any>(null);
 
-  const handleLocation = async () => {
-    const hasPermission = await getLocationPermission();
-
-    if (hasPermission) {
-      const location = getCurrentLocation();
-      console.log('location', location);
-    }
-  };
-
-  const getLocalitiesList = () => {
-    let payload = {
-      cityId: city?.id,
-      areaId: undefined,
-    };
-    if (city == 'Delhi') {
-      payload = {
-        ...payload,
-        areaId: area?.id,
+  useEffect(() => {
+    if (location?.city_id) {
+      let payload: any = {
+        cityId: location?.city_id,
       };
+      if (location?.city_name === 'Delhi' && location?.area_id) {
+        payload = {
+          ...payload,
+          areaId: location.area_id,
+        };
+      }
+      getAllLocalitiesList(payload)
+        .then(res => {
+          setLocalitiesList(res?.data ?? []);
+        })
+        .catch(error => {
+          console.log('error in getting all areas', error);
+        });
     }
-    getAllLocalitiesList(payload)
-      .then(res => {
-        setLocalitiesList(res?.data);
-        console.log('res in localitiesList', res?.data);
-      })
-      .catch(error => {
-        console.log('error in getting all areas', error);
-      });
-  };
+  }, [location?.area_id, location?.city_id, location?.city_name]);
 
-  const getSearchLocalitiesList = (searchText: string) => {
+  const getSearchLocalitiesList = (value: string) => {
     const payload = {
-      name: searchText,
+      name: value,
+      cityId: location?.city_id ?? 0,
     };
     searchLocalities(payload)
       .then(res => {
-        console.log('res in getSearchLocalitiesList:', res);
-        if (res) {
-          const data = res?.data?.map((item: any) => {
-            return {
-              ...item,
-              name: item?.locality_name,
-            };
-          });
-          setLocalitiesList(data);
-        }
+        const list = (res?.data ?? []).filter(
+          (item: any) => item.city_name === location?.city_name,
+        );
+        const updatedList = list.map((item: any) => {
+          const obj = localitiesList.find(ele => ele.id === item.id);
+          return obj;
+        });
+        setFilteredList(updatedList);
       })
       .catch(error => console.log('error in getSearchLocalitiesList', error));
   };
 
-  // useEffect(() => {
-  //   if (searchText?.length > 0) {
-  //     getSearchLocalitiesList(searchText);
-  //   } else {
-  //     getLocalitiesList();
-  //   }
-  // }, [searchText]);
-
-  useEffect(() => {
-    getLocalitiesList();
-  }, []);
-
-  const handleOnPress = async (item: any) => {
-    if (item?.city_name && item?.area_name) {
-      dispatch(setLocation(item));
-      await AsyncStorage.setItem('location', JSON.stringify(item));
-      navigation.navigate('HomeScreen');
-    } else {
-      dispatch(
-        setLocation({
-          ...item,
-          city_name: city?.name,
-          area_name: area?.name,
-        }),
-      );
-
-      await AsyncStorage.setItem('location', JSON.stringify(item));
-      navigation.navigate('HomeScreen');
+  const handleTextChange = (name: string) => {
+    setSearchText(name);
+    if (searchInputRef?.current) {
+      clearTimeout(searchInputRef.current);
     }
+    searchInputRef.current = setTimeout(() => {
+      getSearchLocalitiesList(name);
+    }, 300);
   };
-  return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={styles.parent}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <CustomBack onPress={() => navigation.goBack()} />
-          <MagicText
-            style={
-              styles.locationCrumb
-            }>{`${city?.name} > ${area?.name}`}</MagicText>
+
+  const handleOnPress = async (item: LocalityType) => {
+    const locationData: locationType = {
+      area_id: location.area_id,
+      city_id: location?.city_id ?? null,
+      id: item.id ?? null,
+      name: '',
+      ranking: item.ranking ?? 0,
+      city_name: location?.city_name ?? '',
+      area_name: location.area_name ?? '',
+      locality_name: item.name ?? '',
+    };
+    locationData.name = `${locationData.locality_name}, ${locationData.area_name}, ${locationData.city_name}`;
+
+    dispatch(setLocation(locationData));
+    await AsyncStorage.setItem('location', JSON.stringify({...locationData}));
+    navigation.navigate('HomeScreen');
+  };
+
+  const renderRightIcon = () => {
+    if (searchText) {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            setSearchText('');
+            setFilteredList([]);
+          }}>
+          <Image source={IMAGE.CloseIcon} style={styles.closeIcon} />
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  };
+
+  const renderLocality = ({
+    item,
+    index,
+  }: {
+    item: LocalityType;
+    index: number;
+  }) => {
+    return (
+      <TouchableOpacity
+        key={index}
+        style={styles.row}
+        onPress={() => handleOnPress(item)}>
+        <View style={styles.locationIconView}>
+          <LocationIcon />
         </View>
+        <MagicText style={styles.locationText}>{item.name}</MagicText>
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScreenHeader
+        showBackBtn
+        onBackPress={() => {
+          navigation.goBack();
+        }}
+        onPressProfile={() => {
+          navigation.navigate('ProfileScreen');
+        }}
+        onLoginPress={() => {
+          navigation.navigate('AuthStack', {
+            screen: 'LoginScreen',
+          });
+        }}
+      />
+
+      <View style={styles.parent}>
         <MagicText style={styles.mainText}>
-          Top localities in {area?.name}
+          Select locality in {location.area_name ?? location?.city_name}
         </MagicText>
         <SearchContainer
           placeholder="Search for area, street name, locality..."
-          style={styles.searchStyle}
-          onChangeText={name => setSearchText(name)}
+          onChangeText={handleTextChange}
+          searchValue={searchText}
+          rightIcon={renderRightIcon()}
         />
-        {/* <View style={styles.row}>
-          <View style={styles.currentLocationView}>
-            <CurrentLocationIcon />
-          </View>
-          <TouchableOpacity onPress={() => handleLocation()}>
-            <MagicText style={styles.currentLocationText}>
-              Choose Current Location
-            </MagicText>
-          </TouchableOpacity>
-        </View> */}
-        <HR style={styles.hrView} />
 
-        <View>
-          <FlatList
-            data={localitiesList}
-            renderItem={({item, index}) => {
-              return (
-                <TouchableOpacity
-                  key={index}
-                  onPress={async () => {
-                    handleOnPress(item);
-                  }}>
-                  <View style={styles.row}>
-                    <View style={styles.locationIconView}>
-                      <LocationIcon />
-                    </View>
-                    <MagicText style={styles.locationText}>
-                      {item?.name}
-                    </MagicText>
-                  </View>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
+        <MagicText style={styles.breadcrumText}>
+          {getBreadcrumText(location)}
+        </MagicText>
+
+        <FlatList
+          data={searchText ? filteredList : localitiesList}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderLocality}
+        />
       </View>
     </SafeAreaView>
   );
@@ -174,32 +182,53 @@ const LocalitiesScreen = ({navigation, route}: LocalitiesScreenProps) => {
 export default LocalitiesScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   parent: {
     flex: 1,
-    paddingHorizontal: 14,
-    paddingTop: 24,
-    backgroundColor: COLORS.WHITE,
+    padding: 15,
+    backgroundColor: COLORS.WHITE_SMOKE,
   },
   mainText: {
     fontSize: 24,
-    marginTop: 22,
-    marginBottom: 12,
+    lineHeight: 36,
+    fontWeight: '700',
+    marginBottom: 15,
   },
-  searchStyle: {marginHorizontal: 8, marginBottom: 16},
+  breadcrumText: {
+    fontSize: 14,
+    lineHeight: 21,
+    marginBottom: 15,
+    marginTop: 8,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 12,
+    padding: 10,
   },
   currentLocationView: {
     marginRight: 14,
   },
   locationIconView: {
-    marginRight: 14,
+    marginRight: 10,
   },
-  currentLocationText: {fontSize: 14, color: COLORS.TEXT_GRAY},
-  locationText: {fontSize: 14},
-  hrView: {marginTop: 24},
-  locationCrumb: {fontSize: 16, marginLeft: 12, fontWeight: '600'},
+  currentLocationText: {
+    fontSize: 14,
+    color: COLORS.TEXT_GRAY,
+  },
+  locationText: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  locationCrumb: {
+    fontSize: 16,
+    marginLeft: 12,
+    fontWeight: '600',
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
 });

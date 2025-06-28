@@ -1,33 +1,45 @@
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
+  BackHandler,
   Image,
-  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
 import MagicText from '../../../components/MagicText';
 import {COLORS} from '../../../assets/colors';
-import CustomBack from '../../../components/CustomBack';
 import {IMAGE} from '../../../assets/images';
 import TextField from '../../../components/TextField';
-import {CallIcon} from '../../../assets/icons';
 import Button from '../../../components/Button';
 import {LoginScreenProps} from '../../../types/authTypes';
 import {handleUserLogin} from '../../../services/authServices';
 import Toast from 'react-native-toast-message';
-import HR from '../../../components/HR';
 
 const LoginScreen = ({navigation}: LoginScreenProps) => {
-  const [mobile, setMobile] = useState<any>();
+  const [mobile, setMobile] = useState('');
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Are you sure want to exit?', '', [
+        {text: 'Cancel', style: 'cancel'},
+        {text: 'Exit', onPress: () => BackHandler.exitApp(), style: 'default'},
+      ]);
+      return true;
+    };
+    const backhandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => {
+      backhandler.remove();
+    };
+  }, []);
 
   const handleSignIn = () => {
-    const payload = {
-      phone: mobile,
-    };
-    handleUserLogin(payload)
+    handleUserLogin({phone: mobile})
       .then(res => {
-        console.log('res', res);
         Toast.show({
           type: 'success',
           text1: res?.user?.message,
@@ -35,95 +47,61 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
         navigation.navigate('OtpScreen', {mobile, screen: 'user'});
       })
       .catch(error => {
-        console.log('error', error?.response?.data?.message);
         Toast.show({
           type: 'error',
           text1: error?.response?.data?.message,
         });
       });
   };
-  return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={styles.parent}>
-        <View style={styles.row}>
-          {/* <CustomBack /> */}
-          {/* <View style={styles.signinView}> */}
-          {/* <MagicText style={styles.signinText}>Sign In</MagicText> */}
-          {/* </View> */}
-        </View>
-        <View>
-          <View
-            style={{
-              height: 380,
-            }}>
-            <Image
-              source={IMAGE.COMPANY_LOGO}
-              style={styles.logoStyle}
-              resizeMode="contain"
-            />
-          </View>
-          <View style={styles.row}>
-            <View style={styles.hr} />
-            <MagicText style={styles.continueText}>Log in or sign up</MagicText>
-            <View style={styles.hr} />
-          </View>
-          <View style={{marginTop: 18}}>
-            <TextField
-              placeholder="Enter Mobile Number"
-              inputStyle={{marginLeft: 12, fontSize: 16}}
-              // leftIcon={<CallIcon />}
-              style={{
-                borderWidth: 0.4,
-                backgroundColor: COLORS.WHITE,
-                marginHorizontal: 30,
-              }}
-              onChangeText={number => setMobile(number)}
-              maxLength={10}
-              showCountryCode={true}
-            />
-            {/* <MagicText style={styles.termsText}>Terms of service</MagicText> */}
-            <Button
-              label="Continue"
-              style={styles.btnStyle}
-              labelStyle={styles.btnLabel}
-              onPress={() => handleSignIn()}
-            />
-          </View>
-        </View>
 
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <View style={styles.row}>
-            <View style={styles.hr} />
-            <MagicText style={styles.continueText}>or</MagicText>
-            <View style={styles.hr} />
-          </View>
+  return (
+    <View style={styles.parent}>
+      <View>
+        <Image source={IMAGE.COMPANY_LOGO} style={styles.logoStyle} />
+        <View style={styles.row}>
+          <View style={styles.hr} />
+          <MagicText style={styles.continueText}>Log in or sign up</MagicText>
+          <View style={styles.hr} />
         </View>
-        <View style={{alignItems: 'center', marginBottom: 30}}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('AgentLoginScreen')}
-            style={styles.agentBtn}>
-            <MagicText style={styles.agentText}>Agent</MagicText>
-            <MagicText style={styles.agentText1}>Log in or sign up</MagicText>
+        <TextField
+          placeholder="Enter Mobile Number"
+          inputStyle={styles.inputStyle}
+          style={styles.input}
+          onChangeText={number => setMobile(number)}
+          maxLength={10}
+          showCountryCode={true}
+          keyboardType="number-pad"
+          value={mobile}
+        />
+        <Button
+          label="Continue"
+          style={styles.btnStyle}
+          labelStyle={styles.btnLabel}
+          onPress={() => handleSignIn()}
+        />
+      </View>
+      <View style={styles.bottomView}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('AgentLoginScreen')}
+          style={styles.agentBtn}>
+          <MagicText style={styles.agentText}>Agent Log In</MagicText>
+        </TouchableOpacity>
+        <MagicText style={styles.termsHeaderText}>
+          By continuing, you agree to our
+        </MagicText>
+        <View style={styles.textRow}>
+          <TouchableOpacity>
+            <MagicText style={styles.termsText}>Terms of Service</MagicText>
           </TouchableOpacity>
-          <MagicText
-            style={{
-              textAlign: 'center',
-              width: 180,
-              marginBottom: 2,
-            }}>
-            By continuing, you agree to our
-          </MagicText>
-          <MagicText style={{textAlign: 'center'}}>
-            Terms of Service, Privacy Policy And Content Policy
-          </MagicText>
+          <TouchableOpacity style={styles.horizontalView}>
+            <MagicText style={styles.termsText}>Privacy Policy</MagicText>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <MagicText style={styles.termsText}>Content Policy</MagicText>
+          </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -132,26 +110,16 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: COLORS.WHITE,
-    // paddingHorizontal: 14,
-    // paddingTop: 14,
+  },
+  logoStyle: {
+    width: '100%',
+    height: 380,
+    resizeMode: 'contain',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  signinText: {fontSize: 16},
-
-  signinView: {
-    flex: 1,
-    alignItems: 'center',
-    // marginLeft: -22,
-    marginRight: 22,
-  },
-  logoStyle: {
-    width: '100%',
-    height: '100%',
-    // marginTop: 22,
+    marginVertical: 15,
   },
   continueText: {
     fontSize: 16,
@@ -159,11 +127,42 @@ const styles = StyleSheet.create({
     color: COLORS.TEXT_GRAY,
     fontWeight: '800',
   },
-  moibleText: {fontSize: 14, marginBottom: 12},
-  btnStyle: {paddingVertical: 12, marginTop: 22, marginHorizontal: 30},
-  termsText: {marginTop: 22, marginBottom: 18},
-
-  btnLabel: {fontSize: 20, fontWeight: '700'},
+  inputStyle: {
+    marginLeft: 12,
+    fontSize: 16,
+  },
+  input: {
+    borderWidth: 0.4,
+    backgroundColor: COLORS.WHITE,
+    marginHorizontal: 15,
+  },
+  btnStyle: {
+    paddingVertical: 12,
+    marginTop: 25,
+    marginHorizontal: 15,
+  },
+  bottomView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: 30,
+  },
+  signinText: {
+    fontSize: 16,
+  },
+  signinView: {
+    flex: 1,
+    alignItems: 'center',
+    marginRight: 22,
+  },
+  moibleText: {
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  btnLabel: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
   hr: {
     flex: 1,
     borderWidth: 0.2,
@@ -171,13 +170,39 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   agentBtn: {
-    backgroundColor: COLORS.APP_RED,
-    alignItems: 'center',
-    paddingVertical: 6,
-    borderRadius: 10,
-    width: '60%',
-    marginBottom: 22,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: COLORS.TEXT_GRAY,
+    paddingHorizontal: 12,
+    marginBottom: 25,
   },
-  agentText: {fontSize: 22, color: COLORS.WHITE, fontWeight: '700'},
-  agentText1: {fontSize: 12, color: COLORS.WHITE, fontWeight: '700'},
+  agentText: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: COLORS.TEXT_GRAY,
+    fontWeight: '700',
+  },
+  agentText1: {
+    fontSize: 12,
+    color: COLORS.WHITE,
+    fontWeight: '700',
+  },
+  termsHeaderText: {
+    textAlign: 'center',
+    fontSize: 14,
+    lineHeight: 21,
+    fontWeight: '600',
+  },
+  textRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  termsText: {
+    fontSize: 14,
+    lineHeight: 21,
+    fontWeight: '600',
+    color: COLORS.BLACK,
+    textDecorationLine: 'underline',
+  },
+  horizontalView: {marginHorizontal: 8},
 });

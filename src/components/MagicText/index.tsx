@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, TextProps} from 'react-native';
+import {Text, View, TextProps} from 'react-native';
 import React from 'react';
 import {getFont} from './utils';
 
@@ -8,13 +8,10 @@ type MagicTextType = {
     | 'OPENSANS_BOLD'
     | 'OPENSANS_MEDIUM'
     | 'OPENSANS_SEMIBOLD';
-
-  isRequired?: boolean;
 } & TextProps;
 const MagicText = ({
   family = 'OPENSANS_REGULAR',
   style,
-  isRequired,
   ...props
 }: MagicTextType) => {
   let newStyle = getFont(family);
@@ -28,5 +25,3 @@ const MagicText = ({
 };
 
 export default MagicText;
-
-const styles = StyleSheet.create({});

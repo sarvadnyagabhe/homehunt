@@ -1,4 +1,4 @@
-import {StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
+import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native';
 import React from 'react';
 
 type DotComponentType = {
@@ -16,14 +16,14 @@ const DotComponent = ({
   InActiveColor,
 }: DotComponentType) => {
   return (
-    <View style={{width: 14, marginRight: 6}}>
+    <View style={styles.container}>
       <View
         key={index}
         style={[
           style,
           {
             backgroundColor:
-              currentIndex == index ? activeColor : InActiveColor,
+              currentIndex === index ? activeColor : InActiveColor,
           },
           styles.dotStyle,
         ]}
@@ -35,10 +35,14 @@ const DotComponent = ({
 export default DotComponent;
 
 const styles = StyleSheet.create({
+  container: {
+    width: 14,
+    marginRight: 6,
+  },
   dotStyle: {
     marginRight: 12,
-    width: 16,
-    height: 4,
+    width: 8,
+    height: 8,
     borderRadius: 8,
   },
 });

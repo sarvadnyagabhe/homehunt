@@ -56,9 +56,13 @@ const handleDeleteAgentBookmark = async (payload: any) => {
   }
 };
 
-const handleSliderData = async () => {
+const handleSliderData = async (cityId: number) => {
   try {
-    const response = await axios.get(`${BASE_URL}${ENDPOINT.slider_info}`);
+    let url = `${BASE_URL}${ENDPOINT.slider_info}`;
+    if (cityId) {
+      url += `?city_id=${cityId}`;
+    }
+    const response = await axios.get(url);
     return response?.data;
   } catch (error) {
     throw error;

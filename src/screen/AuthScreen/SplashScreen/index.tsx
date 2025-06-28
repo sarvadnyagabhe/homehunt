@@ -8,7 +8,7 @@ const SplashScreen = () => {
   return (
     <View style={styles.parent}>
       <FastImage
-        source={IMAGE.SplashScreen}
+        source={IMAGE.HouseAppLogo}
         style={styles.image}
         resizeMode="contain"
       />
