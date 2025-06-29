@@ -1,16 +1,9 @@
-import {
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 import React, {useEffect, useState} from 'react';
+import {FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
 import MagicText from '../../../components/MagicText';
 import CustomBack from '../../../components/CustomBack';
 import {COLORS} from '../../../assets/colors';
 import PropertyCard from '../../../components/PropertyCard';
-import {IMAGE} from '../../../assets/images';
 import {SavedScreenProps} from '../../../types/appTypes';
 import {
   handleDeleteAgentBookmark,
@@ -20,22 +13,6 @@ import Toast from 'react-native-toast-message';
 
 const SavedScreen = ({navigation}: SavedScreenProps) => {
   const [bookmarkList, setBookmarkList] = useState<any>([]);
-  const data = [
-    {
-      id: 1,
-      agentName: 'Shri Sai Shyam Properties',
-      rating: '16',
-      address: 'Office No L-17 A, Ground Floor, Block L, Saket, Delhi - 110017',
-      review: '2.4',
-      media: [
-        {id: 1, type: 'image', image: IMAGE.CARD_IMAGE},
-        {id: 2, type: 'image', image: IMAGE.CARD_IMAGE2},
-      ],
-      details:
-        'We are dedicated property dealer with over 10 years of experience in the Delhi real estate market. Specializing in luxury residential properties, Raj has successfully facilitated numerous high-end transactions, assisting clients in finding their dream homes',
-      isSaved: true,
-    },
-  ];
 
   const getBookmarkList = () => {
     handleGetAgentBookmark()
@@ -73,6 +50,7 @@ const SavedScreen = ({navigation}: SavedScreenProps) => {
   useEffect(() => {
     getBookmarkList();
   }, []);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.parent}>
@@ -83,23 +61,32 @@ const SavedScreen = ({navigation}: SavedScreenProps) => {
           </View>
         </View>
 
-        <View>
-          <FlatList
-            data={bookmarkList}
-            renderItem={({item}) => {
-              return (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('ProprtyDetailScreen', {data: data[0]})
-                  }>
+        <View style={{flex: 1, marginTop: 15}}>
+          {bookmarkList.length > 0 ? (
+            <FlatList
+              data={bookmarkList}
+              renderItem={({item}) => {
+                return (
                   <PropertyCard
                     item={item}
                     onBookmarkPress={() => deleteBookmarkList(item?.agent_id)}
+                    onPress={() =>
+                      navigation.navigate('ProprtyDetailScreen', {
+                        data: item,
+                      })
+                    }
                   />
-                </TouchableOpacity>
-              );
-            }}
-          />
+                );
+              }}
+            />
+          ) : (
+            <View
+              style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+              <MagicText style={{fontSize: 16, lineHeight: 24}}>
+                Your saved agents will be shown here.
+              </MagicText>
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -111,9 +98,8 @@ export default SavedScreen;
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: COLORS.WHITE,
-    paddingHorizontal: 14,
-    paddingTop: 12,
+    padding: 15,
+    backgroundColor: COLORS.WHITE_SMOKE,
   },
   row: {
     flexDirection: 'row',

@@ -61,3 +61,15 @@ export interface AgentUserType {
   images: string[];
   image_url: string;
 }
+
+export interface UserType {
+  id: number;
+  name: string;
+  dob: number;
+  phone: string;
+  email: string;
+  profile: string;
+  role: string;
+  status: number;
+  location: any;
+}

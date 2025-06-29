@@ -23,6 +23,8 @@ type HomeScreenStackParamList = {
   LocalitiesScreen: undefined;
   ProfileDetailScreen: any;
   PendingApprovalScreen: undefined;
+  WorkingLocationsListScreen: undefined;
+  AccountSettings: undefined;
 };
 
 export type HomeScreenProps = CompositeScreenProps<
@@ -79,6 +81,19 @@ export type ProfileDetailScreenProps = CompositeScreenProps<
 
 export type PendingApprovalScreenProps = CompositeScreenProps<
   NativeStackScreenProps<HomeScreenStackParamList, 'PendingApprovalScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
+>;
+
+export type WorkingLocationsListScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<
+    HomeScreenStackParamList,
+    'WorkingLocationsListScreen'
+  >,
+  NativeStackScreenProps<MainStackParamList, 'AuthStack'>
+>;
+
+export type AccountSettingsProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenStackParamList, 'AccountSettings'>,
   NativeStackScreenProps<MainStackParamList, 'AuthStack'>
 >;
 

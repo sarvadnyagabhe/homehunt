@@ -9,8 +9,8 @@ import {BASE_URL} from '../../constant/urls';
 interface ScreenHeaderProps {
   showBackBtn?: boolean;
   onBackPress?: () => void;
-  onPressProfile: () => void;
-  onLoginPress: () => void;
+  onPressProfile?: () => void;
+  onLoginPress?: () => void;
 }
 
 const ScreenHeader = ({

@@ -6,6 +6,7 @@ import OtpScreen from '../../screen/AuthScreen/OtpScreen';
 import SignupScreen from '../../screen/AuthScreen/SignupScreen';
 import AgentLoginScreen from '../../screen/AuthScreen/AgentLoginScreen';
 import WorkLocationScreen from '../../screen/AuthScreen/WorkLocationScreen';
+import UserSignupScreen from '../../screen/AuthScreen/SignupScreen/UserSignupScreen';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 const AuthRoutes = () => {
@@ -18,6 +19,7 @@ const AuthRoutes = () => {
       <Stack.Screen name="SignupScreen" component={SignupScreen} />
       <Stack.Screen name="AgentLoginScreen" component={AgentLoginScreen} />
       <Stack.Screen name="WorkLocationScreen" component={WorkLocationScreen} />
+      <Stack.Screen name="UserSignupScreen" component={UserSignupScreen} />
     </Stack.Navigator>
   );
 };

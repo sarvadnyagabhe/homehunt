@@ -8,6 +8,7 @@ import {TimerIcon} from '../../../assets/icons';
 import {OtpScreenProps} from '../../../types/authTypes';
 import {
   getAgentDetails,
+  getUserDetails,
   handleAgentResendOtp,
   handleUserResendOtp,
   VerifyAgentOtp,
@@ -18,8 +19,6 @@ import {useAppDispatch} from '../../../store';
 import {setToken, setUserData} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setAxiosInterceptor} from '../../../axios';
-import axios from 'axios';
-import {BASE_URL, ENDPOINT} from '../../../constant/urls';
 
 const OtpScreen = ({navigation, route}: OtpScreenProps) => {
   const {mobile, screen: prevScreen} = route.params;
@@ -49,9 +48,7 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
       otp: Number(otp),
     };
     VerifyUserOtp(payload)
-      .then(async res => {
-        console.log('verifyUserOTP ==>', res);
-
+      .then(res => {
         Toast.show({
           type: 'success',
           text1: res?.message,
@@ -61,22 +58,30 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
         const userId = res?.UserId ?? '';
 
         if (userId && token) {
-          const response = await axios.get(
-            `${BASE_URL}${ENDPOINT.get_user_details}/${userId}`,
-            {headers: {Authorization: `Bearer ${token}`}},
-          );
-          if (response?.data?.success) {
-            const userData: any = response?.data?.data ?? {};
+          getUserDetails(userId, token).then(async response => {
+            if (response?.id) {
+              const userData: any = response ?? {};
 
-            if (!userData?.name) {
-              return;
+              if (!userData?.name) {
+                navigation.navigate('UserSignupScreen', {
+                  mobile_number: mobile,
+                  token,
+                  user_id: userId,
+                  role: res?.role,
+                });
+                return;
+              }
+              dispatch(setToken(token));
+              dispatch(setUserData({...response}));
+              await AsyncStorage.setItem('token', token);
+              await AsyncStorage.setItem('role', res?.role);
+              setAxiosInterceptor(token, dispatch);
+              navigation.navigate('HomeScreenStack', {
+                screen: 'HomeScreen',
+              });
             }
-          }
-          dispatch(setToken(res?.tokens?.access?.token));
-          dispatch(setUserData({role: res?.role, Id: res?.UserId}));
-          await AsyncStorage.setItem('token', res?.tokens?.access?.token);
-          await AsyncStorage.setItem('role', res?.role);
-          setAxiosInterceptor(res?.tokens?.access?.token, dispatch);
+          });
+        } else {
           navigation.navigate('HomeScreenStack', {
             screen: 'HomeScreen',
           });
@@ -141,36 +146,32 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
                 });
                 return;
               }
-              dispatch(setToken(token));
-              dispatch(setUserData({...agentData}));
-              await AsyncStorage.setItem('token', token);
-              await AsyncStorage.setItem('role', res?.role);
-              await AsyncStorage.setItem('userData', JSON.stringify(agentData));
-              setAxiosInterceptor(token, dispatch);
-              navigation.navigate('HomeScreenStack', {
-                screen: 'HomeScreen',
+
+              if (agentData.verified !== 0) {
+                dispatch(setToken(token));
+                dispatch(setUserData({...agentData}));
+                await AsyncStorage.setItem('token', token);
+                await AsyncStorage.setItem('role', res?.role);
+                await AsyncStorage.setItem(
+                  'userData',
+                  JSON.stringify(agentData),
+                );
+                setAxiosInterceptor(token, dispatch);
+                navigation.navigate('HomeScreenStack', {
+                  screen: 'HomeScreen',
+                });
+              } else {
+                navigation.navigate('HomeScreenStack', {
+                  screen: 'PendingApprovalScreen',
+                });
+              }
+            } else {
+              navigation.navigate('SignupScreen', {
+                mobile_number: mobile,
+                token,
+                agent_id: agentId,
+                role: res?.role,
               });
-              //   if (agentData.verified !== 0) {
-              //     dispatch(setToken(token));
-              //     await AsyncStorage.setItem('token', token);
-              //     dispatch(setUserData({role: res?.role, Id: agentId}));
-              //     await AsyncStorage.setItem('role', res?.role);
-              //     setAxiosInterceptor(token, dispatch);
-              //     navigation.navigate('HomeScreenStack', {
-              //       screen: 'HomeScreen',
-              //     });
-              //   } else {
-              //     navigation.navigate('HomeScreenStack', {
-              //       screen: 'PendingApprovalScreen',
-              //     });
-              //   }
-              // } else {
-              //   navigation.navigate('SignupScreen', {
-              //     mobile_number: mobile,
-              //     token,
-              //     agent_id: agentId,
-              //     role: res?.role,
-              //   });
             }
           });
         }

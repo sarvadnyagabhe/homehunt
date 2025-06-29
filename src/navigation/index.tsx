@@ -6,6 +6,7 @@ import AppRoutes from './AppRoutes';
 import {setToken, setUserData} from '../store/slice/authSlice';
 import SplashScreen from '../screen/AuthScreen/SplashScreen';
 import {setLocation} from '../store/slice/locationSlice';
+import {defaultLocation} from '../constant';
 
 const RootNavigator = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -24,9 +25,13 @@ const RootNavigator = () => {
       }
 
       //get location data
-      const locationData: any = await AsyncStorage.getItem('location');
-      const parseData = JSON.parse(locationData);
-      dispatch(setLocation(parseData));
+      const locationData = await AsyncStorage.getItem('location');
+      if (locationData) {
+        const parseData = JSON.parse(locationData);
+        dispatch(setLocation(parseData));
+      } else {
+        dispatch(setLocation(defaultLocation));
+      }
 
       setTimeout(() => {
         setLoading(false);

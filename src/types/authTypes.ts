@@ -16,6 +16,12 @@ export type AuthStackParamList = {
     signupPayload: any;
     token: string;
   };
+  UserSignupScreen: {
+    mobile_number: string;
+    token: string;
+    role: string;
+    user_id: string;
+  };
 };
 
 export type LoginScreenProps = CompositeScreenProps<
@@ -40,5 +46,10 @@ export type SignupScreenProps = CompositeScreenProps<
 
 export type WorkLocationScreenProps = CompositeScreenProps<
   NativeStackScreenProps<AuthStackParamList, 'WorkLocationScreen'>,
+  NativeStackScreenProps<MainStackParamList, 'HomeScreenStack'>
+>;
+
+export type UserSignupScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<AuthStackParamList, 'UserSignupScreen'>,
   NativeStackScreenProps<MainStackParamList, 'HomeScreenStack'>
 >;

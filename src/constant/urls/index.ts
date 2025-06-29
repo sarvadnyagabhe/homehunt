@@ -47,6 +47,7 @@ const ENDPOINT = {
 
   work_location: 'v1/auth/agent/working-locations',
   public_agents: 'v1/auth/users/public/by-location?locationId=',
+  user_details: 'v1/auth/users/user-detail/',
 };
 
 export {BASE_URL, ENDPOINT};

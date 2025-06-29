@@ -40,14 +40,24 @@ const PropertyCard = ({
       .catch(err => err && console.log(err));
   };
 
+  const getSliderImages = () => {
+    if (item?.image_urls?.length > 0) {
+      return item.image_urls.map((image, index) => ({
+        id: index.toString(),
+        image: `${BASE_URL}public/${image}`,
+      }));
+    }
+    if (item?.image_url) {
+      return [{id: '1', image: item.image_url}];
+    }
+    return [];
+  };
+
   return (
     <Pressable style={[styles.parent, containerStyle]} onPress={onPress}>
       <View>
         <CustomSlider
-          sliderData={item.image_urls.map((image, index) => ({
-            id: index.toString(),
-            image: `${BASE_URL}public/${image}`,
-          }))}
+          sliderData={getSliderImages()}
           imageStyle={styles.imageContainerStyle}
           imageContainer={{height: 200}}
         />
@@ -78,7 +88,9 @@ const PropertyCard = ({
       <View style={styles.bottomContainer}>
         <View style={styles.row}>
           <View style={{flex: 1}}>
-            <MagicText style={styles.heading}>{item.agency_name}</MagicText>
+            <MagicText style={styles.heading}>
+              {item.agency_name ?? item.name}
+            </MagicText>
           </View>
           <RatingCard rating={item?.rating ?? 0} />
         </View>

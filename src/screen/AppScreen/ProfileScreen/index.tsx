@@ -96,29 +96,6 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     return <LoadingAndErrorComponent />;
   }
 
-  //to delete user and agent
-  // const handleDeleteUser = () => {
-  //   const payload = {
-  //     otp: '212551',
-  //   };
-  //   deleteUser(payload)
-  //     .then(res => {
-  //       console.log('res in delete user', res);
-  //       Toast.show({
-  //         type: 'success',
-  //         text1: res?.message,
-  //       });
-  //       handleLogout();
-  //     })
-  //     .catch(error => {
-  //       console.log('error', error);
-  //       Toast.show({
-  //         type: 'error',
-  //         text1: error?.response?.data?.message,
-  //       });
-  //     });
-  // };
-
   const renderOption = (option: string) => {
     switch (option) {
       case 'experthelp':
@@ -152,12 +129,13 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
 
       case 'locations':
         return (
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('WorkingLocationsListScreen')}>
             <View style={[styles.row, {justifyContent: 'space-between'}]}>
               <View style={styles.row}>
                 <LocationIcon />
                 <MagicText style={{marginLeft: 12, fontSize: 16}}>
-                  Locations
+                  Working Locations
                 </MagicText>
               </View>
               <RightArrowIcon />
@@ -167,7 +145,8 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
 
       case 'accountSettings':
         return (
-          <TouchableOpacity onPress={() => navigation.navigate('SavedScreen')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('AccountSettings')}>
             <View style={[styles.row, {justifyContent: 'space-between'}]}>
               <View style={styles.row}>
                 <Image source={IMAGE.SettingsIcon} style={styles.icon} />
@@ -227,13 +206,14 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
         <View style={styles.header}>
           <MagicText style={styles.headerText}>Your Profile</MagicText>
         </View>
+        <View style={{width: 30}} />
       </View>
 
       <ScrollView contentContainerStyle={styles.parent}>
         {renderUserInfo()}
         {options.map(option => {
           return (
-            <WhiteCardView cardStyle={styles.cardStyle}>
+            <WhiteCardView cardStyle={styles.cardStyle} key={option}>
               {renderOption(option)}
             </WhiteCardView>
           );
@@ -250,36 +230,6 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
             <RightArrowIcon />
           </View>
         </WhiteCardView>
-
-        {/* <WhiteCardView cardStyle={styles.cardStyle}>
-          <View style={[styles.row, {justifyContent: 'space-between'}]}>
-            <View style={styles.row}>
-              <ContactUsIcon />
-              <MagicText style={{fontSize: 16, marginLeft: 12}}>
-                Contact us
-              </MagicText>
-            </View>
-            <RightArrowIcon />
-          </View>
-        </WhiteCardView> */}
-
-        {/* <View
-          style={{
-            marginTop: 30,
-          }}>
-          <Button
-            label="Delete Account"
-            type="OUTLINE"
-            onPress={() => handleDeleteUser()}
-            labelStyle={{fontSize: 14, fontWeight: '800'}}
-            style={{
-              // marginTop: 16,
-              marginBottom: 14,
-              borderColor: COLORS.RED,
-              marginHorizontal: 30,
-            }}
-          />
-        </View> */}
       </ScrollView>
     </SafeAreaView>
   );

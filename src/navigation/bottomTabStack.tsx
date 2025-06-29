@@ -13,6 +13,8 @@ import AreaSelectionScreen from '../screen/AppScreen/AreaSelectionScreen';
 import LocalitiesScreen from '../screen/AppScreen/LocalitiesScreen';
 import ProfileDetailScreen from '../screen/AppScreen/ProfileDetailScreen';
 import PendingApprovalScreen from '../screen/AppScreen/PendingApprovalScreen';
+import WorkingLocationsListScreen from '../screen/AppScreen/WorkingLocationsListScreen';
+import AccountSettings from '../screen/AppScreen/AccountSettings';
 
 const HomeStack = createNativeStackNavigator<HomeScreenStackParamList>();
 
@@ -55,6 +57,11 @@ const HomeScreenStack = () => {
         name="PendingApprovalScreen"
         component={PendingApprovalScreen}
       />
+      <HomeStack.Screen
+        name="WorkingLocationsListScreen"
+        component={WorkingLocationsListScreen}
+      />
+      <HomeStack.Screen name="AccountSettings" component={AccountSettings} />
     </HomeStack.Navigator>
   );
 };

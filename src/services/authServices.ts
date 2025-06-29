@@ -151,3 +151,26 @@ export const getAgentDetails = async (agentId: string, token: string) => {
     throw error;
   }
 };
+
+export const getUserDetails = async (userId: string, token: string) => {
+  try {
+    const url = `${BASE_URL}${ENDPOINT.user_details}${userId}`;
+    const response = await axios.get(url, {
+      headers: {Authorization: `Bearer ${token}`},
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const handleGetWorkingLocations = async (token: string) => {
+  try {
+    const response = await axios.get(`${BASE_URL}${ENDPOINT.work_location}`, {
+      headers: {Authorization: `Bearer ${token}`},
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
