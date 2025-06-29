@@ -44,6 +44,9 @@ const ENDPOINT = {
 
   //home slider
   slider_info: 'v1/auth/users/banners/active',
+
+  work_location: 'v1/auth/agent/working-locations',
+  public_agents: 'v1/auth/users/public/by-location?locationId=',
 };
 
 export {BASE_URL, ENDPOINT};

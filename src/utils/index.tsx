@@ -58,15 +58,15 @@ const getFirstInitial = (name: string) => {
 const getBreadcrumText = (location: locationType) => {
   const arr: string[] = [];
 
-  if (location.city_name) {
+  if (location?.city_name) {
     arr.push(location.city_name);
   }
 
-  if (location.area_name) {
+  if (location?.area_name) {
     arr.push(location.area_name);
   }
 
-  if (location.locality_name) {
+  if (location?.locality_name) {
     arr.push(location.locality_name);
   }
 

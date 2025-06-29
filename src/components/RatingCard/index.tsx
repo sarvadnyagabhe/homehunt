@@ -1,12 +1,5 @@
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import React, {ReactElement, ReactNode} from 'react';
+import React from 'react';
+import {StyleProp, StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import MagicText from '../MagicText';
 import {COLORS} from '../../assets/colors';
 import {StarIcon} from '../../assets/icons';
@@ -16,7 +9,6 @@ type GreenComponentType = {
   labelStyle?: StyleProp<TextStyle>;
   label?: any;
   family?: any;
-  icon?: ReactNode | ReactElement;
   rating?: string;
 };
 const RatingCard = ({
@@ -24,17 +16,11 @@ const RatingCard = ({
   labelStyle,
   label,
   family,
-  icon,
   rating,
 }: GreenComponentType) => {
   return (
     <View style={[styles.component, componentStyle]}>
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          marginHorizontal: 4,
-        }}>
+      <View style={styles.container}>
         <MagicText style={[styles.text, labelStyle]} family={family}>
           {Number(rating)?.toFixed(1)}
         </MagicText>
@@ -62,5 +48,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.WHITE,
     marginRight: 4,
+  },
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginHorizontal: 4,
   },
 });

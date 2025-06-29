@@ -13,7 +13,7 @@ import MagicText from '../../../components/MagicText';
 import PropertyCard from '../../../components/PropertyCard';
 import {HomeScreenProps} from '../../../types/appTypes';
 import {useAppDispatch, useAppSelector} from '../../../store';
-import {getAllAgentList} from '../../../services/HomeService';
+import {getPublicAgentList} from '../../../services/HomeService';
 import SearchContainer from '../../../components/SearchContainer';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 import {
@@ -29,15 +29,15 @@ import {setLocation} from '../../../store/slice/locationSlice';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {BASE_URL} from '../../../constant/urls';
 import {getBreadcrumText} from '../../../utils';
+import {AgentUserType} from '../../../types';
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
   const {location} = useAppSelector(state => state.location);
-  const {id, city_id} = location;
   const isFocused = useIsFocused();
   const dispatch = useAppDispatch();
   const inputRef = useRef<any>(null);
 
-  const [agentList, setAgentList] = useState<any>([]);
+  const [agentList, setAgentList] = useState<AgentUserType[]>([]);
   const [sliderData, setSliderData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>('');
@@ -45,13 +45,16 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
 
   const getAgentList = useCallback((locationId: number) => {
     setIsLoading(true);
-    getAllAgentList(locationId)
+    getPublicAgentList(locationId)
       .then(res => {
-        setAgentList(res?.data);
+        const list = (res?.data ?? []).filter(
+          (item: any) => item.agency_name && item.name,
+        );
+        setAgentList(list);
         setIsLoading(false);
       })
       .catch(async error => {
-        console.log('error in getAgentList', error);
+        console.log('error in getPublicAgentList', error);
         setIsLoading(false);
       });
   }, []);
@@ -60,10 +63,13 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     handleSliderData(cityId)
       .then(res => {
         const data = res ?? [];
-        const list = data.map((item: any) => ({
-          id: item.id,
-          image: `${BASE_URL}public${item.image_url}`,
-        }));
+        const list = data
+          .filter((item: any) => item.position === 'Home Page Banner')
+          .map((item: any) => ({
+            id: item.id,
+            image: `${BASE_URL}public${item.image_url}`,
+          }));
+
         setSliderData(list);
       })
       .catch(error => {
@@ -73,10 +79,10 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
 
   useEffect(() => {
     if (isFocused) {
-      getAgentList(id ?? 0);
-      getSliderData(city_id ?? 0);
+      getAgentList(location?.id ?? 0);
+      getSliderData(location?.city_id ?? 0);
     }
-  }, [getAgentList, getSliderData, id, isFocused, city_id]);
+  }, [getAgentList, getSliderData, location?.id, isFocused, location?.city_id]);
 
   const addNewBookmark = (agent_id: number) => {
     const payload = {
@@ -89,7 +95,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
           type: 'success',
           text1: res?.message,
         });
-        getAgentList(id ?? 0);
+        getAgentList(location?.id ?? 0);
       })
       .catch(error => {
         console.log('error in addNewBookmark', error?.response);
@@ -129,7 +135,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       if (text.length >= 0) {
         getSearchLocalitiesList(text);
       } else {
-        getAgentList(id ?? 0);
+        getAgentList(location?.id ?? 0);
       }
     }, 300);
   };
@@ -157,6 +163,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
           <CustomSlider
             sliderData={[...sliderData]}
             containerStyle={styles.slider}
+            imageStyle={{borderRadius: 12}}
           />
           <SearchContainer
             placeholder="Search for area, streetname, locality"
@@ -169,7 +176,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
             {getBreadcrumText(location)}
           </MagicText>
 
-          {searchList?.length > 0 && (
+          {searchList?.length > 0 ? (
             <View style={styles.searchView}>
               <ScrollView nestedScrollEnabled={true}>
                 {searchList?.map((item: any) => {
@@ -197,7 +204,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
                 })}
               </ScrollView>
             </View>
-          )}
+          ) : null}
 
           {agentList?.length > 0 ? (
             <View style={styles.flatlistView}>
@@ -205,21 +212,19 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
                 data={agentList}
                 nestedScrollEnabled={false}
                 showsVerticalScrollIndicator={false}
-                renderItem={({item, index}) => {
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => {
                   return (
-                    <TouchableOpacity
-                      key={index}
-                      activeOpacity={0.8}
+                    <PropertyCard
+                      item={item}
+                      onBookmarkPress={() => addNewBookmark(item?.agent_id)}
                       onPress={() => {
                         navigation.navigate('ProprtyDetailScreen', {
                           data: item,
                         });
-                      }}>
-                      <PropertyCard
-                        item={item}
-                        onBookmarkPress={() => addNewBookmark(item?.agent_id)}
-                      />
-                    </TouchableOpacity>
+                      }}
+                      containerStyle={{marginBottom: 15}}
+                    />
                   );
                 }}
               />
@@ -250,6 +255,7 @@ const styles = StyleSheet.create({
   flatlistView: {
     marginBottom: 30,
     marginTop: 12,
+    backgroundColor: COLORS.WHITE_SMOKE,
   },
   locationCrumb: {
     marginBottom: 18,
@@ -263,7 +269,7 @@ const styles = StyleSheet.create({
   searchView: {
     marginBottom: 12,
     borderRadius: 12,
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
     maxHeight: 200,
   },
   searchItem: {

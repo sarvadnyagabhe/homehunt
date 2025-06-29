@@ -12,4 +12,6 @@ export const IMAGE = {
   HouseAppLogo: require('./HouseAppLogo.jpeg'),
   AccountCircle: require('./account_circle.png'),
   CloseIcon: require('./close_icon.png'),
+  SettingsIcon: require('./setting.png'),
+  LogoutIcon: require('./logout.png'),
 };

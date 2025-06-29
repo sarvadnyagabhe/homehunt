@@ -14,20 +14,15 @@ import CustomBack from '../../../components/CustomBack';
 import {COLORS} from '../../../assets/colors';
 import {
   CallIcon,
-  CameraIcon,
   EmailIcon,
   FormProfileIcon,
   OverviewIcon,
-  ProfileIcon,
 } from '../../../assets/icons';
 import TextField from '../../../components/TextField';
 import Button from '../../../components/Button';
 import {FormikValues, useFormik} from 'formik';
 import * as yup from 'yup';
 import {launchImageLibrary} from 'react-native-image-picker';
-import Toast from 'react-native-toast-message';
-import {BASE_URL, ENDPOINT} from '../../../constant/urls';
-import axios from 'axios';
 
 const SignupScreen = ({navigation, route}: SignupScreenProps) => {
   const {mobile_number, token} = route.params;
@@ -46,14 +41,14 @@ const SignupScreen = ({navigation, route}: SignupScreenProps) => {
     });
   };
 
-  const handleProfile = () => {
-    launchImageLibrary({
-      mediaType: 'photo',
-      selectionLimit: 1,
-    }).then(response => {
-      formik.setFieldValue('profile_image', response.assets?.[0] ?? null);
-    });
-  };
+  // const handleProfile = () => {
+  //   launchImageLibrary({
+  //     mediaType: 'photo',
+  //     selectionLimit: 1,
+  //   }).then(response => {
+  //     formik.setFieldValue('profile_image', response.assets?.[0] ?? null);
+  //   });
+  // };
 
   const handleValidation = yup.object().shape({
     agency_name: yup.string().required('Agency name is required.'),
@@ -80,7 +75,7 @@ const SignupScreen = ({navigation, route}: SignupScreenProps) => {
       .array()
       .of(yup.mixed().required('Image is required'))
       .min(1, 'At least one image is required'),
-    profile_image: yup.mixed().notRequired(),
+    // profile_image: yup.mixed().notRequired(),
   });
 
   const formik = useFormik({
@@ -91,7 +86,7 @@ const SignupScreen = ({navigation, route}: SignupScreenProps) => {
       email: '',
       overview: '',
       images: [],
-      profile_image: null,
+      // profile_image: null,
     },
     validationSchema: handleValidation,
     onSubmit: values => {
@@ -119,43 +114,43 @@ const SignupScreen = ({navigation, route}: SignupScreenProps) => {
         });
       }
 
-      if (formik.values.profile_image) {
-        const image: any = formik.values.profile_image ?? null;
-        formData.append('image_url', {
-          uri: image.uri,
-          name: image.name || `image_${new Date().getTime()}.jpg`,
-          type: image.type || 'image/jpeg',
-        });
-      }
+      // if (formik.values.profile_image) {
+      //   const image: any = formik.values.profile_image ?? null;
+      //   formData.append('image_url', {
+      //     uri: image.uri,
+      //     name: image.name || `image_${new Date().getTime()}.jpg`,
+      //     type: image.type || 'image/jpeg',
+      //   });
+      // }
 
       navigation.navigate('WorkLocationScreen', {
         signupPayload: formData,
         token,
       });
 
-      axios
-        .patch(`${BASE_URL}${ENDPOINT.update_agent_profile}`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then(() => {
-          Toast.show({
-            type: 'success',
-            text1: 'Account created successfully',
-          });
-          navigation.navigate('HomeScreenStack', {
-            screen: 'HomeScreen',
-          });
-        })
-        .catch(error => {
-          console.log('error in handleSignup:', error);
-          Toast.show({
-            type: 'error',
-            text1: error?.response?.data?.message,
-          });
-        });
+      // axios
+      //   .patch(`${BASE_URL}${ENDPOINT.update_agent_profile}`, formData, {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       'Content-Type': 'multipart/form-data',
+      //     },
+      //   })
+      //   .then(() => {
+      //     Toast.show({
+      //       type: 'success',
+      //       text1: 'Account created successfully',
+      //     });
+      //     navigation.navigate('HomeScreenStack', {
+      //       screen: 'HomeScreen',
+      //     });
+      //   })
+      //   .catch(error => {
+      //     console.log('error in handleSignup:', error);
+      //     Toast.show({
+      //       type: 'error',
+      //       text1: error?.response?.data?.message,
+      //     });
+      //   });
     }
   };
 
@@ -216,7 +211,7 @@ const SignupScreen = ({navigation, route}: SignupScreenProps) => {
           Fill your information to continue
         </MagicText>
 
-        <TouchableOpacity style={styles.formView} onPress={handleProfile}>
+        {/* <TouchableOpacity style={styles.formView} onPress={handleProfile}>
           <View style={styles.roundView}>
             {formik.values.profile_image !== null ? (
               <Image
@@ -231,7 +226,7 @@ const SignupScreen = ({navigation, route}: SignupScreenProps) => {
               <CameraIcon />
             </View>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View>
           <TextField
@@ -365,7 +360,7 @@ const styles = StyleSheet.create({
   informationText: {
     fontSize: 12,
     color: COLORS.TEXT_GRAY,
-    marginTop: 16,
+    marginVertical: 15,
   },
   roundView: {
     width: 120,

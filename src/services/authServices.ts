@@ -102,12 +102,12 @@ export const handleAgentDetails = async (agentId: any) => {
   }
 };
 
-export const handleUserDetails = async (agentId: any) => {
+export const handleUserDetails = async (userId: any) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}${ENDPOINT.get_user_details}/${agentId}`,
+      `${BASE_URL}${ENDPOINT.get_user_details}/${userId}`,
     );
-    console.log('user', agentId, response?.data);
+    console.log('user', userId, response?.data);
     return response.data;
   } catch (error) {
     throw error;

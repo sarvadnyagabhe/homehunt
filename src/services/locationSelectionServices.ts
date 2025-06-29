@@ -12,9 +12,11 @@ const getAllCityList = async () => {
 
 const getAllAreasList = async (cityId: number) => {
   try {
-    const response = await axios.get(
-      `${BASE_URL}${ENDPOINT.get_areas}?cityId=${cityId}`,
-    );
+    let url = `${BASE_URL}${ENDPOINT.get_areas}`;
+    if (cityId) {
+      url += `?cityId=${cityId}`;
+    }
+    const response = await axios.get(url);
     return response.data;
   } catch (error) {
     throw error;

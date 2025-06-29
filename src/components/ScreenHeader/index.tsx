@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import CustomBack from '../CustomBack';
 import {HouseAppIcon} from '../../assets/icons';
 import {IMAGE} from '../../assets/images';
 import {useAppSelector} from '../../store';
+import {BASE_URL} from '../../constant/urls';
 
 interface ScreenHeaderProps {
   showBackBtn?: boolean;
@@ -18,7 +19,26 @@ const ScreenHeader = ({
   onPressProfile = () => {},
   onLoginPress = () => {},
 }: ScreenHeaderProps) => {
-  const {token} = useAppSelector(state => state.auth);
+  const [profileImageUrl, setProfielImageUrl] = useState('');
+  const {token, userData} = useAppSelector(state => state.auth);
+
+  useEffect(() => {
+    if (token && userData?.id) {
+      if (userData.role === 'agent') {
+        if (userData?.images?.length > 0) {
+          const url = `${BASE_URL}public/${userData.images[0]}`;
+          setProfielImageUrl(url);
+        } else {
+          setProfielImageUrl('');
+        }
+      } else {
+        //
+      }
+    } else {
+      setProfielImageUrl('');
+    }
+  }, [token, userData]);
+
   return (
     <View style={styles.parent}>
       {showBackBtn ? (
@@ -31,7 +51,12 @@ const ScreenHeader = ({
       <TouchableOpacity
         onPress={() => (token ? onPressProfile() : onLoginPress())}>
         <View style={styles.profileViewStyle}>
-          <Image source={IMAGE.AccountCircle} style={styles.profileImgStyle} />
+          <Image
+            source={
+              profileImageUrl ? {uri: profileImageUrl} : IMAGE.AccountCircle
+            }
+            style={styles.profileImgStyle}
+          />
         </View>
       </TouchableOpacity>
     </View>
@@ -53,7 +78,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 30,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
 });
 

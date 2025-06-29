@@ -30,6 +30,34 @@ export interface locationType {
 
 export interface workLocationType {
   location_id: number;
-  area_id: number;
-  city_id: number;
+  area_id: number | null;
+  city_id: number | null;
+}
+
+export interface globalLocationSearch {
+  city_name: string;
+  area_name: string;
+  locality_name: string;
+  id: number;
+}
+
+export interface AgentUserType {
+  agency_name: string;
+  agent_id: number;
+  email: string;
+  experience_years: string;
+  image_urls: string[];
+  languages_spoken: string[];
+  min_ranking: number;
+  name: string;
+  office_address: string | null;
+  phone: string;
+  rating: string;
+  sponsorship_status: number;
+  status: number;
+  whatsapp_number: number;
+  role: string;
+  id: number;
+  images: string[];
+  image_url: string;
 }

@@ -19,7 +19,9 @@ const RootNavigator = () => {
       dispatch(setToken(accessToken));
 
       const userData = await AsyncStorage.getItem('userData');
-      dispatch(setUserData(userData));
+      if (userData) {
+        dispatch(setUserData(JSON.parse(userData)));
+      }
 
       //get location data
       const locationData: any = await AsyncStorage.getItem('location');

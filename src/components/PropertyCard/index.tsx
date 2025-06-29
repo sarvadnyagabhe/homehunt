@@ -1,166 +1,179 @@
-import {Dimensions, StyleSheet, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import {
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import MagicText from '../MagicText';
 import RatingCard from '../RatingCard';
 import {COLORS} from '../../assets/colors';
 import {BookmarkIcon, GoogleLocationIcon, ShareIcon} from '../../assets/icons';
 import CustomSlider from '../CustomSlider';
-import FastImage from 'react-native-fast-image';
 import Share from 'react-native-share';
+import {AgentUserType} from '../../types';
+import {BASE_URL} from '../../constant/urls';
 
 type PropertyCardType = {
-  item: any;
+  item: AgentUserType;
   onBookmarkPress?: () => void;
+  onPress?: () => void;
+  containerStyle?: StyleProp<ViewStyle>;
 };
-const PropertyCard = ({item, onBookmarkPress = () => {}}: PropertyCardType) => {
-  const width = Dimensions.get('window').width - 36;
-  const styles = getStyles(width);
+
+const PropertyCard = ({
+  item,
+  onBookmarkPress = () => {},
+  onPress = () => {},
+  containerStyle = {},
+}: PropertyCardType) => {
   const handleShare = () => {
     const shareOptions = {
       title: 'Check this out!',
-      // message: '',
       url: 'https://example.com',
-      // social: Share.Social., // Optional, for specific platforms
     };
 
     Share.open(shareOptions)
       .then(res => console.log(res))
       .catch(err => err && console.log(err));
   };
-  return (
-    <View style={styles.parent}>
-      <View style={{}}>
-        <CustomSlider
-          sliderData={item?.image_urls}
-          containerStyle={styles.imageStyle}
-        />
-        {/* <FastImage source={{uri: item?.image_url}} style={styles.imageStyle} /> */}
 
+  return (
+    <Pressable style={[styles.parent, containerStyle]} onPress={onPress}>
+      <View>
+        <CustomSlider
+          sliderData={item.image_urls.map((image, index) => ({
+            id: index.toString(),
+            image: `${BASE_URL}public/${image}`,
+          }))}
+          imageStyle={styles.imageContainerStyle}
+          imageContainer={{height: 200}}
+        />
         <View style={styles.distanceAbosluteView}>
-          <View>
-            <MagicText style={styles.distanceText}>10 KM Away</MagicText>
-          </View>
+          <MagicText style={styles.distanceText}>10 KM Away</MagicText>
         </View>
-        {item?.isSponsored && (
-          <View style={styles.absoluteView}>
-            <MagicText
-              style={{color: COLORS.APP_RED, fontWeight: '700', marginTop: 8}}>
-              Sponsored
-            </MagicText>
+        {item.sponsorship_status ? (
+          <View style={styles.sponsoredView}>
+            <MagicText style={styles.sponsorText}>Sponsored</MagicText>
           </View>
-        )}
-        <View
-          style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-          }}>
+        ) : null}
+
+        <View style={styles.iconAbsoluteView}>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => onBookmarkPress()}>
               <View style={styles.bookmarkIconView}>
-                <BookmarkIcon
-                  color={item?.isBookmarked ? COLORS.APP_RED : COLORS.WHITE}
-                />
+                <BookmarkIcon color={COLORS.WHITE} />
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleShare()}>
+            <TouchableOpacity
+              onPress={() => handleShare()}
+              style={styles.shareIconContainer}>
               <ShareIcon />
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      <View style={styles.mainView}>
-        <View
-          style={[
-            styles.row,
-            {justifyContent: 'space-between', marginBottom: 8},
-          ]}>
-          <View style={{flex: 1, justifyContent: 'center'}}>
-            <MagicText style={styles.heading}>{item?.name}</MagicText>
+      <View style={styles.bottomContainer}>
+        <View style={styles.row}>
+          <View style={{flex: 1}}>
+            <MagicText style={styles.heading}>{item.agency_name}</MagicText>
           </View>
           <RatingCard rating={item?.rating ?? 0} />
         </View>
-        {/* <View style={[styles.row, {justifyContent: 'space-between'}]}>
-          <MagicText style={styles.ratingText}>
-            {item?.rating} Ratings
-          </MagicText>
-        </View> */}
-        <View style={[styles.row, {marginTop: 12}]}>
-          <GoogleLocationIcon />
-          <MagicText style={styles.addressText}>
-            {item?.office_address}
-          </MagicText>
-        </View>
+        {item?.office_address ? (
+          <View
+            style={[styles.row, {marginTop: 12, justifyContent: 'flex-start'}]}>
+            <View>
+              <GoogleLocationIcon />
+            </View>
+            <MagicText style={styles.addressText}>
+              {item.office_address}
+            </MagicText>
+          </View>
+        ) : null}
       </View>
-    </View>
+    </Pressable>
   );
 };
 
+const styles = StyleSheet.create({
+  parent: {
+    elevation: 4,
+    borderRadius: 12,
+    backgroundColor: COLORS.WHITE,
+  },
+  imageContainerStyle: {
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
+  },
+  distanceAbosluteView: {
+    position: 'absolute',
+    zIndex: 1,
+    left: 0,
+    bottom: 12,
+    backgroundColor: COLORS.WHITE_SMOKE,
+    borderBottomRightRadius: 20,
+    borderTopRightRadius: 20,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+  },
+  distanceText: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: COLORS.BLACK,
+  },
+  sponsoredView: {
+    position: 'absolute',
+    zIndex: 1,
+    top: 0,
+    left: 0,
+    backgroundColor: COLORS.WHITE_SMOKE,
+    padding: 6,
+    borderRadius: 4,
+  },
+  sponsorText: {
+    color: COLORS.APP_RED,
+    fontWeight: '700',
+  },
+  bookmarkIconView: {
+    backgroundColor: COLORS.SHADOW_COLOR,
+    borderRadius: 20,
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  iconAbsoluteView: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  shareIconContainer: {
+    backgroundColor: COLORS.SHADOW_COLOR,
+    borderRadius: 20,
+    padding: 4,
+  },
+  bottomContainer: {
+    padding: 15,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  heading: {
+    fontSize: 20,
+    lineHeight: 30,
+    fontWeight: 'bold',
+  },
+  addressText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: COLORS.TEXT_GRAY,
+    marginLeft: 10,
+  },
+});
 export default PropertyCard;
-const getStyles = (width: number) => {
-  return StyleSheet.create({
-    parent: {
-      marginVertical: 14,
-      elevation: 4,
-      marginHorizontal: 4,
-    },
-    imageStyle: {
-      width: width,
-      height: 220,
-      borderTopRightRadius: 22,
-      borderTopLeftRadius: 22,
-    },
-    heading: {
-      fontSize: 20,
-      fontWeight: '800',
-    },
-    mainView: {
-      backgroundColor: COLORS.WHITE_SMOKE,
-      paddingHorizontal: 12,
-      paddingVertical: 12,
-      borderBottomRightRadius: 22,
-      borderBottomLeftRadius: 22,
-      elevation: 4,
-    },
-    ratingText: {fontSize: 14, color: COLORS.TEXT_GRAY},
-    distanceText: {fontSize: 14, marginLeft: 8},
-    row: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    addressText: {
-      fontSize: 16,
-      color: COLORS.TEXT_GRAY,
-      marginLeft: 10,
-      height: 40,
-    },
-
-    distanceAbosluteView: {
-      position: 'absolute',
-      backgroundColor: COLORS.WHITE_SMOKE,
-      bottom: 12,
-      left: 0,
-      width: '28%',
-      borderBottomColor: COLORS.WHITE_SMOKE,
-      elevation: 4,
-      borderBottomRightRadius: 20,
-      borderTopRightRadius: 20,
-      paddingVertical: 2,
-    },
-
-    bookmarkIconView: {
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      borderRadius: 20,
-      width: 30,
-      height: 30,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: 8,
-    },
-    absoluteView: {
-      position: 'absolute',
-      bottom: 12,
-      right: 0,
-    },
-  });
-};

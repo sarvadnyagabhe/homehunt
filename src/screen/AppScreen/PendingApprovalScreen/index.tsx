@@ -16,12 +16,12 @@ import {useAppDispatch} from '../../../store';
 import {clearAuthState} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PendingApprovalScreen = ({}: PendingApprovalScreenProps) => {
+const PendingApprovalScreen = ({navigation}: PendingApprovalScreenProps) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     const backAction = () => {
-      Alert.alert('Are you sure want to exit app?', '', [
+      Alert.alert('Exit App', 'Do you really want to exit?', [
         {text: 'Exit', onPress: () => BackHandler.exitApp()},
         {text: 'Wait'},
       ]);
@@ -37,9 +37,19 @@ const PendingApprovalScreen = ({}: PendingApprovalScreenProps) => {
     };
   }, []);
 
-  const handleLogout = async () => {
-    dispatch(clearAuthState());
-    await AsyncStorage.setItem('token', '');
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to log out?', [
+      {text: 'Cancel'},
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          dispatch(clearAuthState());
+          await AsyncStorage.clear();
+          navigation.navigate('CitySelectionScreen');
+        },
+      },
+    ]);
   };
 
   return (

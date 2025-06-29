@@ -5,21 +5,27 @@ import {
   Platform,
   StyleSheet,
   View,
-  Pressable,
   ViewStyle,
   StyleProp,
+  ImageStyle,
 } from 'react-native';
 import {COLORS} from '../../assets/colors';
 import DotComponent from '../DotComponent';
 import FastImage from 'react-native-fast-image';
+
 type CustomSliderType = {
   sliderData: {id: string; image: string}[];
   containerStyle?: StyleProp<ViewStyle>;
+  imageContainer?: StyleProp<ViewStyle>;
+  imageStyle?: StyleProp<ImageStyle>;
   isHome?: boolean;
 };
+
 const CustomSlider = ({
   sliderData = [],
   containerStyle = {},
+  imageContainer = {},
+  imageStyle = {},
   isHome = false,
 }: CustomSliderType) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -59,7 +65,6 @@ const CustomSlider = ({
         horizontal
         pagingEnabled
         ref={scrollRef}
-        style={{}}
         scrollEventThrottle={16}
         snapToAlignment="center"
         snapToInterval={screenWidth}
@@ -69,17 +74,13 @@ const CustomSlider = ({
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => {
           return (
-            <Pressable>
-              <View style={styles.mainViewStyle}>
-                {
-                  <FastImage
-                    style={styles.outputBoxStyle}
-                    source={{uri: item.image}}
-                    resizeMode="cover"
-                  />
-                }
-              </View>
-            </Pressable>
+            <View style={[styles.mainViewStyle, imageContainer]}>
+              <FastImage
+                style={[styles.outputBoxStyle, imageStyle]}
+                source={{uri: item.image}}
+                resizeMode="cover"
+              />
+            </View>
           );
         }}
       />
@@ -117,7 +118,6 @@ export const getStyles = (screenWidth: number) => {
     outputBoxStyle: {
       height: '100%',
       width: '100%',
-      borderRadius: 10,
     },
     containerStyle: {
       alignItems: 'center',

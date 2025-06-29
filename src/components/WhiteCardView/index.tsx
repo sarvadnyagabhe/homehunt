@@ -1,14 +1,23 @@
 import React, {ReactNode} from 'react';
-import {View, StyleSheet, StyleProp, ViewStyle} from 'react-native';
+import {StyleSheet, StyleProp, ViewStyle, Pressable} from 'react-native';
 import {COLORS} from '../../assets/colors';
 
 interface WhiteCardViewType {
   cardStyle?: StyleProp<ViewStyle>;
   children?: ReactNode;
+  onPress?: () => void;
 }
 
-const WhiteCardView = ({cardStyle, ...props}: WhiteCardViewType) => {
-  return <View style={[styles.cardParent, cardStyle]}>{props.children}</View>;
+const WhiteCardView = ({
+  cardStyle,
+  onPress = () => {},
+  ...props
+}: WhiteCardViewType) => {
+  return (
+    <Pressable style={[styles.cardParent, cardStyle]} onPress={onPress}>
+      {props.children}
+    </Pressable>
+  );
 };
 
 const styles = StyleSheet.create({

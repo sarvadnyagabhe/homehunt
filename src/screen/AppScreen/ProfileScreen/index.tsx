@@ -1,122 +1,78 @@
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {memo, useEffect, useState} from 'react';
 import CustomBack from '../../../components/CustomBack';
 import MagicText from '../../../components/MagicText';
 import {COLORS} from '../../../assets/colors';
 import {
   BookmarkIcon,
-  CallIcon,
-  CameraIcon,
-  ContactUsIcon,
-  EmailIcon,
-  FormProfileIcon,
-  ProfileIcon,
+  LocationIcon,
   RightArrowIcon,
-  VerifiedIcon,
 } from '../../../assets/icons';
-import TextField from '../../../components/TextField';
-import {useFormik} from 'formik';
-import * as yup from 'yup';
-import Button from '../../../components/Button';
 import {ProfileScreennProps} from '../../../types/appTypes';
 import {useAppDispatch, useAppSelector} from '../../../store';
 import {clearAuthState} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   handleAgentDetails,
-  handleAgentUpdateProfile,
   handleUserDetails,
-  handleUserUpdateProfile,
 } from '../../../services/authServices';
-import Toast from 'react-native-toast-message';
-import {jwtDecode} from 'jwt-decode';
 import FastImage from 'react-native-fast-image';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {deleteUser} from '../../../services/HomeService';
-import HR from '../../../components/HR';
 import WhiteCardView from '../../../components/WhiteCardView';
-import {IMAGE} from '../../../assets/images';
 import {getFirstInitial} from '../../../utils';
+import {AgentUserType} from '../../../types';
+import {IMAGE} from '../../../assets/images';
+
+const UserMenuOptions = ['experthelp', 'bookmarks', 'accountSettings'];
+const AgentMenuOptions = ['bookmarks', 'locations', 'accountSettings'];
 
 const ProfileScreen = ({navigation}: ProfileScreennProps) => {
-  // ({navigation}: ProfileScreennProps) => {
-  //TODO: take agentID from redux after which is needs to store after login
-
-  const isVerified = true;
   const dispatch = useAppDispatch();
   const {token, userData} = useAppSelector(state => state.auth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [userDetails, setUserDetails] = useState<any>([]);
+  const [userDetails, setUserDetails] = useState<AgentUserType | null>(null);
+  const [options, setOptions] = useState<string[]>([]);
 
-  // const handleValidation = yup.object().shape({
-  //   name: yup.string().required('Name is required'),
-  //   phone: yup.string().required('Phone is required'),
-  //   email: yup.string().required('Email is required'),
-  //   whatsapp_number: yup.string().required('WhatsApp number is required'),
-  //   city: yup.string().required('City is required'),
-  //   experience_years: yup.string().required('Experience years is required'),
-  //   // image_url: yup.string().required('Image is required'),
-  // });
-
-  // const formik = useFormik({
-  //   initialValues: {
-  //     name: '',
-  //     phone: '',
-  //     email: '',
-  //     whatsapp_number: '',
-  //     city: '',
-  //     experience_years: '',
-  //     image_url: '',
-  //   },
-  //   validationSchema: handleValidation,
-  //   onSubmit: (values: any) => {
-  //     handleProfileUpdate(values);
-  //   },
-  // });
-
-  // //to update user and agent data
-  // const handleProfileUpdate = (values: any) => {
-  //   const API =
-  //     userData?.role == 'users'
-  //       ? handleUserUpdateProfile(values)
-  //       : handleAgentUpdateProfile(values);
-
-  //   API.then(res => {
-  //     console.log('res in handleProfileUpdate', res);
-  //     Toast.show({
-  //       type: 'success',
-  //       text1: res?.user?.message,
-  //     });
-  //   }).catch(error => {
-  //     console.log('error in handleProfileUpdate:', error?.response?.data);
-  //     Toast.show({
-  //       type: 'error',
-  //       text1: error?.response?.data?.message,
-  //     });
-  //   });
-  // };
+  useEffect(() => {
+    if (token && userData?.id) {
+      if (userData.role === 'agent') {
+        setOptions(AgentMenuOptions);
+      } else {
+        setOptions(UserMenuOptions);
+      }
+    } else {
+      setOptions([]);
+    }
+  }, [token, userData]);
 
   const handleLogout = async () => {
-    dispatch(clearAuthState());
-    await AsyncStorage.setItem('token', '');
+    Alert.alert('Logout', 'Are you sure you want to log out?', [
+      {text: 'Cancel'},
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          dispatch(clearAuthState());
+          await AsyncStorage.clear();
+          navigation.navigate('HomeScreen');
+        },
+      },
+    ]);
   };
 
   //to get  user and agent data
-  const getAgentDetails = () => {
+  const getDetails = (userId: number, role: string) => {
     setIsLoading(true);
     const API =
-      userData?.role == 'users'
-        ? handleUserDetails(userData?.Id)
-        : handleAgentDetails(userData?.Id);
+      role === 'agent' ? handleAgentDetails(userId) : handleUserDetails(userId);
 
     API.then(res => {
       setIsLoading(false);
@@ -131,213 +87,231 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   };
 
   useEffect(() => {
-    getAgentDetails();
-  }, []);
+    if (token && userData?.id) {
+      getDetails(userData.id, userData.role);
+    }
+  }, [token, userData?.id, userData?.role]);
 
   if (isLoading) {
     return <LoadingAndErrorComponent />;
   }
 
   //to delete user and agent
-  const handleDeleteUser = () => {
-    const payload = {
-      otp: '212551',
-    };
-    deleteUser(payload)
-      .then(res => {
-        console.log('res in delete user', res);
-        Toast.show({
-          type: 'success',
-          text1: res?.message,
-        });
-        handleLogout();
-      })
-      .catch(error => {
-        console.log('error', error);
-        Toast.show({
-          type: 'error',
-          text1: error?.response?.data?.message,
-        });
-      });
+  // const handleDeleteUser = () => {
+  //   const payload = {
+  //     otp: '212551',
+  //   };
+  //   deleteUser(payload)
+  //     .then(res => {
+  //       console.log('res in delete user', res);
+  //       Toast.show({
+  //         type: 'success',
+  //         text1: res?.message,
+  //       });
+  //       handleLogout();
+  //     })
+  //     .catch(error => {
+  //       console.log('error', error);
+  //       Toast.show({
+  //         type: 'error',
+  //         text1: error?.response?.data?.message,
+  //       });
+  //     });
+  // };
+
+  const renderOption = (option: string) => {
+    switch (option) {
+      case 'experthelp':
+        return (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ExpertsScreen')}
+            activeOpacity={0.7}>
+            <View style={styles.getHelpView}>
+              <MagicText style={styles.getHelpText}>Get Expert Help</MagicText>
+              <MagicText style={styles.sellbuyText}>
+                BUY | SELL | RENT
+              </MagicText>
+            </View>
+          </TouchableOpacity>
+        );
+
+      case 'bookmarks':
+        return (
+          <TouchableOpacity onPress={() => navigation.navigate('SavedScreen')}>
+            <View style={[styles.row, {justifyContent: 'space-between'}]}>
+              <View style={styles.row}>
+                <BookmarkIcon color={COLORS.BLACK} />
+                <MagicText style={{marginLeft: 12, fontSize: 16}}>
+                  Bookmarks
+                </MagicText>
+              </View>
+              <RightArrowIcon />
+            </View>
+          </TouchableOpacity>
+        );
+
+      case 'locations':
+        return (
+          <TouchableOpacity onPress={() => {}}>
+            <View style={[styles.row, {justifyContent: 'space-between'}]}>
+              <View style={styles.row}>
+                <LocationIcon />
+                <MagicText style={{marginLeft: 12, fontSize: 16}}>
+                  Locations
+                </MagicText>
+              </View>
+              <RightArrowIcon />
+            </View>
+          </TouchableOpacity>
+        );
+
+      case 'accountSettings':
+        return (
+          <TouchableOpacity onPress={() => navigation.navigate('SavedScreen')}>
+            <View style={[styles.row, {justifyContent: 'space-between'}]}>
+              <View style={styles.row}>
+                <Image source={IMAGE.SettingsIcon} style={styles.icon} />
+                <MagicText style={{marginLeft: 12, fontSize: 16}}>
+                  Account Settings
+                </MagicText>
+              </View>
+              <RightArrowIcon />
+            </View>
+          </TouchableOpacity>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const renderUserInfo = () => {
+    return (
+      <WhiteCardView cardStyle={styles.cardStyle}>
+        <View style={styles.formView}>
+          <View style={styles.roundView}>
+            {userDetails?.image_url ? (
+              <FastImage
+                source={{uri: userDetails?.image_url}}
+                style={styles.imageView}
+              />
+            ) : (
+              <MagicText style={styles.imageText}>
+                {getFirstInitial(userDetails?.name ?? '')}
+              </MagicText>
+            )}
+          </View>
+          <View>
+            <MagicText style={styles.userName}>{userDetails?.name}</MagicText>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('ProfileDetailScreen', {
+                  data: userDetails,
+                })
+              }>
+              <View style={styles.profileRow}>
+                <MagicText style={styles.editText}>Edit Profile</MagicText>
+                <RightArrowIcon color={COLORS.WHITE} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </WhiteCardView>
+    );
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={styles.parent}>
-        <ScrollView contentContainerStyle={{flex: 1}}>
-          <View style={styles.row}>
-            <CustomBack onPress={() => navigation.goBack()} />
-            <View style={styles.header}>
-              <MagicText style={styles.headerText}>Your Profile</MagicText>
-            </View>
-          </View>
-          <WhiteCardView cardStyle={styles.cardStyle}>
-            <View style={styles.formView}>
-              <View style={styles.roundView}>
-                {userDetails?.image_url ? (
-                  <FastImage
-                    source={{uri: userDetails?.image_url}}
-                    style={{width: '100%', height: '100%', borderRadius: 100}}
-                  />
-                ) : (
-                  // <ProfileIcon />
-                  <MagicText style={{fontSize: 18, fontWeight: '700'}}>
-                    {getFirstInitial(userDetails?.name)}
-                  </MagicText>
-                )}
-              </View>
-              <View>
-                <MagicText style={{fontSize: 20, marginBottom: 6}}>
-                  {userDetails?.name}
-                </MagicText>
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('ProfileDetailScreen', {
-                      data: userDetails,
-                    })
-                  }>
-                  <View
-                    style={[
-                      styles.row,
-                      {
-                        backgroundColor: COLORS.BLACK,
-                        borderRadius: 16,
-                        paddingHorizontal: 12,
-
-                        paddingVertical: 2,
-                      },
-                    ]}>
-                    <MagicText style={{fontSize: 14, color: COLORS.WHITE}}>
-                      Edit Profile
-                    </MagicText>
-                    <RightArrowIcon color={COLORS.WHITE} />
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-            {/* <HR /> */}
-          </WhiteCardView>
-
-          <WhiteCardView cardStyle={[styles.cardStyle]}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ExpertsScreen')}
-              activeOpacity={0.7}>
-              <View style={styles.getHelpView}>
-                <MagicText style={styles.getHelpText}>
-                  Get Expert Help
-                </MagicText>
-                <MagicText style={styles.sellbuyText}>
-                  BUY | SELL | RENT
-                </MagicText>
-              </View>
-              {/* <Image
-                source={IMAGE.GET_EXPERT_HELP}
-                style={{width: '100%', height: '100%'}}
-              /> */}
-            </TouchableOpacity>
-          </WhiteCardView>
-
-          <WhiteCardView cardStyle={styles.cardStyle}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('SavedScreen')}>
-              <View style={[styles.row, {justifyContent: 'space-between'}]}>
-                <View style={styles.row}>
-                  <BookmarkIcon color={COLORS.BLACK} />
-                  <MagicText style={{marginLeft: 12, fontSize: 16}}>
-                    Bookmarks
-                  </MagicText>
-                </View>
-                <RightArrowIcon />
-              </View>
-            </TouchableOpacity>
-          </WhiteCardView>
-
-          {/* <WhiteCardView cardStyle={styles.cardStyle}>
-            <View style={[styles.row, {justifyContent: 'space-between'}]}>
-              <MagicText style={{fontSize: 16}}>Join us</MagicText>
-              <RightArrowIcon />
-            </View>
-          </WhiteCardView> */}
-
-          <WhiteCardView cardStyle={styles.cardStyle}>
-            <View style={[styles.row, {justifyContent: 'space-between'}]}>
-              <View style={styles.row}>
-                <ContactUsIcon />
-                <MagicText style={{fontSize: 16, marginLeft: 12}}>
-                  Contact us
-                </MagicText>
-              </View>
-              <RightArrowIcon />
-            </View>
-          </WhiteCardView>
-
-          {/* <WhiteCardView cardStyle={styles.cardStyle}>
-            <View style={[styles.row, {justifyContent: 'space-between'}]}>
-              <MagicText style={{fontSize: 16}}>Terms And Conditions</MagicText>
-              <RightArrowIcon />
-            </View>
-          </WhiteCardView> */}
-
-          <View
-            style={{
-              marginTop: 30,
-            }}>
-            <Button
-              label="Delete Account"
-              type="OUTLINE"
-              onPress={() => handleDeleteUser()}
-              labelStyle={{fontSize: 14, fontWeight: '800'}}
-              style={{
-                // marginTop: 16,
-                marginBottom: 14,
-                borderColor: COLORS.RED,
-                marginHorizontal: 30,
-              }}
-            />
-          </View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'flex-end',
-              marginBottom: 24,
-              // alignItems: 'flex-end',
-            }}>
-            <TouchableOpacity onPress={() => handleLogout()}>
-              <MagicText
-                style={{fontSize: 18, color: COLORS.RED, fontWeight: '800'}}>
-                Log Out
-              </MagicText>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+    <SafeAreaView style={styles.parentView}>
+      <View style={styles.headerRow}>
+        <CustomBack onPress={() => navigation.goBack()} />
+        <View style={styles.header}>
+          <MagicText style={styles.headerText}>Your Profile</MagicText>
+        </View>
       </View>
+
+      <ScrollView contentContainerStyle={styles.parent}>
+        {renderUserInfo()}
+        {options.map(option => {
+          return (
+            <WhiteCardView cardStyle={styles.cardStyle}>
+              {renderOption(option)}
+            </WhiteCardView>
+          );
+        })}
+
+        <WhiteCardView
+          cardStyle={styles.cardStyle}
+          onPress={() => handleLogout()}>
+          <View style={[styles.row, {justifyContent: 'space-between'}]}>
+            <View style={styles.row}>
+              <Image source={IMAGE.LogoutIcon} style={styles.icon} />
+              <MagicText style={styles.logoutText}>Logout</MagicText>
+            </View>
+            <RightArrowIcon />
+          </View>
+        </WhiteCardView>
+
+        {/* <WhiteCardView cardStyle={styles.cardStyle}>
+          <View style={[styles.row, {justifyContent: 'space-between'}]}>
+            <View style={styles.row}>
+              <ContactUsIcon />
+              <MagicText style={{fontSize: 16, marginLeft: 12}}>
+                Contact us
+              </MagicText>
+            </View>
+            <RightArrowIcon />
+          </View>
+        </WhiteCardView> */}
+
+        {/* <View
+          style={{
+            marginTop: 30,
+          }}>
+          <Button
+            label="Delete Account"
+            type="OUTLINE"
+            onPress={() => handleDeleteUser()}
+            labelStyle={{fontSize: 14, fontWeight: '800'}}
+            style={{
+              // marginTop: 16,
+              marginBottom: 14,
+              borderColor: COLORS.RED,
+              marginHorizontal: 30,
+            }}
+          />
+        </View> */}
+      </ScrollView>
     </SafeAreaView>
   );
 };
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
-  parent: {
+  parentView: {
     flex: 1,
     backgroundColor: COLORS.WHITE_SMOKE,
-    paddingTop: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+  },
+  parent: {
+    flex: 1,
+    paddingHorizontal: 15,
+  },
+  headerRow: {
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardStyle: {
+    marginBottom: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  cardStyle: {
-    marginTop: 20,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
   header: {
     flex: 1,
     alignItems: 'center',
-    marginLeft: -22,
-    marginRight: 22,
   },
   headerText: {
     fontSize: 16,
@@ -400,4 +374,38 @@ const styles = StyleSheet.create({
   logout: {fontSize: 16, fontWeight: '700', color: COLORS.RED},
   contactText: {fontSize: 14, fontWeight: '700', marginBottom: 8},
   contactValueText: {fontSize: 14, fontWeight: '600'},
+  imageView: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 100,
+  },
+  imageText: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  userName: {
+    fontSize: 20,
+    marginBottom: 6,
+  },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.BLACK,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 2,
+  },
+  editText: {
+    fontSize: 14,
+    color: COLORS.WHITE,
+  },
+  icon: {
+    width: 18,
+    height: 18,
+  },
+  logoutText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: COLORS.APP_RED,
+  },
 });

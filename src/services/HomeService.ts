@@ -2,10 +2,21 @@ import axios from 'axios';
 import {BASE_URL, ENDPOINT} from '../constant/urls';
 
 const getAllAgentList = async (id: number) => {
+  const url = `${BASE_URL}${ENDPOINT.get_agent_by_location}?locationId=${id}`;
   try {
-    const response = await axios.get(
-      `${BASE_URL}${ENDPOINT.get_agent_by_location}?locationId=${id}`,
-    );
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getPublicAgentList = async (id: number) => {
+  const url = `${BASE_URL}${ENDPOINT.public_agents}${id}`;
+  console.log({url});
+
+  try {
+    const response = await axios.get(url);
     return response.data;
   } catch (error) {
     throw error;
@@ -47,4 +58,10 @@ const deleteUser = async (payload: any) => {
   }
 };
 
-export {getAllAgentList, getAgentDetailsById, handleInteraction, deleteUser};
+export {
+  getAllAgentList,
+  getAgentDetailsById,
+  handleInteraction,
+  deleteUser,
+  getPublicAgentList,
+};

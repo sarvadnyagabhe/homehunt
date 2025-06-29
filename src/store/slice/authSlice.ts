@@ -1,14 +1,15 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {AgentUserType} from '../../types';
 interface authSliceState {
   token: string | null;
-  userData: {role: string; Id: number | null};
+  userData: AgentUserType | null;
   isOnBoardingComplete: boolean;
   isLoading?: boolean;
 }
 
 const initialState: authSliceState = {
   token: null,
-  userData: {role: '', Id: null},
+  userData: null,
   isOnBoardingComplete: false,
   isLoading: false,
 };
