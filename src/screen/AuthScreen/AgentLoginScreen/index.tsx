@@ -1,6 +1,7 @@
 import {
   Alert,
   BackHandler,
+  Linking,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -14,6 +15,8 @@ import {AgentLoginScreenProps} from '../../../types/authTypes';
 import Toast from 'react-native-toast-message';
 import {handleAgentLogin} from '../../../services/authServices';
 import {HouseAppIcon} from '../../../assets/icons';
+import {Link} from '@react-navigation/native';
+import {BASE_URL} from '../../../constant/urls';
 
 const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
   const [mobile, setMobile] = useState('');
@@ -95,10 +98,17 @@ const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
           By continuing, you agree to our
         </MagicText>
         <View style={styles.textRow}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(`${BASE_URL}/v1/auth/terms`);
+            }}>
             <MagicText style={styles.termsText}>Terms of Service</MagicText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.horizontalView}>
+          <TouchableOpacity
+            style={styles.horizontalView}
+            onPress={() => {
+              Linking.openURL(`${BASE_URL}v1/auth/privacy-policy`);
+            }}>
             <MagicText style={styles.termsText}>Privacy Policy</MagicText>
           </TouchableOpacity>
           <TouchableOpacity>

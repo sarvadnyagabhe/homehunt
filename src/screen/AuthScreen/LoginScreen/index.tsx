@@ -3,6 +3,7 @@ import {
   Alert,
   BackHandler,
   Image,
+  Linking,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -15,6 +16,7 @@ import Button from '../../../components/Button';
 import {LoginScreenProps} from '../../../types/authTypes';
 import {handleUserLogin} from '../../../services/authServices';
 import Toast from 'react-native-toast-message';
+import {BASE_URL} from '../../../constant/urls';
 
 const LoginScreen = ({navigation}: LoginScreenProps) => {
   const [mobile, setMobile] = useState('');
@@ -90,10 +92,17 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
           By continuing, you agree to our
         </MagicText>
         <View style={styles.textRow}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(`${BASE_URL}/v1/auth/terms`);
+            }}>
             <MagicText style={styles.termsText}>Terms of Service</MagicText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.horizontalView}>
+          <TouchableOpacity
+            style={styles.horizontalView}
+            onPress={() => {
+              Linking.openURL(`${BASE_URL}v1/auth/privacy-policy`);
+            }}>
             <MagicText style={styles.termsText}>Privacy Policy</MagicText>
           </TouchableOpacity>
           <TouchableOpacity>

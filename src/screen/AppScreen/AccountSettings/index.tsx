@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, SafeAreaView, StyleSheet, View} from 'react-native';
+import {Alert, Linking, SafeAreaView, StyleSheet, View} from 'react-native';
 import {AccountSettingsProps} from '../../../types/appTypes';
 import {COLORS} from '../../../assets/colors';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {clearAuthState} from '../../../store/slice/authSlice';
 import Toast from 'react-native-toast-message';
 import {useAppDispatch, useAppSelector} from '../../../store';
+import {BASE_URL} from '../../../constant/urls';
 
 const AccountSettings = ({navigation}: AccountSettingsProps) => {
   const dispatch = useAppDispatch();
@@ -52,7 +53,11 @@ const AccountSettings = ({navigation}: AccountSettingsProps) => {
       <View style={styles.container}>
         <MagicText style={styles.titleText}>Account Settings</MagicText>
 
-        <WhiteCardView cardStyle={styles.cardStyle}>
+        <WhiteCardView
+          cardStyle={styles.cardStyle}
+          onPress={() => {
+            Linking.openURL(`${BASE_URL}v1/auth/about-us`);
+          }}>
           <View style={styles.row}>
             <ContactUsIcon />
             <MagicText style={styles.label}>About US</MagicText>
@@ -60,7 +65,7 @@ const AccountSettings = ({navigation}: AccountSettingsProps) => {
           <RightArrowIcon />
         </WhiteCardView>
 
-        <WhiteCardView cardStyle={styles.cardStyle}>
+        <WhiteCardView cardStyle={styles.cardStyle} onPress={() => {}}>
           <View style={styles.row}>
             <ContactUsIcon />
             <MagicText style={styles.label}>Contact US</MagicText>
@@ -68,7 +73,11 @@ const AccountSettings = ({navigation}: AccountSettingsProps) => {
           <RightArrowIcon />
         </WhiteCardView>
 
-        <WhiteCardView cardStyle={styles.cardStyle}>
+        <WhiteCardView
+          cardStyle={styles.cardStyle}
+          onPress={() => {
+            Linking.openURL(`${BASE_URL}v1/auth/terms`);
+          }}>
           <View style={styles.row}>
             <ContactUsIcon />
             <MagicText style={styles.label}>Terms and Conditions</MagicText>
@@ -76,7 +85,11 @@ const AccountSettings = ({navigation}: AccountSettingsProps) => {
           <RightArrowIcon />
         </WhiteCardView>
 
-        <WhiteCardView cardStyle={styles.cardStyle}>
+        <WhiteCardView
+          cardStyle={styles.cardStyle}
+          onPress={() => {
+            Linking.openURL(`${BASE_URL}v1/auth/privacy-policy`);
+          }}>
           <View style={styles.row}>
             <ContactUsIcon />
             <MagicText style={styles.label}>Privacy Policies</MagicText>
