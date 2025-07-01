@@ -14,9 +14,9 @@ import Button from '../../../components/Button';
 import {AgentLoginScreenProps} from '../../../types/authTypes';
 import Toast from 'react-native-toast-message';
 import {handleAgentLogin} from '../../../services/authServices';
-import {HouseAppIcon} from '../../../assets/icons';
-import {Link} from '@react-navigation/native';
+
 import {BASE_URL} from '../../../constant/urls';
+import CustomBack from '../../../components/CustomBack';
 
 const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
   const [mobile, setMobile] = useState('');
@@ -65,10 +65,9 @@ const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
     <View style={styles.parent}>
       <View>
         <View style={styles.headerView}>
-          <View style={{alignItems: 'center'}}>
-            <HouseAppIcon />
-            <MagicText style={styles.title}>Welcome! To Our Team</MagicText>
-          </View>
+          <CustomBack onPress={() => navigation.navigate('LoginScreen')} />
+          <MagicText style={styles.title}>Welcome,</MagicText>
+          <MagicText style={styles.subTitle}>To Our Team</MagicText>
         </View>
 
         <TextField
@@ -89,11 +88,6 @@ const AgentLoginScreen = ({navigation}: AgentLoginScreenProps) => {
         />
       </View>
       <View style={styles.bottomView}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('LoginScreen')}
-          style={styles.agentBtn}>
-          <MagicText style={styles.agentText}>User Log In</MagicText>
-        </TouchableOpacity>
         <MagicText style={styles.termsHeaderText}>
           By continuing, you agree to our
         </MagicText>
@@ -125,6 +119,7 @@ export default AgentLoginScreen;
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
+    backgroundColor: COLORS.WHITE,
   },
   logoStyle: {
     width: '100%',
@@ -148,7 +143,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 0.4,
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: COLORS.WHITE_SMOKE,
     marginHorizontal: 15,
   },
   btnStyle: {
@@ -184,19 +179,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.GRAY,
     marginHorizontal: 10,
   },
-  agentBtn: {
-    borderWidth: 2,
-    borderRadius: 25,
-    borderColor: COLORS.TEXT_GRAY,
-    paddingHorizontal: 12,
-    marginBottom: 25,
-  },
-  agentText: {
-    fontSize: 14,
-    lineHeight: 21,
-    color: COLORS.TEXT_GRAY,
-    fontWeight: '700',
-  },
+
   agentText1: {
     fontSize: 12,
     color: COLORS.WHITE,
@@ -224,12 +207,21 @@ const styles = StyleSheet.create({
   },
   headerView: {
     padding: 15,
-    marginBottom: 25,
+    marginBottom: 50,
   },
   title: {
-    fontSize: 24,
-    lineHeight: 34,
+    fontSize: 30,
+    lineHeight: 40,
     color: COLORS.BLACK,
-    fontWeight: '700',
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginLeft: 25,
+  },
+  subTitle: {
+    fontSize: 30,
+    lineHeight: 40,
+    color: COLORS.BLACK,
+    fontWeight: 'bold',
+    marginLeft: 40,
   },
 });

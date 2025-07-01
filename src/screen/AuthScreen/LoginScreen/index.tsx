@@ -86,7 +86,7 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
         <TouchableOpacity
           onPress={() => navigation.navigate('AgentLoginScreen')}
           style={styles.agentBtn}>
-          <MagicText style={styles.agentText}>Agent Log In</MagicText>
+          <MagicText style={styles.agentText}>Agent Log in</MagicText>
         </TouchableOpacity>
         <MagicText style={styles.termsHeaderText}>
           By continuing, you agree to our
@@ -119,6 +119,7 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
+    backgroundColor: COLORS.WHITE,
   },
   logoStyle: {
     width: '100%',
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 0.4,
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: COLORS.WHITE_SMOKE,
     marginHorizontal: 15,
   },
   btnStyle: {
@@ -179,17 +180,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   agentBtn: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 25,
-    borderColor: COLORS.TEXT_GRAY,
+    borderColor: COLORS.GRAY,
     paddingHorizontal: 12,
     marginBottom: 25,
   },
   agentText: {
     fontSize: 14,
     lineHeight: 21,
-    color: COLORS.TEXT_GRAY,
-    fontWeight: '700',
+    color: COLORS.GRAY,
+    // fontWeight: '700',
   },
   agentText1: {
     fontSize: 12,
