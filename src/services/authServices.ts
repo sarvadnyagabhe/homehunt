@@ -131,6 +131,11 @@ export const handleUserUpdateProfile = async (payload: any) => {
     const response = await axios.patch(
       `${BASE_URL}${ENDPOINT.update_agent_profile}`,
       payload,
+      {
+        headers: {
+          'content-Type': 'multipart/form-data',
+        },
+      },
     );
     return response.data;
   } catch (error) {

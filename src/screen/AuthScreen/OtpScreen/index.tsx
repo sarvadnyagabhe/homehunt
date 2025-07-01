@@ -48,7 +48,7 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
       otp: Number(otp),
     };
     VerifyUserOtp(payload)
-      .then(res => {
+      .then(async res => {
         Toast.show({
           type: 'success',
           text1: res?.message,
@@ -56,36 +56,47 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
 
         const token = res?.tokens?.refresh?.token ?? '';
         const userId = res?.UserId ?? '';
+        dispatch(setToken(token));
+        dispatch(setUserData({role: res?.role, id: userId, name: 'User Name'}));
+        await AsyncStorage.setItem(
+          'userData',
+          JSON.stringify({role: res?.role, id: userId, name: 'User Name'}),
+        );
+        await AsyncStorage.setItem('token', token);
+        await AsyncStorage.setItem('role', res?.role);
+        setAxiosInterceptor(token, dispatch);
+        navigation.navigate('HomeScreenStack', {
+          screen: 'HomeScreen',
+        });
+        // if (userId && token) {
+        //   getUserDetails(userId, token).then(async response => {
+        //     if (response?.id) {
+        //       const userData: any = response ?? {};
 
-        if (userId && token) {
-          getUserDetails(userId, token).then(async response => {
-            if (response?.id) {
-              const userData: any = response ?? {};
-
-              if (!userData?.name) {
-                navigation.navigate('UserSignupScreen', {
-                  mobile_number: mobile,
-                  token,
-                  user_id: userId,
-                  role: res?.role,
-                });
-                return;
-              }
-              dispatch(setToken(token));
-              dispatch(setUserData({...response}));
-              await AsyncStorage.setItem('token', token);
-              await AsyncStorage.setItem('role', res?.role);
-              setAxiosInterceptor(token, dispatch);
-              navigation.navigate('HomeScreenStack', {
-                screen: 'HomeScreen',
-              });
-            }
-          });
-        } else {
-          navigation.navigate('HomeScreenStack', {
-            screen: 'HomeScreen',
-          });
-        }
+        //       if (!userData?.name) {
+        //         navigation.navigate('UserSignupScreen', {
+        //           mobile_number: mobile,
+        //           token,
+        //           user_id: userId,
+        //           role: res?.role,
+        //         });
+        //         return;
+        //       }
+        //       dispatch(setToken(token));
+        //       dispatch(setUserData({...response}));
+        //       await AsyncStorage.setItem('token', token);
+        //       await AsyncStorage.setItem('role', res?.role);
+        //       setAxiosInterceptor(token, dispatch);
+        //       navigation.navigate('HomeScreenStack', {
+        //         screen: 'HomeScreen',
+        //       });
+        //     }
+        //   });
+        // } else {
+        //   navigation.navigate('HomeScreenStack', {
+        //     screen: 'HomeScreen',
+        //   });
+        // }
       })
       .catch(error => {
         console.log('error while verifying otp in handleUserVerifyOtp', error);
@@ -151,6 +162,10 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
                 dispatch(setToken(token));
                 dispatch(setUserData({...agentData}));
                 await AsyncStorage.setItem('token', token);
+                await AsyncStorage.setItem(
+                  'userData',
+                  JSON.stringify(agentData),
+                );
                 await AsyncStorage.setItem('role', res?.role);
                 await AsyncStorage.setItem(
                   'userData',

@@ -12,7 +12,7 @@ type MainStackParamList = {
 
 type HomeScreenStackParamList = {
   HomeScreen: any;
-  ProprtyDetailScreen: any;
+  ProprtyDetailScreen: {agent_id: number};
   AddReviewScreen: any;
   ProfileScreen: any;
   ExpertsScreen: any;

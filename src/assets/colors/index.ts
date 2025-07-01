@@ -12,4 +12,7 @@ export enum COLORS {
   'APP_RED' = '#FA003F',
   'SHADOW_COLOR' = '#00000029',
   'BLUE' = '#0000FF',
+  'DARK_GRAY' = '#8a8a8a',
+  'MODAL_BACKGROUND' = 'rgba(0,0,0,0.7)',
+  'MODAL_CONTAINER' = '#6B6B6B',
 }

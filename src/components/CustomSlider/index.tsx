@@ -8,6 +8,7 @@ import {
   ViewStyle,
   StyleProp,
   ImageStyle,
+  Pressable,
 } from 'react-native';
 import {COLORS} from '../../assets/colors';
 import DotComponent from '../DotComponent';
@@ -19,6 +20,7 @@ type CustomSliderType = {
   imageContainer?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
   isHome?: boolean;
+  onPress?: () => void;
 };
 
 const CustomSlider = ({
@@ -27,6 +29,7 @@ const CustomSlider = ({
   imageContainer = {},
   imageStyle = {},
   isHome = false,
+  onPress = () => {},
 }: CustomSliderType) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const scrollRef = useRef<FlatList>(null);
@@ -59,7 +62,7 @@ const CustomSlider = ({
   const styles = getStyles(screenWidth);
 
   return (
-    <View style={containerStyle}>
+    <Pressable style={containerStyle} onPress={onPress}>
       <FlatList
         data={sliderData}
         horizontal
@@ -76,7 +79,7 @@ const CustomSlider = ({
           return (
             <View style={[styles.mainViewStyle, imageContainer]}>
               <FastImage
-                style={[styles.outputBoxStyle, imageStyle]}
+                style={[styles.outputBoxStyle, imageStyle as any]}
                 source={{uri: item.image}}
                 resizeMode="cover"
               />
@@ -99,7 +102,7 @@ const CustomSlider = ({
             })
           : null}
       </View>
-    </View>
+    </Pressable>
   );
 };
 

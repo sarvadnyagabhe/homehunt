@@ -1,16 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import CustomBack from '../CustomBack';
-import {HouseAppIcon} from '../../assets/icons';
 import {IMAGE} from '../../assets/images';
 import {useAppSelector} from '../../store';
 import {BASE_URL} from '../../constant/urls';
+import {COLORS} from '../../assets/colors';
+import MagicText from '../MagicText';
 
 interface ScreenHeaderProps {
   showBackBtn?: boolean;
   onBackPress?: () => void;
   onPressProfile?: () => void;
   onLoginPress?: () => void;
+  onHomePress?: () => void;
 }
 
 const ScreenHeader = ({
@@ -18,26 +20,36 @@ const ScreenHeader = ({
   onBackPress = () => {},
   onPressProfile = () => {},
   onLoginPress = () => {},
+  onHomePress = () => {},
 }: ScreenHeaderProps) => {
-  const [profileImageUrl, setProfielImageUrl] = useState('');
   const {token, userData} = useAppSelector(state => state.auth);
 
-  useEffect(() => {
-    if (token && userData?.id) {
-      if (userData.role === 'agent') {
-        if (userData?.images?.length > 0) {
-          const url = `${BASE_URL}public/${userData.images[0]}`;
-          setProfielImageUrl(url);
-        } else {
-          setProfielImageUrl('');
-        }
-      } else {
-        //
-      }
-    } else {
-      setProfielImageUrl('');
+  const getProfileImage = () => {
+    if (userData?.role === 'agent') {
+      return (
+        <View style={styles.profileView}>
+          <MagicText style={styles.userNameText}>
+            {userData?.agency_name[0].toUpperCase()}
+          </MagicText>
+        </View>
+      );
     }
-  }, [token, userData]);
+    if (userData?.image) {
+      const url = `${BASE_URL}public/${userData?.image}`;
+      return (
+        <View style={styles.profileViewStyle}>
+          <Image source={{uri: url}} style={styles.profileImgStyle} />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.profileView}>
+        <MagicText style={styles.userNameText}>
+          {userData?.name[0].toUpperCase()}
+        </MagicText>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.parent}>
@@ -47,18 +59,19 @@ const ScreenHeader = ({
         <View style={{width: 40}} />
       )}
 
-      <HouseAppIcon />
-      <TouchableOpacity
-        onPress={() => (token ? onPressProfile() : onLoginPress())}>
-        <View style={styles.profileViewStyle}>
-          <Image
-            source={
-              profileImageUrl ? {uri: profileImageUrl} : IMAGE.AccountCircle
-            }
-            style={styles.profileImgStyle}
-          />
-        </View>
+      <TouchableOpacity style={styles.logoSection} onPress={onHomePress}>
+        <Image source={IMAGE.HouseAppLogo} style={styles.image} />
       </TouchableOpacity>
+
+      {token ? (
+        <TouchableOpacity onPress={() => onPressProfile()}>
+          {getProfileImage()}
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity onPress={() => onLoginPress()}>
+          <MagicText style={styles.btnText}>Login</MagicText>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -68,7 +81,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
+    backgroundColor: COLORS.WHITE,
+    paddingVertical: 10,
   },
   profileViewStyle: {
     width: 30,
@@ -79,6 +94,35 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 30,
     resizeMode: 'cover',
+  },
+  image: {
+    width: 100,
+    height: 40,
+    resizeMode: 'cover',
+  },
+  btnText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: '700',
+    color: COLORS.APP_RED,
+  },
+  logoSection: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  profileView: {
+    width: 40,
+    height: 40,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.WHITE_SMOKE,
+  },
+  userNameText: {
+    fontSize: 18,
+    lineHeight: 24,
+    color: COLORS.BLACK,
+    fontWeight: 'bold',
   },
 });
 

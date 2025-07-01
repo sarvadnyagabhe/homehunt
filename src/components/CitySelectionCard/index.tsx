@@ -63,7 +63,7 @@ const getStyles = (width: number) => {
       height: 160,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: COLORS.WHITE,
+      backgroundColor: COLORS.WHITE_SMOKE,
       marginRight: 5,
       marginLeft: 5,
       marginBottom: 10,

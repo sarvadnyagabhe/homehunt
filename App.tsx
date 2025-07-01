@@ -16,10 +16,7 @@ import {COLORS} from './src/assets/colors';
 const App = () => {
   return (
     <SafeAreaView style={styles.parent}>
-      <StatusBar
-        backgroundColor={COLORS.WHITE_SMOKE}
-        barStyle={'dark-content'}
-      />
+      <StatusBar backgroundColor={COLORS.WHITE} barStyle={'dark-content'} />
       <Provider store={store}>
         <RootNavigator />
         <Toast />
@@ -33,7 +30,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop:
       Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 + 10 : 0,
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
   },
 });
 

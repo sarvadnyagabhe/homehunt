@@ -23,6 +23,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: COLORS.WHITE_SMOKE,
   },
 });

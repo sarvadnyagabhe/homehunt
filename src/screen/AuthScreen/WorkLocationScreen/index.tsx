@@ -143,7 +143,6 @@ const WorkLocationScreen = ({navigation, route}: WorkLocationScreenProps) => {
       })
       .then(() => {
         const payload = {location: locations};
-        console.log({payload});
 
         axios
           .post(`${BASE_URL}${ENDPOINT.work_location}`, payload, {

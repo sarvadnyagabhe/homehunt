@@ -64,7 +64,7 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
       whatsapp_number: '',
       city: '',
       experience_years: '',
-      image_url: '',
+      image: '',
       description: '',
     },
     validationSchema: handleValidation,
@@ -75,10 +75,25 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
 
   //to update user and agent data
   const handleProfileUpdate = (values: any) => {
-    const API =
-      userData?.role === 'users'
-        ? handleUserUpdateProfile(values)
-        : handleAgentUpdateProfile(values);
+    const formData = new FormData();
+    formData.append('name', values.name);
+    formData.append('email', values.email);
+    formData.append('dob', '25/06/1997');
+    formData.append('image', {
+      uri: values.image.uri,
+      name: values.image.name || `image_user_profile.jpg`,
+      type: values.image.type || 'image/jpeg',
+    });
+    formData.append('location', {
+      address: '1234 Sunset Blvd, Los Angeles, CA 90026',
+      latitude: 34.09000912,
+      longitude: -118.27498032,
+    });
+
+    const API = handleUserUpdateProfile(formData);
+    // userData?.role === 'users'
+    //   ? handleUserUpdateProfile(formData)
+    //   : handleAgentUpdateProfile(values);
 
     API.then(res => {
       console.log('res in handleProfileUpdate', res);
@@ -108,8 +123,8 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
-        console.log('Image URI: ', response.assets[0].uri);
-        formik.setFieldValue('image_url', response.assets[0].uri);
+        console.log('Image URI: ', response.assets[0]);
+        formik.setFieldValue('image', response.assets[0]);
       }
     });
   };
@@ -142,9 +157,9 @@ const ProfileDetailScreen = ({navigation, route}: ProfileDetailScreenProps) => {
       });
   };
 
-  useEffect(() => {
-    formik.setValues(userDetails);
-  }, []);
+  // useEffect(() => {
+  //   formik.setValues(userDetails);
+  // }, []);
   //   if (isLoading) {
   //     return <LoadingAndErrorComponent />;
   //   }

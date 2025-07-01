@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import MagicText from '../../../components/MagicText';
 import SearchContainer from '../../../components/SearchContainer';
 import CitySelectionCard from '../../../components/CitySelectionCard';
 import {COLORS} from '../../../assets/colors';
@@ -127,17 +126,18 @@ const CitySelectionScreen = ({navigation}: CitySelectionScreenProps) => {
             screen: 'LoginScreen',
           });
         }}
+        onHomePress={() => navigation.navigate('HomeScreen')}
       />
       <View style={styles.container}>
         <SearchContainer
-          placeholder={'Search for city'}
+          placeholder={'Search City'}
           style={styles.searchStyle}
           onChangeText={handleTextChange}
           searchValue={searchText}
           rightIcon={renderRightIcon()}
         />
 
-        <MagicText style={styles.titleText}>Select your city</MagicText>
+        {/* <MagicText style={styles.titleText}>Select your city</MagicText> */}
 
         <FlatList
           data={searchText ? filteredList : locationsList}
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
   },
   parent: {
     flex: 1,

@@ -1,8 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {AgentUserType} from '../../types';
+import {AgentUserType, UserType} from '../../types';
 interface authSliceState {
   token: string | null;
-  userData: AgentUserType | null;
+  userData: (AgentUserType & UserType) | null;
   isOnBoardingComplete: boolean;
   isLoading?: boolean;
 }

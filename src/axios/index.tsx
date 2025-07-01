@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError, AxiosRequestConfig} from 'axios';
 import {clearAuthState} from '../store/slice/authSlice';
 import {Dispatch} from '@reduxjs/toolkit';
-import {Platform} from 'react-native';
 
 export const setAxiosInterceptor = async (token: any, dispatch: Dispatch) => {
   const headers = {
@@ -34,7 +33,7 @@ export const setAxiosInterceptor = async (token: any, dispatch: Dispatch) => {
     async function (error: AxiosError) {
       console.log('errorrrr====== in axios', error?.response);
 
-      if (error?.response?.status == 401) {
+      if (error?.response?.status === 401) {
         await AsyncStorage.clear();
         dispatch(clearAuthState());
       }

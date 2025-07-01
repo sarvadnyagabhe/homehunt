@@ -15,6 +15,7 @@ import CustomSlider from '../CustomSlider';
 import Share from 'react-native-share';
 import {AgentUserType} from '../../types';
 import {BASE_URL} from '../../constant/urls';
+import {useAppSelector} from '../../store';
 
 type PropertyCardType = {
   item: AgentUserType;
@@ -29,6 +30,7 @@ const PropertyCard = ({
   onPress = () => {},
   containerStyle = {},
 }: PropertyCardType) => {
+  const {token} = useAppSelector(state => state.auth);
   const handleShare = () => {
     const shareOptions = {
       title: 'Check this out!',
@@ -60,30 +62,35 @@ const PropertyCard = ({
           sliderData={getSliderImages()}
           imageStyle={styles.imageContainerStyle}
           imageContainer={{height: 200}}
+          onPress={onPress}
         />
-        <View style={styles.distanceAbosluteView}>
-          <MagicText style={styles.distanceText}>10 KM Away</MagicText>
-        </View>
+        {token ? (
+          <View style={styles.distanceAbosluteView}>
+            <MagicText style={styles.distanceText}>10 KM Away</MagicText>
+          </View>
+        ) : null}
+
         {item.sponsorship_status ? (
           <View style={styles.sponsoredView}>
             <MagicText style={styles.sponsorText}>Sponsored</MagicText>
           </View>
         ) : null}
-
-        <View style={styles.iconAbsoluteView}>
-          <View style={styles.row}>
-            <TouchableOpacity onPress={() => onBookmarkPress()}>
-              <View style={styles.bookmarkIconView}>
-                <BookmarkIcon color={COLORS.WHITE} />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleShare()}
-              style={styles.shareIconContainer}>
-              <ShareIcon />
-            </TouchableOpacity>
+        {token ? (
+          <View style={styles.iconAbsoluteView}>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => onBookmarkPress()}>
+                <View style={styles.bookmarkIconView}>
+                  <BookmarkIcon color={COLORS.WHITE} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleShare()}
+                style={styles.shareIconContainer}>
+                <ShareIcon />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        ) : null}
       </View>
       <View style={styles.bottomContainer}>
         <View style={styles.row}>
@@ -94,7 +101,7 @@ const PropertyCard = ({
           </View>
           <RatingCard rating={item?.rating ?? 0} />
         </View>
-        {item?.office_address ? (
+        {token && item?.office_address ? (
           <View
             style={[styles.row, {marginTop: 12, justifyContent: 'flex-start'}]}>
             <View>

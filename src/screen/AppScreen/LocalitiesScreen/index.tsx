@@ -23,7 +23,6 @@ import {useAppSelector} from '../../../store';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {IMAGE} from '../../../assets/images';
 import {LocalityType, locationType} from '../../../types';
-import {getBreadcrumText} from '../../../utils';
 
 const LocalitiesScreen = ({navigation}: LocalitiesScreenProps) => {
   const [localitiesList, setLocalitiesList] = useState<LocalityType[]>([]);
@@ -152,22 +151,24 @@ const LocalitiesScreen = ({navigation}: LocalitiesScreenProps) => {
             screen: 'LoginScreen',
           });
         }}
+        onHomePress={() => navigation.navigate('HomeScreen')}
       />
 
       <View style={styles.parent}>
-        <MagicText style={styles.mainText}>
-          Select locality in {location.area_name ?? location?.city_name}
-        </MagicText>
         <SearchContainer
-          placeholder="Search for area, street name, locality..."
+          placeholder={'Search for locality, area, street name'}
           onChangeText={handleTextChange}
           searchValue={searchText}
           rightIcon={renderRightIcon()}
         />
 
-        <MagicText style={styles.breadcrumText}>
-          {getBreadcrumText(location)}
+        <MagicText style={styles.mainText}>
+          Select locality in {location.area_name ?? location?.city_name}
         </MagicText>
+
+        {/* <MagicText style={styles.breadcrumText}>
+          {getBreadcrumText(location)}
+        </MagicText> */}
 
         <FlatList
           data={searchText ? filteredList : localitiesList}
@@ -188,13 +189,13 @@ const styles = StyleSheet.create({
   parent: {
     flex: 1,
     padding: 15,
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
   },
   mainText: {
     fontSize: 24,
     lineHeight: 36,
     fontWeight: '700',
-    marginBottom: 15,
+    marginTop: 15,
   },
   breadcrumText: {
     fontSize: 14,

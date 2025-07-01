@@ -60,6 +60,7 @@ export interface AgentUserType {
   id: number;
   images: string[];
   image_url: string;
+  description: string;
 }
 
 export interface UserType {
@@ -68,7 +69,7 @@ export interface UserType {
   dob: number;
   phone: string;
   email: string;
-  profile: string;
+  image: string;
   role: string;
   status: number;
   location: any;

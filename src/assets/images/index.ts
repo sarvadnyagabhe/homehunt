@@ -9,9 +9,11 @@ export const IMAGE = {
   REVIEW_PROFILE_2: require('./reviewProfile2.jpg'),
   GET_EXPERT_HELP: require('./getExpertHelp.jpeg'),
   WHATAPP_IMAGE: require('./whatsapp.png'),
-  HouseAppLogo: require('./HouseAppLogo.jpeg'),
+  HouseAppLogo: require('./HouseAppLogo.png'),
   AccountCircle: require('./account_circle.png'),
   CloseIcon: require('./close_icon.png'),
   SettingsIcon: require('./setting.png'),
   LogoutIcon: require('./logout.png'),
+  LockIcon: require('./padlock.png'),
+  GoogleMapIcon: require('./google-maps.png'),
 };

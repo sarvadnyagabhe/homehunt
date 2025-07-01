@@ -22,7 +22,6 @@ import {useAppDispatch, useAppSelector} from '../../../store';
 import {setLocation} from '../../../store/slice/locationSlice';
 import {IMAGE} from '../../../assets/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getBreadcrumText} from '../../../utils';
 
 const AreaSelectionScreen = ({navigation}: AreaSelectionScreenProps) => {
   const [areaList, setAreaList] = useState<AreaType[]>([]);
@@ -137,20 +136,21 @@ const AreaSelectionScreen = ({navigation}: AreaSelectionScreenProps) => {
             screen: 'LoginScreen',
           });
         }}
+        onHomePress={() => navigation.navigate('HomeScreen')}
       />
       <View style={styles.parent}>
         <SearchContainer
-          placeholder={`Search area in ${location.city_name}`}
+          placeholder={'Search for locality, area, street name'}
           style={styles.searchStyle}
           onChangeText={handleTextChange}
           searchValue={searchText}
           rightIcon={renderRightIcon()}
         />
-        <MagicText style={styles.breadcrumText}>
+        {/* <MagicText style={styles.breadcrumText}>
           {getBreadcrumText(location)}
-        </MagicText>
+        </MagicText> */}
         <MagicText style={styles.mainText}>
-          Select your area in {location.city_name}
+          Select area in {location.city_name}
         </MagicText>
 
         <FlatList
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   parent: {
     flex: 1,
     padding: 15,
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
   },
   mainText: {
     fontSize: 24,

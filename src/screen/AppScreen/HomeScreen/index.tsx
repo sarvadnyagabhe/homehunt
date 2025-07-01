@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {CurrentLocationIcon, SearchIcon} from '../../../assets/icons';
+import {CurrentLocationIcon} from '../../../assets/icons';
 import {COLORS} from '../../../assets/colors';
 import MagicText from '../../../components/MagicText';
 import PropertyCard from '../../../components/PropertyCard';
@@ -30,18 +30,23 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import {BASE_URL} from '../../../constant/urls';
 import {getBreadcrumText} from '../../../utils';
 import {AgentUserType} from '../../../types';
+import LoginModal from '../../../components/LoginModal';
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
   const {location} = useAppSelector(state => state.location);
+  const {token} = useAppSelector(state => state.auth);
   const isFocused = useIsFocused();
   const dispatch = useAppDispatch();
   const inputRef = useRef<any>(null);
 
   const [agentList, setAgentList] = useState<AgentUserType[]>([]);
-  const [sliderData, setSliderData] = useState<any>([]);
+  const [sliderData, setSliderData] = useState<{id: string; image: string}[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>('');
   const [searchList, setSearchList] = useState<any>([]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const getAgentList = useCallback((locationId: number) => {
     setIsLoading(true);
@@ -63,12 +68,10 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     handleSliderData(cityId)
       .then(res => {
         const data = res ?? [];
-        const list = data
-          .filter((item: any) => item.position === 'Home Page Banner')
-          .map((item: any) => ({
-            id: item.id,
-            image: `${BASE_URL}public${item.image_url}`,
-          }));
+        const list = data.map((item: any) => ({
+          id: item.id,
+          image: `${BASE_URL}public${item.image_url}`,
+        }));
 
         setSliderData(list);
       })
@@ -148,7 +151,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     <SafeAreaView style={styles.container}>
       <ScreenHeader
         showBackBtn
-        onBackPress={() => navigation.goBack()}
+        onBackPress={() => navigation.navigate('CitySelectionScreen')}
         onPressProfile={() => {
           navigation.navigate('ProfileScreen');
         }}
@@ -157,24 +160,24 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
             screen: 'LoginScreen',
           });
         }}
+        onHomePress={() => navigation.navigate('HomeScreen')}
       />
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView style={styles.scrollContainer} nestedScrollEnabled>
         <View style={styles.parent}>
-          <CustomSlider
-            sliderData={[...sliderData]}
-            containerStyle={styles.slider}
-            imageStyle={{borderRadius: 12}}
-          />
           <SearchContainer
             placeholder="Search for area, streetname, locality"
             onChangeText={handleTextChange}
             value={searchText}
-            rightIcon={<SearchIcon />}
           />
-
           <MagicText style={styles.locationCrumb}>
             {getBreadcrumText(location)}
           </MagicText>
+
+          <CustomSlider
+            sliderData={[...sliderData]}
+            containerStyle={styles.slider}
+            imageStyle={styles.sliderImage}
+          />
 
           {searchList?.length > 0 ? (
             <View style={styles.searchView}>
@@ -219,9 +222,13 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
                       item={item}
                       onBookmarkPress={() => addNewBookmark(item?.agent_id)}
                       onPress={() => {
-                        navigation.navigate('ProprtyDetailScreen', {
-                          data: item,
-                        });
+                        if (token) {
+                          navigation.navigate('ProprtyDetailScreen', {
+                            agent_id: item.agent_id,
+                          });
+                        } else {
+                          setShowLoginModal(true);
+                        }
                       }}
                       containerStyle={{marginBottom: 15}}
                     />
@@ -234,6 +241,12 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
           )}
         </View>
       </ScrollView>
+      <LoginModal
+        isVisible={showLoginModal}
+        closeModal={() => {
+          setShowLoginModal(false);
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -243,11 +256,11 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
   },
   parent: {
     flex: 1,
-    paddingHorizontal: 15,
+    padding: 15,
   },
   scrollContainer: {
     flex: 1,
@@ -255,10 +268,10 @@ const styles = StyleSheet.create({
   flatlistView: {
     marginBottom: 30,
     marginTop: 12,
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
   },
   locationCrumb: {
-    marginBottom: 18,
+    // marginBottom: 18,
     marginTop: 8,
     marginLeft: 12,
     color: COLORS.TEXT_GRAY,
@@ -269,14 +282,14 @@ const styles = StyleSheet.create({
   searchView: {
     marginBottom: 12,
     borderRadius: 12,
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: COLORS.WHITE_SMOKE,
     maxHeight: 200,
   },
   searchItem: {
     paddingVertical: 12,
     paddingHorizontal: 12,
     borderWidth: 0.8,
-    borderColor: COLORS.WHITE,
+    borderColor: COLORS.WHITE_SMOKE,
     borderRadius: 4,
   },
   searchRow: {
@@ -286,5 +299,9 @@ const styles = StyleSheet.create({
   searchText: {
     fontSize: 16,
     marginLeft: 12,
+  },
+  sliderImage: {
+    borderRadius: 12,
+    height: 150,
   },
 });

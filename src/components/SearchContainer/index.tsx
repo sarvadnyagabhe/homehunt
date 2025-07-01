@@ -9,7 +9,7 @@ import {
 import React, {ReactElement, ReactNode} from 'react';
 import TextField from '../TextField';
 import {COLORS} from '../../assets/colors';
-import {LocationIcon} from '../../assets/icons';
+import {SearchIcon} from '../../assets/icons';
 
 type SearchContainerType = {
   rightIcon?: ReactNode | ReactElement;
@@ -42,7 +42,7 @@ const SearchContainer = ({
         inputStyle,
       ]}
       placeholderTextColor={COLORS.BLACK}
-      leftIcon={<LocationIcon />}
+      leftIcon={<SearchIcon />}
       rightIcon={rightIcon}
       onRightIconPress={onRightIconPress}
       onLeftIconPress={onLeftIconPress}
@@ -57,19 +57,22 @@ export default SearchContainer;
 
 const styles = StyleSheet.create({
   searchContainer: {
-    backgroundColor: COLORS.WHITE,
-    height: 54,
+    backgroundColor: COLORS.WHITE_SMOKE,
+    height: 40,
     alignContent: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 2,
-    borderRadius: 10,
+    borderRadius: 25,
   },
   androidInputStyle: {
     flex: 1,
     paddingVertical: 0,
+    color: COLORS.DARK_GRAY,
+    fontSize: 16,
   },
   iOSInputStyle: {
     flex: 1,
     paddingVertical: 2,
+    color: COLORS.DARK_GRAY,
+    fontSize: 16,
   },
 });
