@@ -66,11 +66,11 @@ export interface AgentUserType {
 export interface UserType {
   id: number;
   name: string;
-  dob: number;
+  dob: string;
   phone: string;
   email: string;
-  image: string;
+  profile: string;
   role: string;
   status: number;
-  location: any;
+  location: {address: string; latitude: number; longitude: number};
 }

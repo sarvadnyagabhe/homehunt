@@ -61,7 +61,7 @@ const TextField = ({
         style={[
           TextFieldStyle.inputContainer,
           style,
-          isValid ? {} : {borderColor: COLORS.RED},
+          isValid ? {} : {borderColor: COLORS.RED, borderWidth: 1},
         ]}>
         <View style={TextFieldStyle.row}>
           {leftIcon ? (

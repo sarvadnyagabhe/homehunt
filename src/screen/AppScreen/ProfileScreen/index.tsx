@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   Image,
@@ -18,18 +18,18 @@ import {
 } from '../../../assets/icons';
 import {ProfileScreennProps} from '../../../types/appTypes';
 import {useAppDispatch, useAppSelector} from '../../../store';
-import {clearAuthState} from '../../../store/slice/authSlice';
+import {clearAuthState, setUserData} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   handleAgentDetails,
   handleUserDetails,
 } from '../../../services/authServices';
-import FastImage from 'react-native-fast-image';
 import LoadingAndErrorComponent from '../../../components/LoadingAndErrorComponent';
 import WhiteCardView from '../../../components/WhiteCardView';
-import {getFirstInitial} from '../../../utils';
-import {AgentUserType} from '../../../types';
+import {AgentUserType, UserType} from '../../../types';
 import {IMAGE} from '../../../assets/images';
+import {BASE_URL} from '../../../constant/urls';
+import {prepareUserObj} from '../../../utils';
 
 const UserMenuOptions = ['experthelp', 'bookmarks', 'accountSettings'];
 const AgentMenuOptions = ['bookmarks', 'locations', 'accountSettings'];
@@ -38,7 +38,9 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   const dispatch = useAppDispatch();
   const {token, userData} = useAppSelector(state => state.auth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [userDetails, setUserDetails] = useState<AgentUserType | null>(null);
+  const [userDetails, setUserDetails] = useState<
+    AgentUserType | UserType | null
+  >(null);
   const [options, setOptions] = useState<string[]>([]);
 
   useEffect(() => {
@@ -69,28 +71,37 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
   };
 
   //to get  user and agent data
-  const getDetails = (userId: number, role: string) => {
-    setIsLoading(true);
-    const API =
-      role === 'agent' ? handleAgentDetails(userId) : handleUserDetails(userId);
+  const getDetails = useCallback(
+    (userId: number, role: string) => {
+      setIsLoading(true);
+      const API =
+        role === 'agent' ? handleAgentDetails(userId) : handleUserDetails();
 
-    API.then(res => {
-      setIsLoading(false);
-      console.log('res ingetAgentDetails ', res);
-      if (res?.success === true) {
-        setUserDetails(res?.data);
-      }
-    }).catch(error => {
-      setIsLoading(false);
-      console.log('error in handleAgentDetails', error?.response?.data);
-    });
-  };
+      API.then(async res => {
+        setIsLoading(false);
+        if (role === 'users') {
+          const userObj = prepareUserObj(res);
+          await AsyncStorage.setItem('userData', JSON.stringify(userObj));
+          dispatch(setUserData(userObj));
+          setUserDetails(userObj);
+        } else {
+          setUserDetails(res);
+        }
+        if (res?.success === true) {
+        }
+      }).catch(error => {
+        setIsLoading(false);
+        console.log('error in handleAgentDetails', error?.response?.data);
+      });
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     if (token && userData?.id) {
       getDetails(userData.id, userData.role);
     }
-  }, [token, userData?.id, userData?.role]);
+  }, [getDetails, token, userData?.id, userData?.role]);
 
   if (isLoading) {
     return <LoadingAndErrorComponent />;
@@ -164,30 +175,51 @@ const ProfileScreen = ({navigation}: ProfileScreennProps) => {
     }
   };
 
+  const getProfileImage = () => {
+    if (userData?.role === 'agent') {
+      return (
+        <View style={styles.profileView}>
+          <MagicText style={styles.userNameText}>
+            {userData?.agency_name[0].toUpperCase()}
+          </MagicText>
+        </View>
+      );
+    }
+
+    const data = userData?.profile ? userData.profile.split('/') : [];
+
+    if (data?.[2] && data?.[2] !== 'undefined' && userData?.profile) {
+      const url = `${BASE_URL}public/${userData.profile}`;
+      return (
+        <View style={styles.profileViewStyle}>
+          <Image source={{uri: url}} style={styles.profileImgStyle} />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.profileView}>
+        <MagicText style={styles.userNameText}>
+          {userData?.name[0].toUpperCase()}
+        </MagicText>
+      </View>
+    );
+  };
+
   const renderUserInfo = () => {
     return (
       <WhiteCardView cardStyle={styles.cardStyle}>
         <View style={styles.formView}>
-          <View style={styles.roundView}>
-            {userDetails?.image_url ? (
-              <FastImage
-                source={{uri: userDetails?.image_url}}
-                style={styles.imageView}
-              />
-            ) : (
-              <MagicText style={styles.imageText}>
-                {getFirstInitial(userDetails?.name ?? '')}
-              </MagicText>
-            )}
-          </View>
+          <View>{getProfileImage()}</View>
           <View>
             <MagicText style={styles.userName}>{userDetails?.name}</MagicText>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('ProfileDetailScreen', {
-                  data: userDetails,
-                })
-              }>
+              onPress={() => {
+                if (userDetails) {
+                  navigation.navigate('ProfileDetailScreen', {
+                    userDetails,
+                  } as any);
+                }
+              }}>
               <View style={styles.profileRow}>
                 <MagicText style={styles.editText}>Edit Profile</MagicText>
                 <RightArrowIcon color={COLORS.WHITE} />
@@ -267,22 +299,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   formView: {
-    // alignItems: 'center',
-    // marginTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    // paddingVertical: 20,
     marginLeft: 12,
-  },
-  roundView: {
-    width: 60,
-    height: 60,
-    borderRadius: 100,
-    alignContent: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.WHITE_SMOKE,
-    alignItems: 'center',
-    marginRight: 18,
   },
   bookmarkRound: {
     width: 40,
@@ -324,15 +343,7 @@ const styles = StyleSheet.create({
   logout: {fontSize: 16, fontWeight: '700', color: COLORS.RED},
   contactText: {fontSize: 14, fontWeight: '700', marginBottom: 8},
   contactValueText: {fontSize: 14, fontWeight: '600'},
-  imageView: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 100,
-  },
-  imageText: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
+
   userName: {
     fontSize: 20,
     marginBottom: 6,
@@ -344,6 +355,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 2,
+    alignSelf: 'baseline',
   },
   editText: {
     fontSize: 14,
@@ -357,5 +369,36 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 16,
     color: COLORS.APP_RED,
+  },
+  profileView: {
+    width: 60,
+    height: 60,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.WHITE_SMOKE,
+    marginRight: 15,
+  },
+  userNameText: {
+    fontSize: 18,
+    lineHeight: 24,
+    color: COLORS.BLACK,
+    fontWeight: 'bold',
+  },
+  profileViewStyle: {
+    width: 60,
+    height: 60,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.WHITE_SMOKE,
+    padding: 2,
+    marginRight: 15,
+  },
+  profileImgStyle: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 100,
+    resizeMode: 'cover',
   },
 });

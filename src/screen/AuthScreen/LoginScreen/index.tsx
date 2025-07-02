@@ -41,7 +41,7 @@ const LoginScreen = ({navigation}: LoginScreenProps) => {
 
   const handleSignIn = () => {
     handleUserLogin({phone: mobile})
-      .then(res => {
+      .then((res: any) => {
         Toast.show({
           type: 'success',
           text1: res?.user?.message,

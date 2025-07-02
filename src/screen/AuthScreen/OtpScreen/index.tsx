@@ -8,8 +8,8 @@ import {TimerIcon} from '../../../assets/icons';
 import {OtpScreenProps} from '../../../types/authTypes';
 import {
   getAgentDetails,
-  getUserDetails,
   handleAgentResendOtp,
+  handleUserDetails,
   handleUserResendOtp,
   VerifyAgentOtp,
   VerifyUserOtp,
@@ -18,7 +18,7 @@ import Toast from 'react-native-toast-message';
 import {useAppDispatch} from '../../../store';
 import {setToken, setUserData} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {setAxiosInterceptor} from '../../../axios';
+import {prepareUserObj} from '../../../utils';
 
 const OtpScreen = ({navigation, route}: OtpScreenProps) => {
   const {mobile, screen: prevScreen} = route.params;
@@ -48,7 +48,7 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
       otp: Number(otp),
     };
     VerifyUserOtp(payload)
-      .then(async res => {
+      .then(async (res: any) => {
         Toast.show({
           type: 'success',
           text1: res?.message,
@@ -56,47 +56,37 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
 
         const token = res?.tokens?.refresh?.token ?? '';
         const userId = res?.UserId ?? '';
-        dispatch(setToken(token));
-        dispatch(setUserData({role: res?.role, id: userId, name: 'User Name'}));
-        await AsyncStorage.setItem(
-          'userData',
-          JSON.stringify({role: res?.role, id: userId, name: 'User Name'}),
-        );
-        await AsyncStorage.setItem('token', token);
-        await AsyncStorage.setItem('role', res?.role);
-        setAxiosInterceptor(token, dispatch);
-        navigation.navigate('HomeScreenStack', {
-          screen: 'HomeScreen',
-        });
-        // if (userId && token) {
-        //   getUserDetails(userId, token).then(async response => {
-        //     if (response?.id) {
-        //       const userData: any = response ?? {};
 
-        //       if (!userData?.name) {
-        //         navigation.navigate('UserSignupScreen', {
-        //           mobile_number: mobile,
-        //           token,
-        //           user_id: userId,
-        //           role: res?.role,
-        //         });
-        //         return;
-        //       }
-        //       dispatch(setToken(token));
-        //       dispatch(setUserData({...response}));
-        //       await AsyncStorage.setItem('token', token);
-        //       await AsyncStorage.setItem('role', res?.role);
-        //       setAxiosInterceptor(token, dispatch);
-        //       navigation.navigate('HomeScreenStack', {
-        //         screen: 'HomeScreen',
-        //       });
-        //     }
-        //   });
-        // } else {
-        //   navigation.navigate('HomeScreenStack', {
-        //     screen: 'HomeScreen',
-        //   });
-        // }
+        if (userId && token) {
+          await AsyncStorage.setItem('token', token);
+          await AsyncStorage.setItem('role', res?.role);
+          dispatch(setToken(token));
+          handleUserDetails().then(async response => {
+            if (response?.id) {
+              const userData: any = response ?? {};
+              const userObj = prepareUserObj(userData);
+
+              if (!userObj?.name) {
+                navigation.navigate('UserSignupScreen', {
+                  mobile_number: mobile,
+                  token,
+                  user_id: userId,
+                  role: res?.role,
+                });
+                return;
+              }
+              await AsyncStorage.setItem('userData', JSON.stringify(userObj));
+              dispatch(setUserData({...userObj}));
+              navigation.navigate('HomeScreenStack', {
+                screen: 'HomeScreen',
+              });
+            }
+          });
+        } else {
+          navigation.navigate('HomeScreenStack', {
+            screen: 'HomeScreen',
+          });
+        }
       })
       .catch(error => {
         console.log('error while verifying otp in handleUserVerifyOtp', error);
@@ -112,7 +102,7 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
       phone: mobile,
     };
     handleUserResendOtp(payload)
-      .then(res => {
+      .then((res: any) => {
         Toast.show({
           type: 'success',
           text1: res?.user?.message,
@@ -134,17 +124,19 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
       otp: Number(otp),
     };
     VerifyAgentOtp(payload)
-      .then(res => {
+      .then(async (res: any) => {
         const token = res?.tokens?.refresh?.token ?? '';
         const agentId = res?.agentId ?? '';
-
+        dispatch(setToken(token));
+        await AsyncStorage.setItem('token', token);
+        await AsyncStorage.setItem('role', res?.role);
         Toast.show({
           type: 'success',
           text1: res?.message,
         });
 
         if (agentId && token) {
-          getAgentDetails(agentId, token).then(async (response: any) => {
+          getAgentDetails(agentId).then(async (response: any) => {
             if (response?.success) {
               const agentData = response?.data ?? {};
 
@@ -159,19 +151,12 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
               }
 
               if (agentData.verified !== 0) {
-                dispatch(setToken(token));
                 dispatch(setUserData({...agentData}));
-                await AsyncStorage.setItem('token', token);
                 await AsyncStorage.setItem(
                   'userData',
                   JSON.stringify(agentData),
                 );
-                await AsyncStorage.setItem('role', res?.role);
-                await AsyncStorage.setItem(
-                  'userData',
-                  JSON.stringify(agentData),
-                );
-                setAxiosInterceptor(token, dispatch);
+
                 navigation.navigate('HomeScreenStack', {
                   screen: 'HomeScreen',
                 });
@@ -205,7 +190,7 @@ const OtpScreen = ({navigation, route}: OtpScreenProps) => {
       phone: mobile,
     };
     handleAgentResendOtp(payload)
-      .then(res => {
+      .then((res: any) => {
         Toast.show({
           type: 'success',
           text1: res?.user?.message,

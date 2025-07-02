@@ -4,6 +4,7 @@ import {
 } from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AuthStackParamList} from './authTypes';
+import {AgentUserType, UserType} from '.';
 
 type MainStackParamList = {
   AuthStack: NavigatorScreenParams<AuthStackParamList>;
@@ -21,7 +22,7 @@ type HomeScreenStackParamList = {
   CitySelectionScreen: undefined;
   AreaSelectionScreen: undefined;
   LocalitiesScreen: undefined;
-  ProfileDetailScreen: any;
+  ProfileDetailScreen: {userDetails: UserType & AgentUserType};
   PendingApprovalScreen: undefined;
   WorkingLocationsListScreen: undefined;
   AccountSettings: undefined;

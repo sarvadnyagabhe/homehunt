@@ -34,8 +34,11 @@ const ScreenHeader = ({
         </View>
       );
     }
-    if (userData?.image) {
-      const url = `${BASE_URL}public/${userData?.image}`;
+
+    const data = userData?.profile ? userData.profile.split('/') : [];
+
+    if (data?.[2] && data?.[2] !== 'undefined' && userData?.profile) {
+      const url = `${BASE_URL}public/${userData.profile}`;
       return (
         <View style={styles.profileViewStyle}>
           <Image source={{uri: url}} style={styles.profileImgStyle} />
@@ -88,6 +91,11 @@ const styles = StyleSheet.create({
   profileViewStyle: {
     width: 30,
     height: 30,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.WHITE_SMOKE,
+    padding: 2,
   },
   profileImgStyle: {
     width: '100%',

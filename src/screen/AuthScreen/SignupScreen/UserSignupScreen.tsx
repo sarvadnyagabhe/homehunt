@@ -3,6 +3,7 @@ import {
   Image,
   SafeAreaView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -11,59 +12,83 @@ import {COLORS} from '../../../assets/colors';
 import CustomBack from '../../../components/CustomBack';
 import MagicText from '../../../components/MagicText';
 import TextField from '../../../components/TextField';
-import {FormikValues, useFormik} from 'formik';
-import * as yup from 'yup';
+import {useFormik} from 'formik';
 import {CameraIcon, ProfileIcon} from '../../../assets/icons';
 import {launchImageLibrary} from 'react-native-image-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import moment from 'moment';
 import Button from '../../../components/Button';
-import axios from 'axios';
-import {BASE_URL, ENDPOINT} from '../../../constant/urls';
 import {useAppDispatch} from '../../../store';
-import {setToken, setUserData} from '../../../store/slice/authSlice';
+import {setUserData} from '../../../store/slice/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {setAxiosInterceptor} from '../../../axios';
 import Toast from 'react-native-toast-message';
+import {userFormValidationSchema, UserFormValues} from './constants';
+import {
+  handleUserDetails,
+  handleUserUpdateProfile,
+} from '../../../services/authServices';
+import {prepareUserObj} from '../../../utils';
 
 const UserSignupScreen = ({navigation, route}: UserSignupScreenProps) => {
-  const {mobile_number, role, token} = route.params;
+  const {mobile_number} = route.params;
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const dispatch = useAppDispatch();
 
-  const handleValidation = yup.object().shape({
-    name: yup
-      .string()
-      .required('User Name is required')
-      .matches(/^[a-zA-Z\s]+$/, 'User Name must contain only letters'),
-    email: yup
-      .string()
-      .matches(
-        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-        'Please enter valid email address.',
-      )
-      .notRequired(),
-    profile_image: yup.mixed().notRequired(),
-    dob: yup
-      .date()
-      .required('Date of Birth is required')
-      .max(new Date(), 'Date of Birth cannot be in the future'),
-  });
+  const handleSignup = (values: UserFormValues) => {
+    const formData = new FormData();
+    formData.append('name', values.name);
+    if (values.email) {
+      formData.append('email', values.email);
+    }
+    formData.append('dob', moment(values.dob).format('DD/MM/YYYY'));
+    formData.append('location', {
+      address: '1234 Sunset Blvd, Los Angeles, CA 90026',
+      latitude: 34.09000912,
+      longitude: -118.27498032,
+    });
+    if (formik.values.profile_image !== null) {
+      const image: any = formik.values.profile_image;
+      formData.append('image', {
+        uri: image.uri,
+        name: 'image_profile.jpg',
+        type: 'image/jpeg',
+      });
+    }
 
-  const formik = useFormik({
+    handleUserUpdateProfile(formData)
+      .then(async () => {
+        const userDetails = await handleUserDetails();
+        if (userDetails?.id) {
+          const userData: any = userDetails ?? {};
+          const userObj = prepareUserObj(userData);
+          await AsyncStorage.setItem('userData', JSON.stringify(userObj));
+          dispatch(setUserData({...userObj}));
+          navigation.navigate('HomeScreenStack', {
+            screen: 'HomeScreen',
+          });
+        }
+      })
+      .catch(error => {
+        console.log('error in handleSignup:', error);
+        Toast.show({
+          type: 'error',
+          text1: error?.response?.data?.message,
+        });
+      });
+  };
+
+  const formik = useFormik<UserFormValues>({
     initialValues: {
       name: '',
       email: '',
       profile_image: null,
-      dob: new Date(),
+      dob: '',
     },
-    validationSchema: handleValidation,
-    onSubmit: values => {
-      handleSignup(values);
-    },
+    validationSchema: userFormValidationSchema,
+    onSubmit: handleSignup,
     validateOnChange: false,
-    validateOnBlur: false,
+    // validateOnBlur: true,
   });
 
   const handleProfile = () => {
@@ -71,7 +96,10 @@ const UserSignupScreen = ({navigation, route}: UserSignupScreenProps) => {
       mediaType: 'photo',
       selectionLimit: 1,
     }).then(response => {
-      formik.setFieldValue('profile_image', response.assets?.[0] ?? null);
+      if (response.assets && response.assets.length > 0) {
+        const selectedImage = response.assets[0];
+        formik.setFieldValue('profile_image', selectedImage.uri ?? null);
+      }
     });
   };
 
@@ -88,52 +116,6 @@ const UserSignupScreen = ({navigation, route}: UserSignupScreenProps) => {
     hideDatePicker();
   };
 
-  const handleSignup = (values: FormikValues) => {
-    if (formik.isValid) {
-      const formData = new FormData();
-      formData.append('name', values.name);
-      if (values.email) {
-        formData.append('email', values.email);
-      }
-      formData.append('dob', moment(values.dob).format('DD/MM/YYYY'));
-      if (formik.values.profile_image !== null) {
-        const image: any = formik.values.profile_image;
-        formData.append('profile', {
-          uri: image.uri,
-          name: image.name || `image_profile}.jpg`,
-          type: image.type || 'image/jpeg',
-        });
-      }
-
-      const url = `${BASE_URL}${ENDPOINT.update_user_profile}`;
-
-      axios
-        .patch(url, formData, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then(async response => {
-          dispatch(setToken(token));
-          dispatch(setUserData({...response?.data}));
-          await AsyncStorage.setItem('token', token);
-          await AsyncStorage.setItem('role', role);
-          setAxiosInterceptor(token, dispatch);
-          navigation.navigate('HomeScreenStack', {
-            screen: 'HomeScreen',
-          });
-        })
-        .catch(error => {
-          console.log('error in handleSignup:', error);
-          Toast.show({
-            type: 'error',
-            text1: error?.response?.data?.message,
-          });
-        });
-    }
-  };
-
   return (
     <SafeAreaView style={styles.parent}>
       <View style={styles.row}>
@@ -147,7 +129,7 @@ const UserSignupScreen = ({navigation, route}: UserSignupScreenProps) => {
           <View style={styles.roundView}>
             {formik.values.profile_image !== null ? (
               <Image
-                source={{uri: (formik.values.profile_image as any)?.uri}}
+                source={{uri: formik.values.profile_image}}
                 style={styles.profileImage}
               />
             ) : (
@@ -160,27 +142,37 @@ const UserSignupScreen = ({navigation, route}: UserSignupScreenProps) => {
           </View>
         </TouchableOpacity>
 
+        <MagicText style={styles.inputLabel}>
+          Full Name <MagicText style={styles.astricStyle}>*</MagicText>
+        </MagicText>
         <TextField
-          placeholder="Enter User Name"
+          placeholder="Enter Full Name"
           style={[
             styles.textFieldStyle,
             formik.errors.name ? {} : {marginBottom: 18},
           ]}
           value={formik.values.name}
-          onChangeText={name => formik.setFieldValue('name', name)}
+          onChangeText={formik.handleChange('name')}
           isValid={formik.errors.name ? false : true}
           errorMessage={formik.errors.name}
           errorStyle={styles.errorLabel}
         />
 
+        <MagicText style={styles.inputLabel}>
+          Phone <MagicText style={styles.astricStyle}>*</MagicText>
+        </MagicText>
         <TextField
           placeholder="Phone"
           style={[styles.textFieldStyle, {marginBottom: 18}]}
           value={mobile_number}
           isValid
           editable={false}
+          showCountryCode
         />
 
+        <Text style={styles.inputLabel}>
+          Email <Text style={styles.optionalTextStyle}>(optional)</Text>
+        </Text>
         <TextField
           placeholder="Enter Email"
           style={[
@@ -188,40 +180,44 @@ const UserSignupScreen = ({navigation, route}: UserSignupScreenProps) => {
             formik.errors.email ? {} : {marginBottom: 18},
           ]}
           value={formik.values.email}
-          onChangeText={text => formik.setFieldValue('email', text)}
+          onChangeText={formik.handleChange('email')}
           isValid={formik.errors.email ? false : true}
           errorMessage={formik.errors.email}
           errorStyle={styles.errorLabel}
+          keyboardType="email-address"
         />
 
+        <MagicText style={styles.inputLabel}>
+          Date of Birth <MagicText style={styles.astricStyle}>*</MagicText>
+        </MagicText>
         <TouchableOpacity
           style={[
             styles.textFieldStyle,
-            {
-              height: 50,
-              justifyContent: 'center',
-              paddingHorizontal: 10,
-              borderRadius: 12,
-            },
+            styles.dobContainer,
+            formik.errors.dob ? {borderWidth: 1, borderColor: COLORS.RED} : {},
           ]}
           onPress={() => showDatePicker()}>
           <MagicText
-            style={{
-              fontSize: 16,
-              lineHeight: 24,
-              color: formik.values.dob ? COLORS.BLACK : COLORS.GRAY,
-            }}>
+            style={[
+              styles.dobText,
+              {color: formik.values.dob ? COLORS.BLACK : COLORS.GRAY},
+            ]}>
             {formik.values.dob
               ? moment(formik.values.dob).format('DD/MM/YYYY')
-              : 'Select Date of Birth'}
+              : 'Date of Birth'}
           </MagicText>
         </TouchableOpacity>
+        {formik.errors.dob ? (
+          <MagicText style={[styles.errorLabel, {marginTop: 8}]}>
+            {formik.errors.dob}
+          </MagicText>
+        ) : null}
 
         <Button
           label="SignUp"
           style={styles.btnStyle}
           labelStyle={styles.btnLabel}
-          onPress={() => handleSignup(formik.values)}
+          onPress={() => formik.handleSubmit()}
         />
       </View>
       <DateTimePickerModal
@@ -239,7 +235,7 @@ const UserSignupScreen = ({navigation, route}: UserSignupScreenProps) => {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: COLORS.WHITE_SMOKE,
+    backgroundColor: COLORS.WHITE,
   },
   row: {
     flexDirection: 'row',
@@ -264,7 +260,7 @@ const styles = StyleSheet.create({
   textFieldStyle: {
     fontSize: 16,
     color: COLORS.BLACK,
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: COLORS.WHITE_SMOKE,
   },
   errorLabel: {
     fontSize: 12,
@@ -278,7 +274,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignContent: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: COLORS.WHITE_SMOKE,
     marginBottom: 18,
     alignItems: 'center',
   },
@@ -303,6 +299,32 @@ const styles = StyleSheet.create({
   btnLabel: {
     fontSize: 18,
     fontWeight: '600',
+  },
+  inputLabel: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: COLORS.BLACK,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  astricStyle: {
+    color: COLORS.RED,
+    fontSize: 14,
+  },
+  optionalTextStyle: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: COLORS.GRAY,
+  },
+  dobContainer: {
+    height: 50,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  dobText: {
+    fontSize: 16,
+    lineHeight: 24,
   },
 });
 

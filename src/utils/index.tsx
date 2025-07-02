@@ -1,6 +1,6 @@
 import {Alert, Linking, PermissionsAndroid, Platform} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import {locationType} from '../types';
+import {locationType, UserType} from '../types';
 
 const getLocationPermission = async () => {
   if (Platform.OS === 'android') {
@@ -73,9 +73,28 @@ const getBreadcrumText = (location: locationType) => {
   return arr.join(' > ');
 };
 
+const prepareUserObj = (userData: any = {}) => {
+  const userObj: UserType = {
+    id: userData.id,
+    name: userData.name ?? '',
+    dob: userData.dob ?? '',
+    phone: userData.phone ?? '',
+    email: userData.email ? JSON.parse(userData.email) : '',
+    profile: userData.profile ? JSON.parse(userData.profile) : '',
+    role: userData.role ?? 'users',
+    status: userData.status ?? 0,
+    location: userData.location
+      ? JSON.parse(JSON.parse(userData.location))
+      : null,
+  };
+
+  return userObj;
+};
+
 export {
   getCurrentLocation,
   getLocationPermission,
   getFirstInitial,
   getBreadcrumText,
+  prepareUserObj,
 };

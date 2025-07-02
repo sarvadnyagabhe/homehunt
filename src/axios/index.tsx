@@ -1,43 +1,50 @@
+import axios, {AxiosRequestConfig, AxiosResponse, AxiosError} from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, {AxiosError, AxiosRequestConfig} from 'axios';
-import {clearAuthState} from '../store/slice/authSlice';
-import {Dispatch} from '@reduxjs/toolkit';
+import {BASE_URL} from '../constant/urls';
 
-export const setAxiosInterceptor = async (token: any, dispatch: Dispatch) => {
-  const headers = {
-    'content-type': 'application/json',
-    authorization: `Bearer ${token}`,
-  };
+// Create axios instance
+const axiosInstance = axios.create({
+  baseURL: BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-  // Add a request interceptor
-  axios.interceptors.request.use(
-    (config: AxiosRequestConfig) => {
-      config.headers = {
-        ...headers,
-        ...config.headers,
-      };
-      return config;
-    },
-    function (error: AxiosError) {
-      console.log('error in axios request', error);
+// Add request interceptor
+axiosInstance.interceptors.request.use(
+  async (config: AxiosRequestConfig) => {
+    // Add token if available
+    const token = await AsyncStorage.getItem('token');
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    console.log('[Request]', config);
+    return config;
+  },
+  (error: AxiosError) => {
+    console.error('[Request Error]', error);
+    return Promise.reject(error);
+  },
+);
 
-      return Promise.reject(error);
-    },
-  );
+// Add response interceptor
+axiosInstance.interceptors.response.use(
+  (response: AxiosResponse) => {
+    console.log('[Response]', response);
+    return response.data;
+  },
+  (error: AxiosError) => {
+    console.error('[Response Error]', error);
 
-  // Add a response interceptor
-  axios.interceptors.response.use(
-    function (response) {
-      return response;
-    },
-    async function (error: AxiosError) {
-      console.log('errorrrr====== in axios', error?.response);
+    if (error.response?.status === 401) {
+      // Handle unauthorized globally
+      console.warn('Unauthorized! Logging out...');
+      // Optionally clear AsyncStorage or navigate to login
+    }
 
-      if (error?.response?.status === 401) {
-        await AsyncStorage.clear();
-        dispatch(clearAuthState());
-      }
-      return Promise.reject(error);
-    },
-  );
-};
+    return Promise.reject(error);
+  },
+);
+
+export default axiosInstance;
